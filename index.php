@@ -28,7 +28,7 @@ require('timeout.php');
 } ?>
     <a href="secured.php">Super secret secure page</a><br />
     <a href="login.php">Login page</a><br />
-    <a href="preferences.php">Preferences page</a><br />
+    <a href="profile.php">View/Edit your profile</a><br />
     <?php if (isset($_SESSION['logged_in'])) { ?><a href="logout.php">Logout</a><br /><?php } ?>
   </body>
 </html>

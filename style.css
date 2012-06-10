@@ -29,11 +29,12 @@ th {
 tr.alt td {
     background-color: #222222;
 }
-.textfield {
-	color: #333333;
-	background: #f7f7f7;
-	border: 1px solid #CCCCCC;
+input {
+	color: #000000;
+	background: #ffffcc;
+	border: 1px solid #cc9900;
 	padding-left: 1px;
+    width: 100%;
 }
 a:link {
     color: #ff0000;

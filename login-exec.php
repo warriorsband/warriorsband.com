@@ -32,10 +32,7 @@ if (($_SESSION['logged_in'] == FALSE) && (isset($_POST["password"])) && (isset($
   $pass=sanitize($_POST["password"]);
 
   //Validate Username
-  if ($fetch = mysql_fetch_array( mysql_query("SELECT `email` FROM `users` WHERE `email`='$email'"))) {
-    //Get correct hashed password from the database, and also the user_type and first name 
-    //because we will save these in the session if validation is successful
-    $row = mysql_fetch_array(mysql_query("SELECT `user_id`,`first_name`,`password`,`user_type` FROM `users` WHERE `email`='$email'"));
+  if ($row = mysql_fetch_array( mysql_query("SELECT `email`,`user_id`,`first_name`,`password`,`user_type` FROM `users` WHERE `email`='$email'"))) {
     $correctpassword = $row['password'];
     $salt = substr($correctpassword, 0, 64);
     $correcthash = substr($correctpassword, 64, 64);
@@ -69,7 +66,7 @@ if ($_SESSION['logged_in']) {
 //Otherwise, redirect back to the login page, passing along the redirect URL if it exists
 else {
   if (isset($_POST['redirect_url'])) {
-    header(sprintf("Location: %s?redirect_url=%s&err_code=1", $loginpage_url, htmlspecialchars($_POST['redirect_url'])));	
+    header(sprintf("Location: %s?redirect_url=%s&error=bademailpass", $loginpage_url, htmlspecialchars($_POST['redirect_url'])));	
   } else {
     header(sprintf("Location: %s", $loginpage_url));	
   }

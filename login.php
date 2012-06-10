@@ -8,7 +8,7 @@
  *
  *    redirect_url: An optional string indicating the URL (relative to the domain and starting 
  *                  with a /) to redirect to if login is successful.
- *    err_code:     An optional string indicating what error occurred during the login 
+ *    error:        An optional string indicating what error occurred during the login 
  *                  validation process.
  */
 
@@ -38,6 +38,11 @@ if (isset($_GET['redirect_url'])) {
     Please enter your e-mail address and password.
     <?php } ?>
     <br /><br />
+<?php if (isset($_GET['error'])) {
+  if ($_GET['error'] == "bademailpass") {
+    echo "Invalid e-mail address or password. <br \>";
+  }
+} ?>
     <!-- START OF LOGIN FORM -->
     <form action="login-exec.php" method="POST">
       <?php if (isset($redirect_url)) { ?>
@@ -64,12 +69,6 @@ if (isset($_GET['redirect_url'])) {
       </table>
     </form>
     <!-- END OF LOGIN FORM -->
-<?php if (isset($_GET['err_code'])) {
-  echo "<br />";
-  if ($_GET['err_code'] == "1") {
-    echo "Invalid e-mail address or password.";
-  }
-} ?>
     </center>
   </body>
 </html>
