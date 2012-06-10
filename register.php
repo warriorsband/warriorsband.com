@@ -142,7 +142,7 @@ if ((isset($_POST["desired_email"]))
       $hashedpassword= HashPassword($desired_password);
 
       //Insert username and the hashed password to MySQL database
-      mysql_query("INSERT INTO `users` (`last_name`, `first_name`, `email`, `password`, `user_type`) VALUES ('Last', 'First', '$desired_email', '$hashedpassword', 1)")
+      mysql_query("INSERT INTO `users` (`last_name`, `first_name`, `email`, `password`, `user_type`) VALUES ('Last', 'First', '$desired_email', '$hashedpassword', 3)")
         or die(mysql_error());
 
       //redirect to main page

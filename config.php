@@ -1,5 +1,10 @@
 <?php
-//require user configuration and database connection parameters
+
+/*
+ *  config.php
+ *
+ *  Contains database connection settings, and other variables used globally
+ */
 
 ///////////////////////////////////////
 //START OF USER CONFIGURATION/////////
@@ -12,8 +17,8 @@ $password = "shbang111";
 $hostname = "localhost";
 $database = "database";
 
-//Define your canonical domain including trailing slash!, example:
-$domain= "http://warriorsband.dyndns.org/";
+//Define your canonical domain excluding trailing slash!, example:
+$domain= "http://warriorsband.dyndns.org";
 
 //Define length of salt,minimum=10, maximum=35
 $length_salt=15;
@@ -22,9 +27,9 @@ $length_salt=15;
 //minimum 60 (for one minute)
 $sessiontimeout=1800;
 
-//Define login, 403 and 404 pages
-$loginpage_url= $domain.'login.php';
-$forbidden_url= $domain.'403.php';
+//Define login and 403 pages
+$loginpage_url= $domain.'/login.php';
+$forbidden_url= $domain.'/403.php';
 ////////////////////////////////////
 //END OF USER CONFIGURATION/////////
 ////////////////////////////////////

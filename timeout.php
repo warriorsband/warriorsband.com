@@ -1,5 +1,5 @@
 <?php
-session_start(); 
+require_once('config.php');
 
 if ((isset($_SESSION['logged_in'])) && (($_SESSION['logged_in'])==TRUE)) {
   //valid user has logged-in to the website
