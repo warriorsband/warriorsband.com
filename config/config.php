@@ -28,7 +28,7 @@ $length_salt=15;
 $sessiontimeout=1800;
 
 //Define login and 403 pages
-$loginpage_url= $domain.'/login.php';
+$loginpage_url= $domain.'/auth/login.php';
 $forbidden_url= $domain.'/403.php';
 ////////////////////////////////////
 //END OF USER CONFIGURATION/////////

@@ -7,13 +7,13 @@
  */
 
 session_start();
-require('config.php'); ?>
+require($_SERVER['DOCUMENT_ROOT'].'/config/config.php'); ?>
 
 <!DOCTYPE HTML>
 <html>
   <head>
     <title>Warriors Band</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="/config/style.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body>
@@ -33,7 +33,7 @@ else {
 } ?>
 
       <br /><br />
-      <a href="index.php">Back to homepage</a>
+      <a href="/index.php">Back to homepage</a>
     </center>
   </body>
 </html>

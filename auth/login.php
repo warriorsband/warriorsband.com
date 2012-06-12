@@ -13,6 +13,8 @@
  */
 
 session_start();
+require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
 
 if (isset($_GET['redirect_url'])) {
   $redirect_url = $_GET['redirect_url'];
@@ -23,7 +25,7 @@ if (isset($_GET['redirect_url'])) {
 <html>
   <head>
     <title>Warriors Band Login</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="/config/style.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body >
@@ -40,47 +42,37 @@ if (isset($_GET['redirect_url'])) {
     <br /><br />
 <?php if (isset($_GET['error'])) {
   if ($_GET['error'] == "bademailpass") {
-    echo "Invalid e-mail address or password. <br \>";
+    echo "Invalid e-mail address or password.";
+  } elseif ($_GET['error'] == "maxlogins") {
+    $minutes_cooldown = $login_cooldown / 60;
+    echo "Maximum number of login attempts exceeded. Try again in $minutes_cooldown minutes.";
   }
+  echo "<br /><br />";
 } ?>
     <!-- START OF LOGIN FORM -->
-    <form action="login-exec.php" method="POST">
+    <form action="/auth/login-exec.php" method="POST">
       <?php if (isset($redirect_url)) { ?>
       <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($redirect_url) ?>">
       <?php } ?>
-      <table class="noborder">
-        <tr class="noborder">
-          <td class="noborder">
-            <table>
-              <tr>
-                <th>E-mail:</th>
-                <td><input type="text" id="email" name="email"></td>
-              </tr>
-              <tr>
-                <th>Password:</th>
-                <td><input name="password" type="password" id="password"></td>
-              </tr>
-            </table>
-          </td>
-          <td class="noborder">
-            <input type="submit" value="Login">
-          </td>
+      <table>
+        <tr>
+          <th>E-mail:</th>
+          <td><input type="text" name="email" tabindex="1"></td>
+          <td rowspan="2"><input type="submit" value="Login" tabindex="3"></td>
+        </tr>
+        <tr>
+          <th>Password:</th>
+          <td><input type="password" name="password" tabindex="2"></td>
         </tr>
       </table>
     </form>
     <!-- END OF LOGIN FORM -->
-    </center>
-  </body>
-</html>
 <?php
-}
-
-if ((isset($_SESSION['logged_in'])) && ($_SESSION['logged_in'] == TRUE)) { ?>
+} elseif ($_SESSION['logged_in'] == TRUE) { ?>
     You are already logged in.
+<?php } ?>
     <br /><br />
-    <a href="index.php">Back to homepage</a>
+    <a href="/index.php">Back to homepage</a>
     </center>
   </body>
 </html>
-<?php
-} ?>

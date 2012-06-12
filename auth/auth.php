@@ -20,7 +20,7 @@
  *  redirect to.
  */
 
-require('config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 if ((!isset($_SESSION['logged_in'])) || ($_SESSION['logged_in'] == FALSE)) {
   if (isset($redirect_url)) {

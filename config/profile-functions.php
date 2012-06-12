@@ -10,6 +10,15 @@
 //or can view/edit a given profile element.
 //These must all be called after the row query has succeeded and 
 //$user_id and $user_type have been defined.
+function profile_viewable() {
+  return TRUE;
+}
+function profile_editable() {
+  global $user_id;
+  if (($_SESSION['user_id'] == $user_id) || ($_SESSION['user_type'] >= 2)) {
+    return TRUE;
+  } else { return FALSE; }
+}
 function email_viewable() {
   global $user_id;
   if (($_SESSION['user_id'] == $user_id) || ($_SESSION['user_type'] >= 2)) {
@@ -31,8 +40,7 @@ function first_name_viewable() {
   return TRUE;
 }
 function first_name_editable() {
-  global $user_id;
-  if (($_SESSION['user_id'] == $user_id) || ($_SESSION['user_type'] >= 2)) {
+  if ($_SESSION['user_type'] >= 2) {
     return TRUE;
   } else { return FALSE; }
 }
@@ -40,8 +48,7 @@ function last_name_viewable() {
   return TRUE;
 }
 function last_name_editable() {
-  global $user_id;
-  if (($_SESSION['user_id'] == $user_id) || ($_SESSION['user_type'] >= 2)) {
+  if ($_SESSION['user_type'] >= 2) {
     return TRUE;
   } else { return FALSE; }
 }
@@ -60,6 +67,8 @@ function user_type_editable() {
 function print_errmsg($error) {
   if ($error == "bademail") {
     echo "Invalid e-mail address.";
+  } elseif ($error == "duplicateemail") {
+    echo "The provided e-mail address is already in use.";
   } elseif ($error == "badpass") {
     echo "Invalid current password.";
   } elseif ($error == "passmismatch") {

@@ -17,10 +17,10 @@
 
 session_start();
 $redirect_url = $_SERVER['PHP_SELF'];
-require('auth.php');
-require_once('timeout.php');
+require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
+require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
 //All the permissions and error message functions are stored here for readability
-include('profile-functions.php');
+require($_SERVER['DOCUMENT_ROOT'].'/config/profile-functions.php');
 
 //Sanitize input
 function sanitize($data){
@@ -32,6 +32,7 @@ function sanitize($data){
 
 //Print out the profile's full name (only works once the query has been made)
 function print_name() {
+  global $row;
   if ((isset($row['first_name'])) && (isset($row['last_name']))) {
     echo $row['first_name']." ".$row['last_name'];
   }
@@ -67,40 +68,54 @@ $user_type = intval($row['user_type']);
 
 //If user_type is editable, set some variables used for displaying
 //radio buttons for user_type.
-if (user_type_editable()) {
+if (user_type_viewable()) {
   if ($user_type == 1) {
     $user_label = "Member";
     $check1 = "checked=\"checked\"";
     $check2 = "";
     $check3 = "";
+    $check4 = "";
   } elseif ($user_type == 2) {
     $user_label = "Exec";
     $check1 = "";
     $check2 = "checked=\"checked\"";
     $check3 = "";
+    $check4 = "";
   } elseif ($user_type == 3) {
     $user_label = "Admin";
     $check1 = "";
     $check2 = "";
     $check3 = "checked=\"checked\"";
+    $check4 = "";
+  } elseif ($user_type == 4) {
+    $user_label = "Admin";
+    $check1 = "";
+    $check2 = "";
+    $check3 = "";
+    $check4 = "checked=\"checked\"";
   }
 }
+
+//Display the profile if it is permitted to do so, otherwise show an error
+if (!profile_viewable()) {
+  echo "You are allowed to view this user's profile.";
+  exit();
+} else {
 ?>
 
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Warriors Band Profile: <?php print_name() ?></title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <title>Warriors Band Profile: <?php print_name(); ?></title>
+    <link href="/config/style.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body >
     <center>
       <h2>Warriors Band Profile</h2>
-      <h3><?php print_name() ?></h3>
+      <h3><?php print_name(); ?></h3>
       <br />
-<?php
-if (isset($_GET['error'])) {
+<?php if (isset($_GET['error'])) {
   print_errmsg($_GET['error']);
 } elseif (isset($_GET['success'])) {
   print_successmsg($_GET['success']);
@@ -111,7 +126,7 @@ if (isset($_GET['error'])) {
         <tr <?php echo row_color() ?> >
           <th>E-mail</th>
 <?php if (email_editable()) { ?>
-          <form action="profile-exec.php" method="POST">
+          <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
               <input type="text" name="email" maxlength="255" value="<?php echo $row['email']; ?>" />
@@ -120,17 +135,18 @@ if (isset($_GET['error'])) {
               <input type="submit" value="Update" />
             </td>
           </form>
-<?php } else { echo "<td>".$row['email']."</td><td></td>"; } ?>
+<?php } else {
+  echo "<td>".$row['email']."</td>"; } ?>
         </tr>
 <?php } if (password_editable()) { ?>
-        <tr <?php echo row_color() ?> >
+        <tr <?php echo row_color(); ?> >
           <th>Password</th>
-          <form action="profile-exec.php" method="POST">
+          <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td style="width:250px">
-              Current password: <input type="text" name="password" maxlength="64" /><br />
-              New password: <input type="text" name="newpassword" maxlength="64" /><br />
-              Retype password: <input type="text" name="newpassword1" maxlength="64" />
+              Current password: <input type="password" name="password" maxlength="64" /><br />
+              New password: <input type="password" name="newpassword" maxlength="64" /><br />
+              Retype password: <input type="password" name="newpassword1" maxlength="64" />
             </td>
             <td>
               <input type="submit" value="Update" />
@@ -138,10 +154,10 @@ if (isset($_GET['error'])) {
           </form>
         </tr>
 <?php } if (first_name_viewable()) { ?>
-        <tr <?php echo row_color() ?> >
+        <tr <?php echo row_color(); ?> >
           <th>First name</th>
 <?php if (first_name_editable()) { ?>
-          <form action="profile-exec.php" method="POST">
+          <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
               <input type="text" name="first_name" maxlength="255" value="<?php echo $row['first_name']; ?>" />
@@ -150,13 +166,14 @@ if (isset($_GET['error'])) {
               <input type="submit" value="Update" />
             </td>
           </form>
-<?php } else { echo "<td>".$row['first_name']."</td><td></td>"; } ?>
+<?php } else {
+  echo "<td>".$row['first_name']."</td>"; } ?>
         </tr>
 <?php } if (last_name_viewable()) { ?>
         <tr <?php echo row_color() ?> >
           <th>Last name</th>
 <?php if (last_name_editable()) { ?>
-          <form action="profile-exec.php" method="POST">
+          <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
               <input type="text" name="last_name" maxlength="255" value="<?php echo $row['last_name']; ?>" />
@@ -165,18 +182,21 @@ if (isset($_GET['error'])) {
               <input type="submit" value="Update" />
             </td>
           </form>
-<?php } else { echo "<td>".$row['last_name']."</td><td></td>"; } ?>
+<?php } else {
+  echo "<td>".$row['last_name']."</td>"; } ?>
         </tr>
-<?php } if (user_type_viewable()) {
-  if (user_type_editable()) { ?>
+<?php } if (user_type_viewable()) { ?>
         <tr>
           <th>User type</th>
-          <form action="profile-exec.php" method="POST">
+<?php if (user_type_editable()) { ?>
+          <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
               <input type="radio" name="user_type" value="1" <?php echo $check1; ?> /> Member
               <input type="radio" name="user_type" value="2" <?php echo $check2; ?> /> Exec
-              <input type="radio" name="user_type" value="3" <?php echo $check3; ?> /> Admin
+              <br />
+              <input type="radio" name="user_type" value="3" <?php echo $check3; ?> /> Admin Exec
+              <input type="radio" name="user_type" value="4" <?php echo $check4; ?> /> Admin
             </td>
             <td>
               <input type="submit" value="Update" />
@@ -184,16 +204,15 @@ if (isset($_GET['error'])) {
           </form>
         </tr>
 <?php } else { ?>
-        <tr>
-          <th>User type</th>
-          <td><?php echo $user_type; ?></td>
-          <td></td>
+          <td><?php echo $user_label; ?></td>
+<?php } ?>
         </tr>
-<?php }} ?>
+<?php } ?>
       </table>
 
       <br /><br />
-      <a href="index.php">Back to homepage</a>
+      <a href="/index.php">Back to homepage</a>
     </center>
   </body>
 </html>
+<?php } ?>
