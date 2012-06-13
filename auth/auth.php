@@ -20,13 +20,13 @@
  *  redirect to.
  */
 
-require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+if (!isset($_SESSION)) session_start(); 
 
 if ((!isset($_SESSION['logged_in'])) || ($_SESSION['logged_in'] == FALSE)) {
   if (isset($redirect_url)) {
-    header(sprintf("Location: %s?redirect_url=%s", $loginpage_url, htmlspecialchars($redirect_url)));
+    header(sprintf("Location: %s?redirect_url=%s", "$domain/auth/login.php", htmlspecialchars($redirect_url)));
   } else {
-    header(sprintf("Location: %s", $forbidden_url));
+    header(sprintf("Location: %s", "$domain/403.php"));
   }
   exit();
 }

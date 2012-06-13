@@ -57,8 +57,10 @@ if (($_SESSION['logged_in'] == FALSE) && (isset($_POST["password"])) && (isset($
         $_SESSION['first_name'] = $row['first_name'];
       }
     }
+  } else {
+    $error='bademailpass';
   }
-} 
+}
 
 //If the user is logged in successfully, redirect to the provided URL if it exists, or just 
 //to the homepage otherwise

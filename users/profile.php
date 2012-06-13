@@ -17,10 +17,11 @@
 
 session_start();
 $redirect_url = $_SERVER['PHP_SELF'];
-require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
+require($_SERVER['DOCUMENT_ROOT'].'/header.php');
+
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
-require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
 
 //Print out the profile's full name (only works once the query has been made)
 function print_name() {
@@ -83,73 +84,63 @@ if (!profile_viewable($user_id, $user_type)) {
 } else {
 ?>
 
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <title>Warriors Band Profile: <?php print_name(); ?></title>
-    <link href="/config/style.css" rel="stylesheet" type="text/css" />
-  </head>
-
-  <body >
-    <center>
-      <h2>Warriors Band Profile</h2>
-      <h3><?php print_name(); ?></h3>
-      <br />
-<?php print_msg(); ?>
-      <table class="noborder">
+<h2>Warriors Band Profile</h2>
+<h3><?php print_name(); ?></h3>
+<br />
+<table>
 <?php
 if (email_viewable($user_id, $user_type)) { ?>
-        <tr <?php echo row_color() ?> >
-          <th>E-mail</th>
+  <tr <?php echo row_color() ?> >
+    <th>E-mail</th>
 <?php
   if (email_editable($user_id, $user_type)) { ?>
-          <form action="/users/profile-exec.php" method="POST">
-            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
-            <td>
-              <input type="text" name="email" maxlength="255" value="<?php echo $row['email']; ?>" />
-            </td>
-            <td>
-              <input type="submit" value="Update" />
-            </td>
-          </form>
+    <form action="/users/profile-exec.php" method="POST">
+      <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+      <td>
+        <input type="text" name="email" maxlength="255" value="<?php echo $row['email']; ?>" />
+      </td>
+      <td>
+        <input type="submit" value="Update" />
+      </td>
+    </form>
 <?php
   } else {
     echo "<td>".$row['email']."</td><td></td>";
   } ?>
-        </tr>
+  </tr>
 <?php
 }
 if (password_editable($user_id, $user_type)) { ?>
-        <tr <?php echo row_color(); ?> >
-          <th>Password</th>
-          <form action="/users/profile-exec.php" method="POST">
-            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
-            <td style="width:250px">
-              Current password: <input type="password" name="password" maxlength="64" /><br />
-              New password: <input type="password" name="newpassword" maxlength="64" /><br />
-              Retype password: <input type="password" name="newpassword1" maxlength="64" />
-            </td>
-            <td>
-              <input type="submit" value="Update" />
-            </td>
-          </form>
-        </tr>
+  <tr <?php echo row_color(); ?> >
+    <th>Password</th>
+    <form action="/users/profile-exec.php" method="POST">
+      <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+      <td style="width:250px">
+        Current password: <input type="password" name="password" maxlength="64" /><br />
+        New password: <input type="password" name="newpassword" maxlength="64" /><br />
+        Retype password: <input type="password" name="newpassword1" maxlength="64" />
+      </td>
+      <td>
+        <input type="submit" value="Update" />
+      </td>
+    </form>
+  </tr>
 <?php
 }
 if (first_name_viewable($user_id, $user_type)) { ?>
-        <tr <?php echo row_color(); ?> >
-          <th>First name</th>
+  <tr <?php echo row_color(); ?> >
+    <th>First name</th>
 <?php
-  if (first_name_editable($user_id, $user_type)) { ?>
-          <form action="/users/profile-exec.php" method="POST">
-            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
-            <td>
-              <input type="text" name="first_name" maxlength="255" value="<?php echo $row['first_name']; ?>" />
-            </td>
-            <td>
-              <input type="submit" value="Update" />
-            </td>
-          </form>
+if (first_name_editable($user_id, $user_type)) { ?>
+    <form action="/users/profile-exec.php" method="POST">
+      <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+      <td>
+        <input type="text" name="first_name" maxlength="255" value="<?php echo $row['first_name']; ?>" />
+      </td>
+      <td>
+        <input type="submit" value="Update" />
+      </td>
+    </form>
 <?php
   }
   else {
@@ -159,19 +150,19 @@ if (first_name_viewable($user_id, $user_type)) { ?>
 <?php
 }
 if (last_name_viewable($user_id, $user_type)) { ?>
-        <tr <?php echo row_color() ?> >
-          <th>Last name</th>
+  <tr <?php echo row_color() ?> >
+    <th>Last name</th>
 <?php
   if (last_name_editable($user_id, $user_type)) { ?>
-          <form action="/users/profile-exec.php" method="POST">
-            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
-            <td>
-              <input type="text" name="last_name" maxlength="255" value="<?php echo $row['last_name']; ?>" />
-            </td>
-            <td>
-              <input type="submit" value="Update" />
-            </td>
-          </form>
+    <form action="/users/profile-exec.php" method="POST">
+      <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+      <td>
+        <input type="text" name="last_name" maxlength="255" value="<?php echo $row['last_name']; ?>" />
+      </td>
+      <td>
+        <input type="submit" value="Update" />
+      </td>
+    </form>
 <?php
   } else {
     echo "<td>".$row['last_name']."</td><td></td>";
@@ -180,53 +171,50 @@ if (last_name_viewable($user_id, $user_type)) { ?>
 <?php
 }
 if (user_type_viewable($user_id, $user_type)) { ?>
-        <tr <?php echo row_color(); ?> >
-          <th>User type</th>
+  <tr <?php echo row_color(); ?> >
+    <th>User type</th>
 <?php
   if (user_type_editable($user_id, $user_type)) { ?>
-          <form action="/users/profile-exec.php" method="POST">
-            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
-            <td>
-              <input type="radio" name="user_type" value="1" <?php echo $check1; ?> /> Member
-              <input type="radio" name="user_type" value="2" <?php echo $check2; ?> /> Exec
-              <br />
-              <input type="radio" name="user_type" value="3" <?php echo $check3; ?> /> Admin Exec
-              <input type="radio" name="user_type" value="4" <?php echo $check4; ?> /> Admin
-            </td>
-            <td>
-              <input type="submit" value="Update" />
-            </td>
-          </form>
-        </tr>
+    <form action="/users/profile-exec.php" method="POST">
+      <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+      <td>
+        <input type="radio" name="user_type" value="1" <?php echo $check1; ?> /> Member
+        <input type="radio" name="user_type" value="2" <?php echo $check2; ?> /> Exec
+        <br />
+        <input type="radio" name="user_type" value="3" <?php echo $check3; ?> /> Admin Exec
+        <input type="radio" name="user_type" value="4" <?php echo $check4; ?> /> Admin
+      </td>
+      <td>
+        <input type="submit" value="Update" />
+      </td>
+    </form>
+  </tr>
 <?php
   } else { ?>
-          <td><?php echo $user_label; ?></td><td></td>
+    <td><?php echo $user_label; ?></td><td></td>
 <?php
   } ?>
-        </tr>
+  </tr>
 <?php
 } ?>
 <?php
 if (account_deletable($user_id, $user_type)) { ?>
-        <tr <?php echo row_color(); ?> class="noborder">
-          <td colspan="3" class="noborder">
-            <form action="/users/delete.php" method="POST">
-              <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+  <tr <?php echo row_color(); ?>>
+    <td colspan="3">
+      <form action="/users/delete.php" method="POST">
+        <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
 <?php
   if ((isset($_GET['msg'])) && ($_GET['msg'] == "confirmdelete")) { ?>
-              <input type="hidden" name="confirm" value="true" />
+        <input type="hidden" name="confirm" value="true" />
 <?php
   } ?>
-              <div align="right"><input style="width:150px" type="submit" value="Delete this account" /></div>
-            </form>
-          </td>
-        </tr>
+        <div align="right"><input style="width:150px" type="submit" value="Delete this account" /></div>
+      </form>
+    </td>
+  </tr>
 <?php } ?>
-      </table>
+</table>
+<?php }
 
-      <br /><br />
-      <a href="/index.php">Back to homepage</a>
-    </center>
-  </body>
-</html>
-<?php } ?>
+require($_SERVER['DOCUMENT_ROOT'].'/footer.php');
+?>

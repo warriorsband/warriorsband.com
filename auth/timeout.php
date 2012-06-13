@@ -9,6 +9,7 @@ if ((isset($_SESSION['logged_in'])) && (($_SESSION['logged_in'])==TRUE)) {
       session_unset();  
     }
     else {
+      session_regenerate_id();
       $_SESSION['LAST_ACTIVITY'] = time(); 
     }
   }

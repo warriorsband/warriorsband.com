@@ -101,8 +101,9 @@ function user_type_to_str($user_type) {
 
 //Outputs 'class="alt"' on even-numbered rows, so that it can be used to define the 
 //class of rows and ".alt" can be given a different colour in the css style
-function row_color() {
+function row_color($reset = FALSE) {
   static $row_count = 0;
+  if ($reset) $row_count = 0;
   if ($odd = ++$row_count % 2) {
     return '';
   } else {

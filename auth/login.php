@@ -12,61 +12,44 @@
  *                  validation process.
  */
 
-session_start();
-require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
-require($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
-require($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
-require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
+require($_SERVER['DOCUMENT_ROOT'].'/header.php');
 
 if (isset($_GET['redirect_url'])) {
   $redirect_url = $_GET['redirect_url'];
 }
 ?>
-
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <title>Warriors Band Login</title>
-    <link href="/config/style.css" rel="stylesheet" type="text/css" />
-  </head>
-
-  <body >
-    <center>
-    <h2>Warriors Band Login</h2>
-    <br />
-
 <?php if (!logged_in()) { ?>
-    <?php if (isset($redirect_url)) { ?>
-    You need to log in to access this page; please enter your e-mail address and password.
-    <?php } else { ?>
-    Please enter your e-mail address and password.
-    <?php } ?>
-    <br /><br />
-<?php print_msg() ?>
-    <!-- START OF LOGIN FORM -->
+<div class="pagedescription">
+<?php if (isset($redirect_url)) { ?>
+  You need to log in to access this page; please enter your e-mail address and password.
+<?php } else { ?>
+  Please enter your e-mail address and password.
+<?php } ?>
+  <br /><br />
+</div>
+  <!-- START OF LOGIN FORM -->
+<?php if (isset($redirect_url)) { ?>
+<?php } ?>
+  <table>
     <form action="/auth/login-exec.php" method="POST">
-      <?php if (isset($redirect_url)) { ?>
       <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($redirect_url) ?>">
-      <?php } ?>
-      <table>
-        <tr>
-          <th>E-mail:</th>
-          <td><input type="text" name="email" tabindex="1"></td>
-          <td rowspan="2"><input type="submit" value="Login" tabindex="3"></td>
-        </tr>
-        <tr>
-          <th>Password:</th>
-          <td><input type="password" name="password" tabindex="2"></td>
-        </tr>
-      </table>
+      <tr>
+        <th class="side">E-mail:</th>
+        <td><input type="text" name="email" tabindex="1"></td>
+        <td rowspan="2"><input type="submit" value="Login" tabindex="3"></td>
+      </tr>
+      <tr>
+        <th class="side">Password:</th>
+        <td><input type="password" name="password" tabindex="2"></td>
+      </tr>
     </form>
-    <!-- END OF LOGIN FORM -->
+  </table>
+  <!-- END OF LOGIN FORM -->
 <?php
 } else { ?>
-    You are already logged in.
-<?php } ?>
-    <br /><br />
-    <a href="/index.php">Back to homepage</a>
-    </center>
-  </body>
-</html>
+<div class="pagedescription">
+  You are already logged in.
+</div>
+<?php }
+
+require($_SERVER['DOCUMENT_ROOT'].'/footer.php'); ?>

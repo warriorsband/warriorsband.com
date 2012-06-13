@@ -153,8 +153,9 @@ function email_viewable($user_id, $user_type) {
   } else { return FALSE; }
 }
 function email_editable($user_id, $user_type) {
-  if (isset($_SESSION['user_type']) &&
-    ($_SESSION['user_type'] >= 2)) {
+  if ((isset($_SESSION['user_id'])) && (isset($_SESSION['user_type'])) &&
+    (($_SESSION['user_id'] == $user_id) || ($_SESSION['user_type'] >= 2)) &&
+    ($_SESSION['user_type'] > $user_type)) {
     return TRUE;
   } else { return FALSE; }
 }
@@ -169,7 +170,8 @@ function first_name_viewable($user_id, $user_type) {
 }
 function first_name_editable($user_id, $user_type) {
   if ((isset($_SESSION['user_type'])) &&
-    ($_SESSION['user_type'] >= 2)) {
+    ($_SESSION['user_type'] >= 2) &&
+    ($_SESSION['user_type'] > $user_type)) {
     return TRUE;
   } else { return FALSE; }
 }
@@ -178,7 +180,8 @@ function last_name_viewable($user_id, $user_type) {
 }
 function last_name_editable($user_id, $user_type) {
   if ((isset($_SESSION['user_type'])) &&
-    ($_SESSION['user_type'] >= 2)) {
+    ($_SESSION['user_type'] >= 2) &&
+    ($_SESSION['user_type'] > $user_type)) {
     return TRUE;
   } else { return FALSE; }
 }
@@ -190,7 +193,8 @@ function user_type_viewable($user_id, $user_type) {
 }
 function user_type_editable($user_id, $user_type) {
   if ((isset($_SESSION['user_type'])) &&
-    ($_SESSION['user_type'] >= 3)) {
+    ($_SESSION['user_type'] >= 3) &&
+    ($_SESSION['user_type'] > $user_type)) {
     return TRUE;
   } else { return FALSE; }
 }

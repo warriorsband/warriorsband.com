@@ -1,30 +1,51 @@
 body {
     background-color:#000000;
 	font: 1em Arial, Helvetica, sans-serif;
-    text-align: left;
 	color: #ffcc33;
-	margin: 0px;
-	padding: 20px 10px 0px;
+    width: 1024px;
+	margin: 0 auto;
+	padding: 10px;
 }
-
+div.center {
+    text-align: center;
+}
+div.pagedescription {
+    text-align: justify;
+    width: 700px;
+    margin: 0 auto;
+}
 table, td, th {
     border-collapse: collapse;
     border: 1px solid #ffcc33;
+    margin: 0 auto;
 }
-table.noborder, td.noborder, th.noborder {
-    border: 0px solid #ffcc33;
+table.contenttable {
+    table-layout: fixed;
+    border-style: none;
+    width: 100%;
+}
+td.contenttd, th.contentth {
+    border-style: none;
+    padding: 0 20px;
+}
+table.navigation {
+    width: 160px;
 }
 td, th {
     font-size: 1em;
     padding: 3px 7px 2px 7px;
 }
 th {
-    border: 1px solid #000000;
+    text-align: left;
+    border-color: #000000;
     font-size: 1.1em;
     padding-top: 5px;
     padding-bottom: 4px;
     background-color: #ffcc33;
-    color: #000000
+    color: #000000;
+}
+th.side {
+    text-align: center;
 }
 tr.alt td {
     background-color: #222222;
@@ -34,7 +55,6 @@ input {
 	background: #ffffcc;
 	border: 1px solid #cc9900;
 	padding-left: 1px;
-    width: 100%;
 }
 a:link {
     color: #ff0000;
@@ -42,7 +62,8 @@ a:link {
 a:visited {
     color: #cc0000
 }
-h1, h2, h3 {
+h1, h2, h3, h4 {
+    text-align: center;
 	color: #ffcc33;
 	margin: 0px 0px 5px;
 	padding: 0px 0px 3px;
@@ -53,4 +74,45 @@ h2 {
 }
 h3 {
 	font: italic 1em Arial, Helvetica, sans-serif;
+}
+#logo {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+#header {
+    position: relative;
+    height: 160px;
+}
+#header_text {
+    text-align: center;
+    position: relative;
+    top: 20px;
+    left: 50px;
+}
+#header1 {
+	color: #ffcc33;
+	font: 1.5em Arial, Helvetica, sans-serif;
+}
+#header2 {
+	color: #ffcc33;
+	font: italic bold 3em Arial, Helvetica, sans-serif;
+}
+#header3 {
+	color: #ffcc33;
+	font: italic 1em Arial, Helvetica, sans-serif;
+}
+#separator {
+    height: 250;
+}
+#navigation {
+    width: 150px;
+    vertical-align: top;
+}
+#content {
+    text-align: left;
+    vertical-align: top;
+}
+#footer {
+    text-align: center;
 }
