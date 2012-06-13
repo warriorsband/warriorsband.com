@@ -17,35 +17,16 @@
 
 session_start();
 $redirect_url = $_SERVER['PHP_SELF'];
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
-//All the permissions and error message functions are stored here for readability
-require($_SERVER['DOCUMENT_ROOT'].'/config/profile-functions.php');
-
-//Sanitize input
-function sanitize($data){
-  $data=trim($data);
-  $data=htmlspecialchars($data);
-  $data=mysql_real_escape_string($data);
-  return $data;
-}
 
 //Print out the profile's full name (only works once the query has been made)
 function print_name() {
   global $row;
   if ((isset($row['first_name'])) && (isset($row['last_name']))) {
     echo $row['first_name']." ".$row['last_name'];
-  }
-}
-
-//Outputs 'class="alt"' on even-numbered rows, so that it can be used to define the 
-//class of rows and :alt" can be given a different colour in the css style
-function row_color() {
-  static $row_count = 0;
-  if ($odd = ++$row_count % 2) {
-    return '';
-  } else {
-    return 'class="alt"';
   }
 }
 
@@ -68,14 +49,13 @@ $user_type = intval($row['user_type']);
 
 //If user_type is editable, set some variables used for displaying
 //radio buttons for user_type.
-if (user_type_viewable()) {
-  if ($user_type == 1) {
-    $user_label = "Member";
-    $check1 = "checked=\"checked\"";
-    $check2 = "";
-    $check3 = "";
-    $check4 = "";
-  } elseif ($user_type == 2) {
+if (user_type_viewable($user_id, $user_type)) {
+  $user_label = "Member";
+  $check1 = "checked=\"checked\"";
+  $check2 = "";
+  $check3 = "";
+  $check4 = "";
+  if ($user_type == 2) {
     $user_label = "Exec";
     $check1 = "";
     $check2 = "checked=\"checked\"";
@@ -97,7 +77,7 @@ if (user_type_viewable()) {
 }
 
 //Display the profile if it is permitted to do so, otherwise show an error
-if (!profile_viewable()) {
+if (!profile_viewable($user_id, $user_type)) {
   echo "You are allowed to view this user's profile.";
   exit();
 } else {
@@ -115,17 +95,14 @@ if (!profile_viewable()) {
       <h2>Warriors Band Profile</h2>
       <h3><?php print_name(); ?></h3>
       <br />
-<?php if (isset($_GET['error'])) {
-  print_errmsg($_GET['error']);
-} elseif (isset($_GET['success'])) {
-  print_successmsg($_GET['success']);
-}
-?>
-      <table>
-<?php if (email_viewable()) { ?>
+<?php print_msg(); ?>
+      <table class="noborder">
+<?php
+if (email_viewable($user_id, $user_type)) { ?>
         <tr <?php echo row_color() ?> >
           <th>E-mail</th>
-<?php if (email_editable()) { ?>
+<?php
+  if (email_editable($user_id, $user_type)) { ?>
           <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
@@ -135,10 +112,14 @@ if (!profile_viewable()) {
               <input type="submit" value="Update" />
             </td>
           </form>
-<?php } else {
-  echo "<td>".$row['email']."</td>"; } ?>
+<?php
+  } else {
+    echo "<td>".$row['email']."</td><td></td>";
+  } ?>
         </tr>
-<?php } if (password_editable()) { ?>
+<?php
+}
+if (password_editable($user_id, $user_type)) { ?>
         <tr <?php echo row_color(); ?> >
           <th>Password</th>
           <form action="/users/profile-exec.php" method="POST">
@@ -153,10 +134,13 @@ if (!profile_viewable()) {
             </td>
           </form>
         </tr>
-<?php } if (first_name_viewable()) { ?>
+<?php
+}
+if (first_name_viewable($user_id, $user_type)) { ?>
         <tr <?php echo row_color(); ?> >
           <th>First name</th>
-<?php if (first_name_editable()) { ?>
+<?php
+  if (first_name_editable($user_id, $user_type)) { ?>
           <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
@@ -166,13 +150,19 @@ if (!profile_viewable()) {
               <input type="submit" value="Update" />
             </td>
           </form>
-<?php } else {
-  echo "<td>".$row['first_name']."</td>"; } ?>
+<?php
+  }
+  else {
+    echo "<td>".$row['first_name']."</td><td></td>";
+  } ?>
         </tr>
-<?php } if (last_name_viewable()) { ?>
+<?php
+}
+if (last_name_viewable($user_id, $user_type)) { ?>
         <tr <?php echo row_color() ?> >
           <th>Last name</th>
-<?php if (last_name_editable()) { ?>
+<?php
+  if (last_name_editable($user_id, $user_type)) { ?>
           <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
@@ -182,13 +172,18 @@ if (!profile_viewable()) {
               <input type="submit" value="Update" />
             </td>
           </form>
-<?php } else {
-  echo "<td>".$row['last_name']."</td>"; } ?>
+<?php
+  } else {
+    echo "<td>".$row['last_name']."</td><td></td>";
+  } ?>
         </tr>
-<?php } if (user_type_viewable()) { ?>
-        <tr>
+<?php
+}
+if (user_type_viewable($user_id, $user_type)) { ?>
+        <tr <?php echo row_color(); ?> >
           <th>User type</th>
-<?php if (user_type_editable()) { ?>
+<?php
+  if (user_type_editable($user_id, $user_type)) { ?>
           <form action="/users/profile-exec.php" method="POST">
             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
             <td>
@@ -203,9 +198,28 @@ if (!profile_viewable()) {
             </td>
           </form>
         </tr>
-<?php } else { ?>
-          <td><?php echo $user_label; ?></td>
-<?php } ?>
+<?php
+  } else { ?>
+          <td><?php echo $user_label; ?></td><td></td>
+<?php
+  } ?>
+        </tr>
+<?php
+} ?>
+<?php
+if (account_deletable($user_id, $user_type)) { ?>
+        <tr <?php echo row_color(); ?> class="noborder">
+          <td colspan="3" class="noborder">
+            <form action="/users/delete.php" method="POST">
+              <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+<?php
+  if ((isset($_GET['msg'])) && ($_GET['msg'] == "confirmdelete")) { ?>
+              <input type="hidden" name="confirm" value="true" />
+<?php
+  } ?>
+              <div align="right"><input style="width:150px" type="submit" value="Delete this account" /></div>
+            </form>
+          </td>
         </tr>
 <?php } ?>
       </table>

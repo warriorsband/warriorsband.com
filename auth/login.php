@@ -14,6 +14,8 @@
 
 session_start();
 require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
+require($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
 
 if (isset($_GET['redirect_url'])) {
@@ -33,22 +35,14 @@ if (isset($_GET['redirect_url'])) {
     <h2>Warriors Band Login</h2>
     <br />
 
-<?php if ((!isset($_SESSION['logged_in'])) || ($_SESSION['logged_in'] == FALSE)) { ?>
+<?php if (!logged_in()) { ?>
     <?php if (isset($redirect_url)) { ?>
     You need to log in to access this page; please enter your e-mail address and password.
     <?php } else { ?>
     Please enter your e-mail address and password.
     <?php } ?>
     <br /><br />
-<?php if (isset($_GET['error'])) {
-  if ($_GET['error'] == "bademailpass") {
-    echo "Invalid e-mail address or password.";
-  } elseif ($_GET['error'] == "maxlogins") {
-    $minutes_cooldown = $login_cooldown / 60;
-    echo "Maximum number of login attempts exceeded. Try again in $minutes_cooldown minutes.";
-  }
-  echo "<br /><br />";
-} ?>
+<?php print_msg() ?>
     <!-- START OF LOGIN FORM -->
     <form action="/auth/login-exec.php" method="POST">
       <?php if (isset($redirect_url)) { ?>
@@ -68,7 +62,7 @@ if (isset($_GET['redirect_url'])) {
     </form>
     <!-- END OF LOGIN FORM -->
 <?php
-} elseif ($_SESSION['logged_in'] == TRUE) { ?>
+} else { ?>
     You are already logged in.
 <?php } ?>
     <br /><br />

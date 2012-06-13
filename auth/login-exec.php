@@ -12,6 +12,7 @@ session_start();
 
 //require user configuration and database connection parameters
 require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 
 //Set default to not validated
 if (!isset($_SESSION['logged_in'])) {
@@ -22,12 +23,6 @@ if (!isset($_SESSION['logged_in'])) {
 if (($_SESSION['logged_in'] == FALSE) && (isset($_POST["password"])) && (isset($_POST["email"]))) {
   //Username and password has been submitted by the user
   //Receive and sanitize the submitted information
-  function sanitize($data){
-    $data=trim($data);
-    $data=htmlspecialchars($data);
-    $data=mysql_real_escape_string($data);
-    return $data;
-  }
   $email=sanitize($_POST["email"]);
   $pass=sanitize($_POST["password"]);
 
@@ -42,22 +37,17 @@ if (($_SESSION['logged_in'] == FALSE) && (isset($_POST["password"])) && (isset($
       mysql_query("UPDATE `users` SET `last_login_attempt`=NOW(), `login_attempts`=`login_attempts`+1 WHERE `email`='$email'")
         or die(mysql_error());
 
-      $correctpassword = $row['password'];
-      $salt = substr($correctpassword, 0, 64);
-      $correcthash = substr($correctpassword, 64, 64);
-      $userhash = hash("sha256", $salt . $pass);
-
       //If the user is registered and the password hash matches, validation is successful
-      if ($userhash != $correcthash) {
+      if (!valid_password($pass, $row['password'])) {
         $error='bademailpass';
       } else {
-        //Regenerate session id prior to setting any session variable
-        //to mitigate session fixation attacks
-        session_regenerate_id();
-
         //Update last login time and login attempts
         mysql_query("UPDATE `users` SET `last_login`=NOW(), `login_attempts`=0 WHERE `email`='$email'")
           or die(mysql_error());
+
+        //Regenerate session id prior to setting any session variable
+        //to mitigate session fixation attacks
+        session_regenerate_id();
 
         //Set various session variables associated with a successful login
         $_SESSION['logged_in'] = TRUE;
@@ -85,12 +75,12 @@ else {
   if (isset($_POST['redirect_url'])) {
     $redirect_url = $loginpage_url."?redirect_url=".htmlspecialchars($_POST['redirect_url']);
     if (isset($error)) {
-      $redirect_url = $redirect_url."&error=$error";
+      $redirect_url = $redirect_url."&msg=$error";
     }
   } else {
     $redirect_url = $loginpage_url;
     if (isset($error)) {
-      $redirect_url = $redirect_url."?error=$error";
+      $redirect_url = $redirect_url."?msg=$error";
     }
   }
 }

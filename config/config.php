@@ -27,6 +27,13 @@ $length_salt=15;
 //minimum 60 (for one minute)
 $sessiontimeout=1800;
 
+//Maximum number of login attempts before being locked out
+$max_login_attempts=3;
+
+//Cooldown time (in seconds) after being locked out before a correct
+//login will be accepted
+$login_cooldown=1800;
+
 //Define login and 403 pages
 $loginpage_url= $domain.'/auth/login.php';
 $forbidden_url= $domain.'/403.php';

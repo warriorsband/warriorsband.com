@@ -11,14 +11,9 @@
 
 session_start();
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
+require($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
-function sanitize($data){
-  $data=trim($data);
-  $data=htmlspecialchars($data);
-  $data=mysql_real_escape_string($data);
-  return $data;
-}
 
 //A user ID is required in order to change settings. If none is provided, 
 //show an error and exit.
@@ -28,6 +23,12 @@ if (!isset($_POST['user_id'])) {
 }
 
 $user_id = intval(sanitize($_POST['user_id']));
+
+//If the confirm flag is not set, refer back to the profile page with a confirm message
+if ((!isset($_POST['confirm'])) || ($_POST['confirm'] != "true")) {
+  header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=confirmdelete");
+  exit();
+}
 
 //Ensure that the requester is allowed to delete accounts
 if ($_SESSION['user_type'] < 2) {
@@ -55,10 +56,10 @@ if ($_SESSION['user_type'] < $user_type) {
 }
 
 //Run the delete
-mysql_query("DELETE FROM `users` WHERE `user_id`='$user_id'");
+mysql_query("DELETE FROM `users` WHERE `user_id`='$user_id'")
   or die(mysql_error());
 
 //Success! Redirect to the settings page with the appropriate code.
-header("Location: $domain/users/users.php");
+header("Location: $domain/users/users.php?msg=deletesuccess");
 exit();
 ?>

@@ -7,7 +7,8 @@
  */
 
 session_start();
-require($_SERVER['DOCUMENT_ROOT'].'/config/config.php'); ?>
+require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php'); ?>
 
 <!DOCTYPE HTML>
 <html>
@@ -21,7 +22,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/config/config.php'); ?>
 
 <?php
 //If the user is logged in, end the session and inform the user
-if ((isset($_SESSION['logged_in'])) && ($_SESSION['logged_in'] == TRUE)) {
+if (logged_in()) {
   $_SESSION['logged_in'] = FALSE;
   session_destroy();   
   session_unset();
