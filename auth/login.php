@@ -12,44 +12,40 @@
  *                  validation process.
  */
 
-require($_SERVER['DOCUMENT_ROOT'].'/header.php');
-
-if (isset($_GET['redirect_url'])) {
-  $redirect_url = $_GET['redirect_url'];
-}
-?>
+if (isset($_GET['redirect_page'])) {
+  $redirect_page = $_GET['redirect_page'];
+} ?>
+<h3>Login</h3>
 <?php if (!logged_in()) { ?>
-<div class="pagedescription">
-<?php if (isset($redirect_url)) { ?>
+<div class="center">
+<?php if (isset($redirect_page)) { ?>
   You need to log in to access this page; please enter your e-mail address and password.
 <?php } else { ?>
   Please enter your e-mail address and password.
 <?php } ?>
   <br /><br />
 </div>
-  <!-- START OF LOGIN FORM -->
-<?php if (isset($redirect_url)) { ?>
+<!-- START OF LOGIN FORM -->
+<table>
+  <form action="/auth/login-exec.php" method="POST">
+<?php if (isset($redirect_page)) { ?>
+    <input type="hidden" name="redirect_page" value="<?php echo $redirect_page ?>">
 <?php } ?>
-  <table>
-    <form action="/auth/login-exec.php" method="POST">
-      <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($redirect_url) ?>">
-      <tr>
-        <th class="side">E-mail:</th>
-        <td><input type="text" name="email" tabindex="1"></td>
-        <td rowspan="2"><input type="submit" value="Login" tabindex="3"></td>
-      </tr>
-      <tr>
-        <th class="side">Password:</th>
-        <td><input type="password" name="password" tabindex="2"></td>
-      </tr>
-    </form>
-  </table>
-  <!-- END OF LOGIN FORM -->
+    <tr>
+      <th class="side">E-mail:</th>
+      <td><input type="text" name="email" tabindex="1"></td>
+      <td rowspan="2"><input type="submit" value="Login" tabindex="3"></td>
+    </tr>
+    <tr>
+      <th class="side">Password:</th>
+      <td><input type="password" name="password" tabindex="2"></td>
+    </tr>
+  </form>
+</table>
+<!-- END OF LOGIN FORM -->
 <?php
 } else { ?>
-<div class="pagedescription">
+<div class="center">
   You are already logged in.
 </div>
-<?php }
-
-require($_SERVER['DOCUMENT_ROOT'].'/footer.php'); ?>
+<?php } ?>

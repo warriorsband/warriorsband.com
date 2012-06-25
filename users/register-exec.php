@@ -8,10 +8,11 @@
  */
 
 session_start();
-require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
-require($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
-require($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
+require_once("Mail.php");
 
 //pre-define success
 $success = FALSE;
@@ -29,25 +30,25 @@ if (logged_in() && user_type_greater_eq(2) &&
 
   //Validate e-mail address
   if (!valid_email($email)) {
-    header("Location: ".$domain."/users/register.php?msg=bademail");
+    header("Location: $domain?page=register&msg=bademail");
     exit();
   }
 
   //Ensure the email address is not already taken
   if ($fetch = mysql_fetch_array( mysql_query("SELECT `email` FROM `users` WHERE `email`='$email'"))) {
-    header("Location: ".$domain."/users/register.php?msg=duplicateemail");
+    header("Location: $domain?page=register&msg=duplicateemail");
     exit();
   }
 
   //Check if the names are too long
   if ((strlen($first_name) > 255) || (strlen($last_name) > 255)) {
-    header("Location: ".$domain."/users/register.php?msg=nametoolong");
+    header("Location: $domain?page=register&msg=nametoolong");
     exit();
   }
   //If names are not letters and dashes only, exit
   if ((!ctype_alpha(str_replace('-','',$first_name))) ||
       (!ctype_alpha(str_replace('-','',$last_name)))) {
-    header("Location: ".$domain."/users/register.php?msg=nonalphaname");
+    header("Location: $domain?page=register&msg=nonalphaname");
     exit();
   }
 
@@ -64,14 +65,30 @@ if (logged_in() && user_type_greater_eq(2) &&
     or die(mysql_error());
 
   //Send an email to the newly registered account
+  $from = "Warriors Band <" . registration_email_from() . ">";
+  $to = "<$email>";
   $subject = registration_email_subject();
-  $message = registration_email_message($temp_password, $_SESSION['first_name'], $comment);
-  $from = registration_email_from();
-  $headers = "From: " . $from;
-  mail($email, $subject, $message, $headers);
+  $body = registration_email_message($temp_password, $_SESSION['first_name'], $comment);
 
-  //redirect back to registration page indicating success
-  header("Location: ".$domain."/users/register.php?msg=registrationsuccess");
+  $headers = array ('From' => $from, 
+    'To' => $to,
+    'Subject' => $subject);
+  $smtp = Mail::factory('smtp',
+    array ('host' => $email_host,
+    'port' => $email_port,
+    'auth' => true,
+    'username' => $email_username,
+    'password' => $email_password));
+
+  $mail = $smtp->send($to, $headers, $body);
+
+  //redirect back to registration page indicating success/failure as appropriate
+  if (PEAR::isError($mail)) {
+    header("Location: $domain?page=register&msg=registrationsuccess");
+  } else {
+    header("Location: $domain?page=register&msg=registrationfail");
+  }
+
   exit();
 }
 ?>

@@ -6,9 +6,9 @@
  *  Ends a session if it exists.
  */
 
-
-session_start();
-require($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
+session_start(); 
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 $was_logged_in = FALSE;
 //If the user is logged in, end the session and inform the user
@@ -19,14 +19,9 @@ if (logged_in()) {
   $was_logged_in = TRUE;
 }
 
-require($_SERVER['DOCUMENT_ROOT'].'/header.php');
-
-echo '<div class="center">';
 if ($was_logged_in) {
-  echo "Logged out successfully.";
+  header("Location: $domain?msg=logoutsuccess");
 } else {
-  echo "You must be logged in before you can log out.";
+  header("Location: $domain?msg=logoutfail");
 }
-echo '</div>';
-
-require($_SERVER['DOCUMENT_ROOT'].'/footer.php'); ?>
+exit();

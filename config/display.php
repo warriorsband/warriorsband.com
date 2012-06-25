@@ -10,6 +10,7 @@
 //Print a message if one is requested
 function print_msg() {
   if (isset($_GET['msg'])) {
+    echo '<div class="msg">';
     switch ($_GET['msg']) {
       //Form submission error messages
       case "bademail":
@@ -40,7 +41,7 @@ function print_msg() {
         echo "Error: First and last name must be letters and dashes only.";
         break;
       case "selfdowngrade":
-        echo "Error: Cannot decrease your own user type. If this is really<br />";
+        echo "Error: Cannot decrease your own user type. If this is really ";
         echo "your plan, delete the account and create a new one.";
         break;
       case "newuserupgrade":
@@ -49,38 +50,58 @@ function print_msg() {
       case "maxlogins":
         echo "Maximum number of login attempts exceeded. Try again in 30 minutes.";
         break;
+      case "logoutfail":
+        echo "You must be logged in before you can log out.";
+        break;
+      case "badtitle":
+        echo "Event titles must be between 4 and 255 characters long.";
+        break;
+      case "baddate":
+        echo "The date provided must be valid.";
+        break;
+      case "badtime":
+        echo "The time provided must be valid.";
+        break;
+      case "badlocation":
+        echo "Event locations must be at most 255 characters long.";
+        break;
       //Form submission success messages
-      case "emailsuccess":
-        echo "E-mail address updated successfully.";
-        break;
-      case "passwordsuccess":
-        echo "Password updated successfully.";
-        break;
-      case "firstnamesuccess":
-        echo "First name updated successfully.";
-        break;
-      case "lastnamesuccess":
-        echo "Last name updated successfully.";
-        break;
-      case "usertypesuccess":
-        echo "User type updated successfully.";
+      case "profileupdatesuccess":
+        echo "Profile updated successfully.";
         break;
       case "registrationsuccess":
-        echo "New user registered successfully!";
+        echo "Registration e-mail sent. New user registered successfully!";
         break;
-      case "deletesuccess":
+      case "registrationfail":
+        echo "Error sending registration email.";
+        break;
+      case "userdeletesuccess":
         echo "Account deleted successfully.";
+        break;
+      case "eventdeletesuccess":
+        echo "Event deleted successfully.";
+        break;
+      case "logoutsuccess":
+        echo "Logged out successfully.";
+        break;
+      case "eventupdatesuccess":
+        echo "Event updated successfully.";
+        break;
+      case "eventcreatesuccess":
+        echo "Event created successfully.";
         break;
       //Confirmation messages
       case "confirmdelete":
-        echo "If you are CERTAIN this account should be deleted, click the delete ";
+        echo "If you are CERTAIN this should be deleted, click the delete ";
         echo "button again and it will be PERMANENTLY deleted.";
         break;
       default:
         echo "Error: Unknown msg code.";
         break;
     }
-    echo "<br /><br />";
+    echo '</div>';
+  } else {
+    echo '<br />';
   }
 }
 
@@ -96,18 +117,6 @@ function user_type_to_str($user_type) {
     return "Admin";
   } else {
     return "";
-  }
-}
-
-//Outputs 'class="alt"' on even-numbered rows, so that it can be used to define the 
-//class of rows and ".alt" can be given a different colour in the css style
-function row_color($reset = FALSE) {
-  static $row_count = 0;
-  if ($reset) $row_count = 0;
-  if ($odd = ++$row_count % 2) {
-    return '';
-  } else {
-    return 'class="alt"';
   }
 }
 
@@ -135,4 +144,27 @@ function registration_email_message($temp_password, $submitter_name, $submitter_
 }
 function registration_email_from() {
   return "registration_noreply@warriorsband.com";
+}
+
+//Outputs 'class="alt"' on even-numbered rows, so that it can be used to define the 
+//class of rows and ".alt" can be given a different colour in the css style
+function row_color($reset = FALSE) {
+  static $row_count = 0;
+  if ($reset == TRUE) {
+    $row_count = 0;
+    return;
+  }
+  if ($odd = ++$row_count % 2) return '';
+  else return 'class="alt"';
+}
+
+function selected($item, $selecteditem) {
+  if (isset($selecteditem) && ($item == $selecteditem)) {
+    echo 'selected="selected"';
+  }
+}
+function checked($item, $checkeditem) {
+  if (isset($checkeditem) && ($item == $checkeditem)) {
+    echo 'checked="checked"';
+  }
 }

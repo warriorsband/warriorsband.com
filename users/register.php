@@ -7,20 +7,18 @@
  *  a new user.
  */
 
-$redirect_url = $_SERVER['PHP_SELF'];
+$redirect_page = "register";
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
-require($_SERVER['DOCUMENT_ROOT'].'/header.php');
-
-require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 
 //Ensure that the user has exec level or above
-ensure_minimum_type(2);
+if (!auth_register_user()) {
+  error_and_exit();
+}
 ?>
 
-<h2>New Member Registration</h2>
+<h1>New Member Registration</h1>
 <br />
-<div class="pagedescription">
+<div class="justify">
   To use this page to register a new user, enter their e-mail address, name, and optionally 
   a comment and click "Register New Member". An automated message will be sent to their e-mail, 
   containing a temporary password, instructions for completing registration, and the comment 
@@ -51,5 +49,3 @@ ensure_minimum_type(2);
     </tr>
   </table>
 </form>
-
-<?php require($_SERVER['DOCUMENT_ROOT'].'/footer.php'); ?>

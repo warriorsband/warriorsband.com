@@ -13,20 +13,15 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
-//Variable to indicate whether a post has been validated and requires an update.
-//If this is TRUE, it is assumed that $col_name and $value contain the column name 
-//and value of a field to update, and $successcode contains a valid code to send 
-//back via GET to profile.php.
-$success = FALSE;
-
-//A user ID is required in order to change settings. If none is provided, 
+//A user ID is required in order to edit a profile. If none is provided, 
 //show an error and exit.
 if (!isset($_POST['user_id'])) {
-  echo "A used ID must be specified in order for settings to be changed.";
+  echo "A used ID must be specified in order for a profile to be changed.";
   exit();
 }
 
-$user_id = intval(sanitize($_POST['user_id']));
+$user_id = intval($_POST['user_id']);
+$redirect_url = "$domain?page=profile&user_id=$user_id";
 
 //Get all the user's details from the database; we'll need most of it anyway.
 if (!($row = mysql_fetch_array( mysql_query("SELECT * FROM `users` WHERE `user_id`='".$user_id."'")))) {
@@ -36,43 +31,35 @@ if (!($row = mysql_fetch_array( mysql_query("SELECT * FROM `users` WHERE `user_i
 
 $user_type = intval($row['user_type']);
 
-//If the user is attempting to modify a different user's information who has a 
-//higher user type, forbid them and display an error
-if (!is_same_user($user_id) && !user_type_greater_eq($user_type)) {
-  echo "You do not have permission to edit this user's information.";
-  exit();
+if (!auth_edit_profile($user_id, $user_type)) {
+  error_and_edit();
 }
 
 //Update email
-if (isset($_POST['email'])) {
-  //Ensure that the user is allowed to modify this setting
-  ensure_minimum_type(2);
-
+if (isset($_POST['email']) && auth_edit_email($user_id, $user_type)) {
   //Sanitize and validate the field
   $email = sanitize($_POST['email']);
-  if (!valid_email($email)) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=bademail");
-    exit();
-  }
+  if ($email != $row['email']) {
+    if (!valid_email($email)) {
+      header("Location: $redirect_url&msg=bademail");
+      exit();
+    }
 
-  //Ensure the requested email address is not already in use
-  if ($fetch = mysql_fetch_array( mysql_query("SELECT `email` FROM `users` WHERE `email`='$email'"))) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=duplicateemail");
-    exit();
-  }
+    //Ensure the requested email address is not already in use
+    if ($fetch = mysql_fetch_array( mysql_query("SELECT `email` FROM `users` WHERE `email`='$email'"))) {
+      header("Location: $redirect_url&msg=duplicateemail");
+      exit();
+    }
 
-  //Set the variables used in the update code below
-  $col_name = 'email';
-  $value = $email;
-  $successcode = 'emailsuccess';
-  $success = TRUE;
+    //Run the update query
+    mysql_query("UPDATE `users` SET `email`='$email' WHERE `user_id`='$user_id'")
+      or die(mysql_error());
+  }
 }
 
 //Update password
-elseif ((isset($_POST['password'])) && (isset($_POST['newpassword'])) && (isset($_POST['newpassword1']))) {
-  //Ensure that the user is allowed to modify this setting
-  ensure_same_user($user_id);
-
+if ((!empty($_POST['password'])) && auth_edit_password($user_id, $user_type) && 
+  (!empty($_POST['newpassword'])) && (!empty($_POST['newpassword1']))) {
   //Sanitize and validate the fields
   $password = sanitize($_POST['password']);
   $newpassword = sanitize($_POST['newpassword']);
@@ -80,144 +67,114 @@ elseif ((isset($_POST['password'])) && (isset($_POST['newpassword'])) && (isset(
 
   //Validate current password
   if (!valid_password($password, $row['password'])) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=badpass");
+    header("Location: $redirect_url&msg=badpass");
     exit();
   }
 
   //Validate new password
   if ((empty($newpassword)) || (strlen($newpassword) < 6) || (strlen($newpassword) > 64)) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=passconstraints");
+    header("Location: $redirect_url&msg=passconstraints");
     exit();
   }
   if ($newpassword != $newpassword1) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=passmismatch");
+    header("Location: $redirect_url&msg=passmismatch");
     exit();
   }
 
-  //Set the variables used in the update code below
-  $col_name = 'password';
+  //Run the update query
   $value = hash_password($newpassword);
-  $successcode = 'passwordsuccess';
-  $success = TRUE;
+  mysql_query("UPDATE `users` SET `password`='$hash' WHERE `user_id`='$user_id'")
+    or die(mysql_error());
 }
 
 //Update first name
-elseif (isset($_POST['first_name'])) {
-  //Ensure that the user is allowed to modify this setting
-  ensure_minimum_type(2);
-
+if (isset($_POST['first_name']) && auth_edit_first_name($user_id, $user_type)) {
   //Check if the field is empty
   if (empty($_POST['first_name'])) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=emptyname");
+    header("Location: $redirect_url&msg=emptyname");
     exit();
   }
 
   //Sanitize the field
   $first_name = sanitize($_POST['first_name']);
-  
-  //Check if the field is too long
-  if (strlen($first_name) > 255) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=nametoolong");
-    exit();
-  }
 
-  //If name is not letters and dashes only, exit
-  if (!ctype_alpha(str_replace('-','',$first_name))) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=nonalphaname");
-    exit();
-  }
+  if ($first_name != $row['first_name']) {
+    //Check if the field is too long
+    if (strlen($first_name) > 255) {
+      header("Location: $redirect_url&msg=nametoolong");
+      exit();
+    }
 
-  //Set the variables used in the update code below
-  $col_name = 'first_name';
-  $value = $first_name;
-  $successcode = 'firstnamesuccess';
-  $success = TRUE;
+    //If name is not letters and dashes only, exit
+    if (!ctype_alpha(str_replace('-','',$first_name))) {
+      header("Location: $redirect_url&msg=nonalphaname");
+      exit();
+    }
+
+    //Run the update query
+    mysql_query("UPDATE `users` SET `first_name`='$first_name' WHERE `user_id`='$user_id'")
+      or die(mysql_error());
+  }
 }
 
 //Update last name
-elseif (isset($_POST['last_name'])) {
-  //Ensure that the user is allowed to modify this setting
-  ensure_minimum_type(2);
-
+if (isset($_POST['last_name']) && auth_edit_last_name($user_id, $user_type)) {
   //Check if the field is empty
   if (empty($_POST['last_name'])) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=emptyname");
+    header("Location: $redirect_url&msg=emptyname");
     exit();
   }
 
   //Sanitize the field
   $last_name = sanitize($_POST['last_name']);
+  
+  if ($last_name != $row['last_name']) {
+    //Check if the field is too long
+    if (strlen($last_name) > 255) {
+      header("Location: $redirect_url&msg=nametoolong");
+      exit();
+    }
 
-  //Check if the field is too long
-  if (strlen($first_name) > 255) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=nametoolong");
-    exit();
+    //If name is not letters and dashes only, exit
+    if (!ctype_alpha(str_replace('-','',$last_name))) {
+      header("Location: $redirect_url&msg=nonalphaname");
+      exit();
+    }
+
+    //Run the update query
+    mysql_query("UPDATE `users` SET `last_name`='$last_name' WHERE `user_id`='$user_id'")
+      or die(mysql_error());
   }
-
-  //If name is not letters and dashes only, exit
-  if (!ctype_alpha(str_replace('-','',$last_name))) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=nonalphaname");
-    exit();
-  }
-
-  //Set the variables used in the update code below
-  $col_name = 'last_name';
-  $value = $last_name;
-  $successcode = 'lastnamesuccess';
-  $success = TRUE;
 }
 
-//Update user type. Note that since this is posted via field, we can just
-//throw an error and exit if the input is unexpected, since it likely means 
-//someone is screwing around. Still have to do the sanitation/validation though.
-elseif (isset($_POST['user_type'])) {
-  //Only admins can modify user_type
-  ensure_minimum_type(3);
-
+//Update user type
+if (isset($_POST['user_type']) && auth_edit_user_type($user_id, $user_type)) {
   //Sanitize the field
-  $new_user_type = intval(sanitize($_POST['user_type']));
+  $new_user_type = intval($_POST['user_type']);
 
-  //Make sure the value is in the correct range
-  if (($new_user_type < 1) || ($new_user_type > 4)) {
-    echo "Invalid user_type.";
-    exit();
+  if ($new_user_type != $user_type) {
+    //Make sure the value is in the correct range
+    if (($new_user_type < 1) || ($new_user_type > 4)) {
+      echo "Invalid user type.";
+      exit();
+    }
+
+    //Prevent a user from lowering their own privileges
+    //(The only exception is a drop from Admin to Admin Exec, since these have the same
+    //privileges)
+    if (is_same_user($user_id) && 
+      (($user_type > $new_user_type) && !(($user_type == 4) && ($new_user_type == 3)))) {
+      header("Location: $redirect_url&msg=selfdowngrade");
+      exit();
+    }
+
+    //Run the update query
+    mysql_query("UPDATE `users` SET `user_type`='$new_user_type' WHERE `user_id`='$user_id'")
+      or die(mysql_error());
   }
-
-  //Prevent a user from lowering their own privileges
-  //(The only exception is a drop from Admin to Admin Exec, since these have the same
-  //privileges)
-  if (is_same_user($user_id) && 
-    (($user_type > $new_user_type) && !(($user_type == 4) && ($new_user_type == 3)))) {
-    header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=selfdowngrade");
-    exit();
-  }
-
-  //Set the variables used in the update code below
-  $col_name = 'user_type';
-  $value = $new_user_type;
-  $successcode = 'usertypesuccess';
-  $success = TRUE;
 }
 
-//Unrecognized settings field, or no field provided. Show an error.
-else {
-  echo "Unrecognized setting, or no setting provided.";
-  exit();
-}
-
-//If successful, do the update
-if ($success == TRUE) {
-  //Run the update query
-  mysql_query("UPDATE `users` SET `$col_name`='$value' WHERE `user_id`='$user_id'")
-    or die(mysql_error());
-
-  //Success! Redirect to the settings page with the appropriate code.
-  header("Location: ".$domain."/users/profile.php?user_id=".$user_id."&msg=".$successcode);
-  exit();
-}
-//Otherwise an unknown error occurred. Show an error I guess.
-else {
-  echo "Unknown error occurred.";
-  exit();
-}
+//Success! Redirect to the settings page with the appropriate code.
+header("Location: $redirect_url&msg=profileupdatesuccess");
+exit();
 ?>

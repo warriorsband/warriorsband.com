@@ -65,8 +65,8 @@ if (($_SESSION['logged_in'] == FALSE) && (isset($_POST["password"])) && (isset($
 //If the user is logged in successfully, redirect to the provided URL if it exists, or just 
 //to the homepage otherwise
 if ($_SESSION['logged_in']) {
-  if (isset($_POST['redirect_url'])) {
-    $redirect_url = $domain.htmlspecialchars($_POST['redirect_url']);
+  if (isset($_POST['redirect_page'])) {
+    $redirect_url = "$domain?page=" . htmlspecialchars($_POST['redirect_page']);
   } else {
     $redirect_url = $domain;
   }
@@ -74,15 +74,15 @@ if ($_SESSION['logged_in']) {
 //Otherwise, update login attempt information, and
 //redirect back to the login page, passing along the redirect URL if it exists.
 else {
-  if (isset($_POST['redirect_url'])) {
-    $redirect_url = $loginpage_url."?redirect_url=".htmlspecialchars($_POST['redirect_url']);
+  if (isset($_POST['redirect_page'])) {
+    $redirect_url = "$domain?page=login&redirect_page=".htmlspecialchars($_POST['redirect_page']);
     if (isset($error)) {
       $redirect_url = $redirect_url."&msg=$error";
     }
   } else {
-    $redirect_url = $loginpage_url;
+    $redirect_url = "$domain?page=login";
     if (isset($error)) {
-      $redirect_url = $redirect_url."?msg=$error";
+      $redirect_url = $redirect_url."&msg=$error";
     }
   }
 }

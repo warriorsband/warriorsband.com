@@ -1,11 +1,14 @@
 <?php
-header('HTTP/1.1 403 Forbidden');
+/*
+ *  403.php
+ *
+ *  403 Forbidden page
+ */
 ?>
-<html>
-  <head>
-    <title>Warriors Band 403 Forbidden</title>
-  </head>
-  <body>
-    <font size="4">You must be logged in to view this content.</font>
-  </body>
-</html>
+
+<h1>403 Forbidden</h1>
+<h2>You're not supposed to be here...</h2>
+
+<div class="center">
+  You're not allowed to view the page you requested.
+</div>

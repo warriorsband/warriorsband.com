@@ -17,8 +17,8 @@ $password = "shbang111";
 $hostname = "localhost";
 $database = "database";
 
-//Define your canonical domain excluding trailing slash!, example:
-$domain= "http://warriorsband.dyndns.org";
+//Define your canonical domain including trailing slash!, example:
+$domain= "http://warriorsband.dyndns.org/";
 
 //Define length of salt,minimum=10, maximum=35
 $length_salt=15;
@@ -34,9 +34,12 @@ $max_login_attempts=3;
 //login will be accepted
 $login_cooldown=1800;
 
-//Define login and 403 pages
-$loginpage_url= $domain.'/auth/login.php';
-$forbidden_url= $domain.'/403.php';
+//E-mail configuration settings
+$email_host = "ssl://smtp.gmail.com";
+$email_port = "465";
+$email_username = "ironmaiden1158@gmail.com";
+$email_password = "gma1337acusphail";
+
 ////////////////////////////////////
 //END OF USER CONFIGURATION/////////
 ////////////////////////////////////
