@@ -31,6 +31,12 @@ if (isset($_POST['event_id'])) {
   }
 }
 
+//Validate status
+$status = intval($_POST['status']);
+if (($status < 1) || ($status > 9)) {
+  error_and_exit();
+}
+
 //Validate title
 $title = sanitize($_POST['title']);
 if (empty($title) || strlen($title) == 0 || strlen($title) > 255) {
@@ -46,7 +52,7 @@ if (isset($_POST['no_date'])) {
   $date_month = intval($_POST['date_month']);
   $date_year = intval($_POST['date_year']);
   $date = "'$date_year-$date_month-$date_day'";
-  if (!valid_date($date)) {
+  if (!checkdate($date_month, $date_day, $date_year)) {
       header("Location: $redirect_url&msg=baddate");
       exit();
   }
@@ -65,7 +71,7 @@ if (isset($_POST['no_time'])) {
     header("Location: $redirect_url&msg=badtime");
     exit();
   }
-  $time = "'$time_hour:$time_minute $time_ampm'";
+  $time = "'" . date("H:i", strtotime("$time_hour:$time_minute $time_ampm")) . "'";
 }
 
 //Validate location
@@ -90,13 +96,13 @@ if (empty($description)) {
 
 //If this is a new event, do an insertion, otherwise do an update
 if ($new_event) {
-  mysql_query("INSERT INTO `events` (`creator_id`,`title`,`date`,`start_time`,`location`,`description`)" . 
-    "VALUES ('" . $_SESSION['user_id'] . "','$title',$date,$time,$location,$description)")
+  mysql_query("INSERT INTO `events` (`status`,`creator_id`,`title`,`date`,`start_time`,`location`,`description`)" . 
+    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,$location,$description)")
     or die(mysql_error());
   header("Location: $redirect_url&msg=eventcreatesuccess");
 } else {
-  mysql_query("UPDATE `events` SET `creator_id`='" . $_SESSION['user_id'] . 
-    "`title`='$title',`date`=$date,`time`=$time,`location`=$location," . 
+  mysql_query("UPDATE `events` SET `status`='$status',`creator_id`='" . $_SESSION['user_id'] . 
+    "',`title`='$title',`date`=$date,`start_time`=$time,`location`=$location," . 
     "`description`=$description WHERE `event_id`='$event_id'")
     or die(mysql_error());
   header("Location: $redirect_url&msg=eventupdatesuccess");

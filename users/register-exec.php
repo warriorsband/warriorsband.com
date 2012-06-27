@@ -83,7 +83,7 @@ if (logged_in() && user_type_greater_eq(2) &&
   $mail = $smtp->send($to, $headers, $body);
 
   //redirect back to registration page indicating success/failure as appropriate
-  if (PEAR::isError($mail)) {
+  if (!PEAR::isError($mail)) {
     header("Location: $domain?page=register&msg=registrationsuccess");
   } else {
     header("Location: $domain?page=register&msg=registrationfail");

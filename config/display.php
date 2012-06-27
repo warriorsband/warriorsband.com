@@ -120,6 +120,24 @@ function user_type_to_str($user_type) {
   }
 }
 
+//Converts an event status code to a printable string
+function event_status_to_str($status, $long = FALSE) {
+  if ($status == 1) {
+    $output = "Active";
+    if ($long) {
+      $output .= " (open to attendance responses from members)";
+    }
+  } elseif ($status == 2) {
+    $output = "Inactive";
+    if ($long) {
+      $output .= " (not open to attendance responses from members)";
+    }
+  } else {
+    $output = "";
+  }
+  return $output;
+}
+
 //Functions which print the content of the registration e-mail message
 function registration_email_subject() {
   return "Warriors Band website registration";
@@ -128,7 +146,7 @@ function registration_email_message($temp_password, $submitter_name, $submitter_
   $message = "One of your band execs, $submitter_name, has registered your e-mail address\n" .
   "for a warriorsband.com account. To use your\n" .
   "account:\n\n" .
-  "1. Visit http://warriorsband.dyndns.org/users/profile.php\n" .
+  "1. Visit http://warriorsband.dyndns.org/?page=profile\n" .
   "2. Log in with your e-mail address and the following temporary password:\n\n" .
   "    $temp_password\n\n" .
   "3. On the page that appears, change your password (6 characters minimum)\n\n" .

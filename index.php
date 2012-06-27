@@ -59,7 +59,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
               <a href="/?page=users">Member list</a>
             </td></tr>
             <tr <?php echo row_color() ?> ><td>
-              <a href="/?page=profile">View your profile</a>
+              <a href="/?page=profile">View/Edit your profile</a>
             </td></tr>
             <tr <?php echo row_color() ?> ><td>
               <a href="/auth/logout.php">Logout</a>
@@ -69,6 +69,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
             <tr><th class="center">Exec links</th></tr>
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=register">Register new user</a>
+            </td></tr>
+            <tr <?php echo row_color() ?> ><td>
+              <a href="/?page=event">Create new event</a>
             </td></tr>
 <?php } } else { ?>
             <tr <?php echo row_color() ?> ><td>

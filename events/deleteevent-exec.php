@@ -35,7 +35,7 @@ if (!auth_delete_events()) {
 }
 
 //First delete all the responses corresponding to this event
-mysql_query("DELETE FROM `responses` WHERE `event_id`='$event_id")
+mysql_query("DELETE FROM `event_responses` WHERE `event_id`='$event_id'")
   or die(mysql_error());
 
 //Then delete the event itself

@@ -7,60 +7,94 @@
  *  event-exec.php
  */
 
-$redirect_page = "event";
-require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
-
-//Ensure that the user is allowed to edit events
-if (!auth_edit_events()) {
-  echo "You're not allowed to edit events.";
+//Ensure that the user is allowed to view events
+if (!auth_view_events()) {
+  echo '<div class="center">You are not authorised to view events.</div>';
+  exit();
 }
 
-// Default selections for the form
-$title = "";
-$date_year = 2012;
-$date_month = 1;
-$date_day = 1;
-$time_hour = 5;
-$time_minute = 30;
-$time_ampm = "PM";
-$location = "";
-$description = "";
+row_color(TRUE);
 
-//If an event ID was specified, try to load that event
-if (isset($_GET['event_id'])) {
-  $event_id = intval($_GET['event_id']);
+//If the requester can edit events, set variables to define the values of the 
+//form elements, and if an event ID is provided, fetch that event's info.
+if (auth_edit_events()) {
+  // Default selections for the form
+  $status = 2;
+  $title = "";
+  $date_year = 2012;
+  $date_month = 1;
+  $date_day = 1;
+  $time_hour = 5;
+  $time_minute = 30;
+  $time_ampm = "PM";
+  $location = "";
+  $description = "";
 
-  //Get the event details from the database
-  //If no row is found, print an error and exit.
-  if (!($row = mysql_fetch_array( mysql_query("SELECT `title`,`date`,TIME_FORMAT(`start_time`, '%H%i%p'),`location`,`description` FROM `events` WHERE `event_id`='$event_id'")))) {
-    echo "No such event with that event ID.";
+  //If an event ID was specified, try to load that event
+  if (isset($_GET['event_id'])) {
+    $event_id = intval($_GET['event_id']);
+
+    //Get the event details from the database
+    //If no row is found, print an error and exit.
+    if (!($row = mysql_fetch_array( mysql_query(
+      "SELECT `status`,`title`,`date`,TIME_FORMAT(`start_time`, '%h%i%p'),`location`,`description` " .
+      "FROM `events` WHERE `event_id`='$event_id'")))) {
+      echo "No such event with that event ID.";
+      exit();
+    }
+    $status = intval($row['status']);
+    $title = $row['title'];
+    $date = explode("-", $row['date']);
+    $date_year = intval($date[0]);
+    $date_month = intval($date[1]);
+    $date_day = intval($date[2]);
+    $time_hour = intval(substr($row[3],0,2));
+    $time_minute = intval(substr($row[3],2,2));
+    $time_ampm = substr($row[3],4,2);
+    $location = $row['location'];
+    $description = $row['description'];
+    echo "<h1>View/Edit Event</h1>\n";
+  } else {
+    echo "<h1>Create Event</h1>\n";
+  }
+}
+//Otherwise the requester can view, but not edit, events
+else {
+  //If an event ID was specified, try to load that event
+  if (isset($_GET['event_id'])) {
+    $event_id = intval($_GET['event_id']);
+
+    //Get the event details from the database
+    //If no row is found, print an error and exit.
+    if (!($row = mysql_fetch_array( mysql_query(
+      "SELECT `status`,`title`,DATE_FORMAT(`date`,'%b %e %Y'),TIME_FORMAT(`start_time`, '%l:%i %p')," .
+      "`location`,`description` FROM `events` WHERE `event_id`='$event_id'")))) {
+      echo "No such event with that event ID.";
+      exit();
+    }
+  } else {
+    echo '<div class="center">The ID of an event must be specified in order to view it.</div>';
     exit();
   }
-  $title = $row['title'];
-  $date = explode("-", $row['date']);
-  $date_year = intval($date[0]);
-  $date_month = intval($date[1]);
-  $date_day = intval($date[2]);
-  $time_hour = intval(substr($row[2],0,2));
-  $time_minute = intval(substr($row[2],2,2));
-  $time_ampm = substr($row[2],4,2);
-  $location = $row['location'];
-  $description = $row['description'];
+  echo "<h1>View Event</h1>\n";
 }
 ?>
 
-<h1>Create/Edit Event</h1>
 <br /><br />
-<form action="/events/event-exec.php" method="POST">
-<?php if (isset($event_id)) {
-  echo '<input type="hidden" name="event_id" value="' . $event_id . '" />'; 
-} ?>
-  <table>
-    <tr>
-      <th>Title</th>
+<table>
+
+<?php 
+//Display a form if the requester can edit events
+if (auth_edit_events()) { ?>
+  <form action="/events/event-exec.php" method="POST">
+<?php if (isset($event_id)) { ?>
+    <input type="hidden" name="event_id" value="<?php echo $event_id; ?>" />
+<?php } ?>
+    <tr <?php echo row_color() ?> >
+      <th>Title (required)</th>
       <td><input type="text" name="title" maxlength="255" value="<?php echo $title; ?>" /></td>
     </tr>
-    <tr class="alt" >
+    <tr <?php echo row_color() ?> >
       <th>Date</th>
       <td>
         <select name="date_day">
@@ -135,7 +169,7 @@ if (isset($_GET['event_id'])) {
         <input type="checkbox" name="no_date" value="true" /> Leave date blank
       </td>
     </tr>
-    <tr>
+    <tr <?php echo row_color() ?> >
       <th>Start Time</th>
       <td>
         <select name="time_hour">
@@ -174,21 +208,91 @@ if (isset($_GET['event_id'])) {
         <input type="checkbox" name="no_time" value="true" /> Leave time blank
       </td>
     </tr>
-    <tr class="alt" >
+    <tr <?php echo row_color() ?> >
       <th>Location</th>
       <td><input type="text" name="location" maxlength="255" value="<?php echo $location; ?>"/></td>
     </tr>
-    <tr>
+    <tr <?php echo row_color() ?> >
       <th>Description</th>
       <td><textarea name="description" rows="6" cols="80"><?php echo $description; ?></textarea></td>
     </tr>
-    <tr>
-      <th></th>
-      <td style="text-align:center"><input type="submit" value="Create/Update Event" /></td>
+    <tr <?php echo row_color() ?> >
+      <th>Active?</th>
+      <td>
+        <input type="radio" name="status" value="1" <?php checked(1,$status); ?> /> Active
+        <input type="radio" name="status" value="2" <?php checked(2,$status); ?> /> Inactive
+        <br />
+        Active events are open to attendance responses from members; inactive events are not.
+      </td>
     </tr>
-  </table>
-</form>
-<?php if (isset($event_id)) { ?>
+    <tr <?php echo row_color() ?> >
+      <th></th>
+<?php if (!isset($event_id)) { ?>
+      <td style="text-align:center"><input type="submit" value="Create Event" /></td>
+<?php } else { ?>
+  <td style="text-align:center"><input type="submit" value="Update Event" /></td>
+<?php } ?>
+    </tr>
+  </form>
+
+
+<?php
+//Otherwise display the info in a non-editable fashion
+} else { ?>
+  <tr <?php echo row_color() ?> >
+    <th>Title</th>
+    <td><?php echo $row['title']; ?></td>
+  </tr>
+  <tr <?php echo row_color() ?> >
+    <th>Date</th>
+    <td><?php echo $row[2]; ?></td>
+  </tr>
+  <tr <?php echo row_color() ?> >
+    <th>Start Time</th>
+    <td><?php echo $row[3]; ?></td>
+  </tr>
+  <tr <?php echo row_color() ?> >
+    <th>Location</th>
+    <td><?php echo $row['location']; ?></td>
+  </tr>
+  <tr <?php echo row_color() ?> >
+    <th>Description</th>
+    <td><?php echo $row['description']; ?></td>
+  </tr>
+  <tr <?php echo row_color() ?> >
+    <th>Active?</th>
+    <td>
+      <?php echo event_status_to_str($row['status'],TRUE); ?>
+    </td>
+  </tr>
+<?php
+} ?>
+
+
+<?php
+//If the user is logged in, and the event is existing and active, show a response form
+if (logged_in() && isset($event_id) && ($row['status'] == 1)) { ?>
+  <form action="/events/eventresponse-exec.php" method="POST">
+    <input type="hidden" name="event_id" value="<?php echo $event_id; ?>" />
+    <tr <?php echo row_color() ?> >
+      <th>Response</th>
+      <td>
+        <input type="radio" name="response" value="yes" checked="checked" /> Yes
+        <input type="radio" name="response" value="no" /> No
+        <input type="radio" name="response" value="maybe" /> Maybe
+        <br />
+        <textarea name="comment" rows="5" cols="40"></textarea>
+        <div class="center"><input type="submit" value="Submit Response" /></div>
+      </td>
+    </tr>
+  </form>
+<?php
+} ?>
+</table>
+
+<?php
+//If the requester can edit events, display a delete form/button
+if (auth_edit_events()) { ?>
 <br /><br />
 <div class="center">
   <form action="/events/deleteevent-exec.php" method="POST">

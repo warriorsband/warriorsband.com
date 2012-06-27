@@ -45,15 +45,9 @@ if (!($row = mysql_fetch_array( mysql_query("SELECT * FROM `users` WHERE `user_i
 
 $user_type = intval($row['user_type']);
 
-//If user_type is editable, set some variables used for displaying
-//radio buttons for user_type.
-if (auth_edit_user_type($user_id, $user_type)) {
-  $user_label = user_type_to_str($user_type);
-}
-
 //Display the profile if it is permitted to do so, otherwise show an error
 if (!auth_view_profile($user_id, $user_type)) {
-  echo "You are allowed to view this user's profile.";
+  echo '<div class="center">You are allowed to view this user\'s profile.</div>';
   exit();
 } else {
 ?>
@@ -68,17 +62,6 @@ if (auth_view_email($user_id, $user_type)) { ?>
     <tr <?php echo row_color() ?> >
       <th>E-mail</th>
 <?php echo "<td>".$row['email']."</td>"; ?>
-    </tr>
-<?php
-}
-if (auth_edit_password($user_id, $user_type)) { ?>
-    <tr <?php echo row_color(); ?> >
-      <th>Password</th>
-      <td style="width:250px">
-        Current password: <input type="password" name="password" maxlength="64" /><br />
-        New password: <input type="password" name="newpassword" maxlength="64" /><br />
-        Retype password: <input type="password" name="newpassword1" maxlength="64" />
-      </td>
     </tr>
 <?php
 }
@@ -113,6 +96,17 @@ if (auth_view_last_name($user_id, $user_type)) { ?>
     </tr>
 <?php
 }
+if (auth_edit_password($user_id, $user_type)) { ?>
+    <tr <?php echo row_color(); ?> >
+      <th>Password</th>
+      <td style="width:250px">
+        Current password: <input type="password" name="password" maxlength="64" /><br />
+        New password: <input type="password" name="newpassword" maxlength="64" /><br />
+        Retype password: <input type="password" name="newpassword1" maxlength="64" />
+      </td>
+    </tr>
+<?php
+}
 if (auth_view_user_type($user_id, $user_type)) { ?>
     <tr <?php echo row_color(); ?> >
       <th>User type</th>
@@ -129,7 +123,8 @@ if (auth_view_user_type($user_id, $user_type)) { ?>
 <?php
   } else { ?>
     <?php echo "<td>" . user_type_to_str($user_type) . "</td>";
-  } ?>
+  }
+} ?>
     </tr>
     <tr>
       <td style="text-align:center" colspan="2">
@@ -137,22 +132,19 @@ if (auth_view_user_type($user_id, $user_type)) { ?>
       </td>
     <tr>
   </form>
+</table>
 <?php
-}
 if (auth_delete_account($user_id, $user_type)) { ?>
-  <tr <?php echo row_color(); ?>>
-    <td colspan="3">
-      <form action="/users/deleteuser-exec.php" method="POST">
-        <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+<br /><br />
+<div class="center">
+  <form action="/users/deleteuser-exec.php" method="POST">
+    <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
 <?php
   if ((isset($_GET['msg'])) && ($_GET['msg'] == "confirmdelete")) { ?>
-        <input type="hidden" name="confirm" value="true" />
+    <input type="hidden" name="confirm" value="true" />
 <?php
   } ?>
-        <div align="right"><input style="width:150px" type="submit" value="Delete this account" /></div>
-      </form>
-    </td>
-  </tr>
-<?php } ?>
-</table>
-<?php } ?>
+    <input style="width:150px" type="submit" value="Delete this account" />
+  </form>
+</div>
+<?php } } ?>

@@ -35,7 +35,7 @@ if (!($row = mysql_fetch_array( mysql_query("SELECT `user_type` FROM `users` WHE
 $user_type = intval($row['user_type']);
 
 //Check if the requester is authorized to delete this account
-if (!auth_delete_account($user_id, $user_type) {
+if (!auth_delete_account($user_id, $user_type)) {
   error_and_exit();
 }
 
