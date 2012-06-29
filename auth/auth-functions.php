@@ -235,4 +235,8 @@ function auth_edit_events() {
 function auth_delete_events() {
   return user_type_greater_eq(2);
 }
+//Can the user view the full list of event responses?
+function auth_view_responses() {
+  return user_type_greater_eq(2);
+}
 ?>

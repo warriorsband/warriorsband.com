@@ -65,6 +65,12 @@ function print_msg() {
       case "badlocation":
         echo "Event locations must be at most 255 characters long.";
         break;
+      case "commentrequired":
+        echo "If you answer \"Maybe\", you must provide a comment to elaborate (10 chars minimum).";
+        break;
+      case "bugreportfail":
+        echo "There was a problem sending the bug report.";
+        break;
       //Form submission success messages
       case "profileupdatesuccess":
         echo "Profile updated successfully.";
@@ -90,6 +96,12 @@ function print_msg() {
       case "eventcreatesuccess":
         echo "Event created successfully.";
         break;
+      case "responserecorded":
+        echo "Attendance response recorded successfully.";
+        break;
+      case "bugreportsuccess":
+        echo "Comment / Bug Report sent successfully.";
+        break;
       //Confirmation messages
       case "confirmdelete":
         echo "If you are CERTAIN this should be deleted, click the delete ";
@@ -105,6 +117,16 @@ function print_msg() {
   }
 }
 
+//Print the reminder for responding to events
+function print_eventreminder() {
+  if (isset($_SESSION['responses']) && $_SESSION['responses'] > 0) {
+    echo '<div class="msg">';
+    echo 'There are are ' . $_SESSION['responses'] . ' event(s) that you ';
+    echo 'haven\'t responded to yet! Click ';
+    echo '<a href="?page=events">here</a> to respond.';
+    echo '</div>';
+  }
+}
 //Converts user_type to a printable string
 function user_type_to_str($user_type) {
   if ($user_type == 1) {
@@ -115,6 +137,18 @@ function user_type_to_str($user_type) {
     return "Admin Exec";
   } elseif ($user_type == 4) {
     return "Admin";
+  } else {
+    return "";
+  }
+}
+//Convert response code to a printable string
+function response_to_str($response) {
+  if ($response == 1) {
+    return "Yes";
+  } elseif ($response == 2) {
+    return "No";
+  } elseif ($response == 3) {
+    return "Maybe";
   } else {
     return "";
   }

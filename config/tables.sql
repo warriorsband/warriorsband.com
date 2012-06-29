@@ -23,8 +23,8 @@ CREATE TABLE `events`
     `title` VARCHAR(255) NOT NULL,
     `date` DATE,
     `start_time` TIME,
-    `location` VARCHAR(255),
-    `description` TEXT,
+    `location` VARCHAR(255) DEFAULT '' NOT NULL,
+    `description` TEXT DEFAULT '' NOT NULL,
     PRIMARY KEY (`event_id`)
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE `event_responses`
     `response_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` INT UNSIGNED NOT NULL,
     `event_id` INT UNSIGNED NOT NULL,
-    `value` TINYINT(1) NOT NULL,
+    `response` TINYINT(1) NOT NULL,
     `comment` TEXT,
     PRIMARY KEY (`response_id`)
 );

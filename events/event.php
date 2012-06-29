@@ -15,6 +15,9 @@ if (!auth_view_events()) {
 
 row_color(TRUE);
 
+//Action being returned to the user: either "view", "edit", or "create".
+$action = "view";
+
 //If the requester can edit events, set variables to define the values of the 
 //form elements, and if an event ID is provided, fetch that event's info.
 if (auth_edit_events()) {
@@ -33,6 +36,7 @@ if (auth_edit_events()) {
   //If an event ID was specified, try to load that event
   if (isset($_GET['event_id'])) {
     $event_id = intval($_GET['event_id']);
+    $action = "edit";
 
     //Get the event details from the database
     //If no row is found, print an error and exit.
@@ -53,9 +57,8 @@ if (auth_edit_events()) {
     $time_ampm = substr($row[3],4,2);
     $location = $row['location'];
     $description = $row['description'];
-    echo "<h1>View/Edit Event</h1>\n";
   } else {
-    echo "<h1>Create Event</h1>\n";
+    $action = "create";
   }
 }
 //Otherwise the requester can view, but not edit, events
@@ -63,6 +66,7 @@ else {
   //If an event ID was specified, try to load that event
   if (isset($_GET['event_id'])) {
     $event_id = intval($_GET['event_id']);
+    $action = "view";
 
     //Get the event details from the database
     //If no row is found, print an error and exit.
@@ -76,24 +80,78 @@ else {
     echo '<div class="center">The ID of an event must be specified in order to view it.</div>';
     exit();
   }
-  echo "<h1>View Event</h1>\n";
 }
-?>
+
+if ($action != "create") {
+  //Get list of respondees' names
+  $yess = mysql_query(
+    "SELECT `first_name` " .
+    "FROM `users` " .
+    "INNER JOIN `event_responses` " .
+    "ON `users`.`user_id`=`event_responses`.`user_id` " .
+    "WHERE `event_id`='$event_id' AND `response`='1'")
+    or die(mysql_error());
+  $nos = mysql_query(
+    "SELECT `first_name` " .
+    "FROM `users` " .
+    "INNER JOIN `event_responses` " .
+    "ON `users`.`user_id`=`event_responses`.`user_id` " .
+    "WHERE `event_id`='$event_id' AND `response`='2'")
+    or die(mysql_error());
+  $maybes = mysql_query(
+    "SELECT `first_name` " .
+    "FROM `users` " .
+    "INNER JOIN `event_responses` " .
+    "ON `users`.`user_id`=`event_responses`.`user_id` " .
+    "WHERE `event_id`='$event_id' AND `response`='3'")
+    or die(mysql_error());
+}
+
+//Start displaying page
+if ($action == "create") { ?>
+<h1>Create Event</h1>
+<?php } elseif ($action == "edit") { ?>
+<h1>View/Edit Event</h1>
+<?php } else { ?>
+<h1>View Event</h1>
+<?php } ?>
 
 <br /><br />
 <table>
-
-<?php 
-//Display a form if the requester can edit events
-if (auth_edit_events()) { ?>
+<?php
+if ($action != "view") {
+?>
   <form action="/events/event-exec.php" method="POST">
-<?php if (isset($event_id)) { ?>
+<?php
+  if (isset($event_id)) {
+?>
     <input type="hidden" name="event_id" value="<?php echo $event_id; ?>" />
-<?php } ?>
+<?php
+  }
+}
+if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>Title</th>
+    <td><?php echo $row['title']; ?></td>
+  </tr>
+<?php
+} else {
+?>
     <tr <?php echo row_color() ?> >
       <th>Title (required)</th>
       <td><input type="text" name="title" maxlength="255" value="<?php echo $title; ?>" /></td>
     </tr>
+<?php
+} if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>Date</th>
+    <td><?php echo $row[2]; ?></td>
+  </tr>
+<?php
+} else {
+?>
     <tr <?php echo row_color() ?> >
       <th>Date</th>
       <td>
@@ -169,6 +227,16 @@ if (auth_edit_events()) { ?>
         <input type="checkbox" name="no_date" value="true" /> Leave date blank
       </td>
     </tr>
+<?php
+} if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>Start Time</th>
+    <td><?php echo $row[3]; ?></td>
+  </tr>
+<?php
+} else {
+?>
     <tr <?php echo row_color() ?> >
       <th>Start Time</th>
       <td>
@@ -208,14 +276,46 @@ if (auth_edit_events()) { ?>
         <input type="checkbox" name="no_time" value="true" /> Leave time blank
       </td>
     </tr>
+<?php
+} if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>Location</th>
+    <td><?php echo $row['location']; ?></td>
+  </tr>
+<?php
+} else {
+?>
     <tr <?php echo row_color() ?> >
       <th>Location</th>
       <td><input type="text" name="location" maxlength="255" value="<?php echo $location; ?>"/></td>
     </tr>
+<?php
+} if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>Description</th>
+    <td><?php echo $row['description']; ?></td>
+  </tr>
+<?php
+} else {
+?>
     <tr <?php echo row_color() ?> >
       <th>Description</th>
       <td><textarea name="description" rows="6" cols="80"><?php echo $description; ?></textarea></td>
     </tr>
+<?php
+} if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>Active?</th>
+    <td>
+      <?php echo event_status_to_str($row['status'],TRUE); ?>
+    </td>
+  </tr>
+<?php
+} else {
+?>
     <tr <?php echo row_color() ?> >
       <th>Active?</th>
       <td>
@@ -225,74 +325,59 @@ if (auth_edit_events()) { ?>
         Active events are open to attendance responses from members; inactive events are not.
       </td>
     </tr>
-    <tr <?php echo row_color() ?> >
-      <th></th>
-<?php if (!isset($event_id)) { ?>
-      <td style="text-align:center"><input type="submit" value="Create Event" /></td>
-<?php } else { ?>
-  <td style="text-align:center"><input type="submit" value="Update Event" /></td>
-<?php } ?>
-    </tr>
-  </form>
-
-
 <?php
-//Otherwise display the info in a non-editable fashion
-} else { ?>
+} if ($action != "create") {
+?>
   <tr <?php echo row_color() ?> >
-    <th>Title</th>
-    <td><?php echo $row['title']; ?></td>
-  </tr>
-  <tr <?php echo row_color() ?> >
-    <th>Date</th>
-    <td><?php echo $row[2]; ?></td>
-  </tr>
-  <tr <?php echo row_color() ?> >
-    <th>Start Time</th>
-    <td><?php echo $row[3]; ?></td>
-  </tr>
-  <tr <?php echo row_color() ?> >
-    <th>Location</th>
-    <td><?php echo $row['location']; ?></td>
-  </tr>
-  <tr <?php echo row_color() ?> >
-    <th>Description</th>
-    <td><?php echo $row['description']; ?></td>
-  </tr>
-  <tr <?php echo row_color() ?> >
-    <th>Active?</th>
+    <th>Who's Going</th>
     <td>
-      <?php echo event_status_to_str($row['status'],TRUE); ?>
+      Definitely Attending: 
+<?php
+  while($yesrow = mysql_fetch_row($yess)) {
+    echo $yesrow[0] . ", ";
+  }
+?>
+      <br />Maybe attending: 
+<?php
+  while($mayberow = mysql_fetch_row($maybes)) {
+    echo $mayberow[0] . ", ";
+  }
+?>
+      <br />Not attending: 
+<?php
+  while($norow = mysql_fetch_row($nos)) {
+    echo $norow[0] . ", ";
+  }
+  if ($action == "edit") {
+    echo "<br /><a href=\"$domain?page=eventresponses&event_id=$event_id\">View full response list</a>";
+  }
+?>
     </td>
   </tr>
 <?php
-} ?>
-
-
-<?php
-//If the user is logged in, and the event is existing and active, show a response form
-if (logged_in() && isset($event_id) && ($row['status'] == 1)) { ?>
-  <form action="/events/eventresponse-exec.php" method="POST">
-    <input type="hidden" name="event_id" value="<?php echo $event_id; ?>" />
+} if ($action == "create") {
+?>
     <tr <?php echo row_color() ?> >
-      <th>Response</th>
-      <td>
-        <input type="radio" name="response" value="yes" checked="checked" /> Yes
-        <input type="radio" name="response" value="no" /> No
-        <input type="radio" name="response" value="maybe" /> Maybe
-        <br />
-        <textarea name="comment" rows="5" cols="40"></textarea>
-        <div class="center"><input type="submit" value="Submit Response" /></div>
-      </td>
+      <th></th>
+      <td style="text-align:center"><input type="submit" value="Create Event" /></td>
     </tr>
   </form>
 <?php
-} ?>
+} elseif ($action == "edit") {
+?>
+    <tr <?php echo row_color() ?> >
+      <th></th>
+      <td style="text-align:center"><input type="submit" value="Update Event" /></td>
+    </tr>
+  </form>
+<?php
+}
+?>
 </table>
 
 <?php
 //If the requester can edit events, display a delete form/button
-if (auth_edit_events()) { ?>
+if ($action == "edit") { ?>
 <br /><br />
 <div class="center">
   <form action="/events/deleteevent-exec.php" method="POST">
@@ -304,3 +389,37 @@ if (auth_edit_events()) { ?>
   </form>
 </div>
 <?php } ?>
+
+<?php
+//If the user is logged in, and the event is existing and active, show a response form
+if (logged_in() && isset($event_id) && ($row['status'] == 1)) {
+  //Get existing response if there is one
+  if ($row = mysql_fetch_array( mysql_query(
+    "SELECT `response`,`comment` FROM `event_responses` WHERE `event_id`='$event_id' AND `user_id`='" .
+    $_SESSION['user_id'] . "'"))) {
+    $response = $row['response'];
+    $comment = $row['comment'];
+  } else {
+    $response = 1;
+    $comment = "";
+  }
+?>
+<br /><br />
+<table><tr><td class="contenttd">
+  <a name="respond">Will you be able to attend this event?</a><br />
+  (If you answer "maybe", you must enter an explanation in the box below)
+  <br />
+  <form action="/events/eventresponse-exec.php" method="POST">
+    <input type="hidden" name="event_id" value="<?php echo $event_id; ?>" />
+    <input type="radio" name="response" value="1" <?php checked(1,$response); ?> /> Yes &nbsp
+    <input type="radio" name="response" value="2" <?php checked(2,$response); ?> /> No &nbsp
+    <input type="radio" name="response" value="3" <?php checked(3,$response) ?> /> Maybe
+    <br />
+    <textarea name="comment" rows="5" cols="80"><?php echo $comment; ?></textarea>
+    <br /><br />
+    <div class="center"><input type="submit" value="Submit Response" /></div>
+  </form>
+</td></tr></table>
+<?php
+}
+?>

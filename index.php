@@ -3,7 +3,9 @@
 /*
  *  index.php
  *
- *  The main Warriors Band page!
+ *  This page contains the banner at the top of the page, and the navigation sidebar.
+ *  It accepts `page` via GET, and the value of `page` defines what content will be 
+ *  displayed.
  */
 
 session_start(); 
@@ -37,6 +39,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
       </tr>
     </table>
     <hr />
+    <?php print_eventreminder(); ?>
     <?php print_msg(); ?>
     <table class="contenttable">
       <tr>
@@ -60,6 +63,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
             </td></tr>
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=profile">View/Edit your profile</a>
+            </td></tr>
+            <tr <?php echo row_color() ?> ><td>
+              <a href="/?page=bugreport">Comments / Bug Reports</a>
             </td></tr>
             <tr <?php echo row_color() ?> ><td>
               <a href="/auth/logout.php">Logout</a>
@@ -93,8 +99,14 @@ if (isset($_GET['page'])) {
     case "event":
       require($_SERVER['DOCUMENT_ROOT'].'/events/event.php');
       break;
+    case "eventresponses":
+      require($_SERVER['DOCUMENT_ROOT'].'/events/eventresponses.php');
+      break;
     case "events":
       require($_SERVER['DOCUMENT_ROOT'].'/events/events.php');
+      break;
+    case "bugreport":
+      require($_SERVER['DOCUMENT_ROOT'].'/bugreport.php');
       break;
     case "login":
       require($_SERVER['DOCUMENT_ROOT'].'/auth/login.php');

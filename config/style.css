@@ -80,7 +80,7 @@ input, textarea, select {
 	background: #ffffcc;
 	border: 1px solid #cc9900;
 }
-input[type="text"], textarea {
+input[type="text"] {
     width: 100%;
 }
 /* Set link colours */

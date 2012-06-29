@@ -82,7 +82,7 @@ if ((!empty($_POST['password'])) && auth_edit_password($user_id, $user_type) &&
   }
 
   //Run the update query
-  $value = hash_password($newpassword);
+  $hash = hash_password($newpassword);
   mysql_query("UPDATE `users` SET `password`='$hash' WHERE `user_id`='$user_id'")
     or die(mysql_error());
 }

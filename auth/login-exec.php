@@ -45,6 +45,17 @@ if (($_SESSION['logged_in'] == FALSE) && (isset($_POST["password"])) && (isset($
         mysql_query("UPDATE `users` SET `last_login`=NOW(), `login_attempts`=0 WHERE `email`='$email'")
           or die(mysql_error());
 
+        //Get the number of events this user needs to respond to
+        $row2 = mysql_fetch_array( mysql_query(
+          "SELECT COUNT(*) " .
+          "FROM `events` " .
+          "LEFT OUTER JOIN `event_responses` " .
+          "ON `events`.`event_id`=`event_responses`.`event_id` " .
+          "WHERE (`user_id`='" . $row['user_id'] . "' OR `user_id` IS NULL) AND " .
+          "`status`='1' AND " .
+          "`date`>=NOW() AND " .
+          "`response` IS NULL"))
+          or die(mysql_error());
         //Regenerate session id prior to setting any session variable
         //to mitigate session fixation attacks
         session_regenerate_id();
@@ -55,6 +66,7 @@ if (($_SESSION['logged_in'] == FALSE) && (isset($_POST["password"])) && (isset($
         $_SESSION['user_id'] = intval($row['user_id']);
         $_SESSION['user_type'] = intval($row['user_type']);
         $_SESSION['first_name'] = $row['first_name'];
+        $_SESSION['responses'] = intval($row2[0]);
       }
     }
   } else {

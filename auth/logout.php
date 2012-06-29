@@ -12,8 +12,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 $was_logged_in = FALSE;
 //If the user is logged in, end the session and inform the user
-if (logged_in()) {
-  $_SESSION['logged_in'] = FALSE;
+if ($_SESSION['logged_in'] == TRUE) {
   session_destroy();   
   session_unset();
   $was_logged_in = TRUE;
@@ -25,3 +24,4 @@ if ($was_logged_in) {
   header("Location: $domain?msg=logoutfail");
 }
 exit();
+?>

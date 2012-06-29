@@ -39,6 +39,10 @@ if (!auth_delete_account($user_id, $user_type)) {
   error_and_exit();
 }
 
+//First delete all the event responses corresponding to this user
+mysql_query("DELETE FROM `event_responses` WHERE `user_id`='$user_id'")
+  or die(mysql_error());
+
 //Run the delete
 mysql_query("DELETE FROM `users` WHERE `user_id`='$user_id'")
   or die(mysql_error());

@@ -6,7 +6,6 @@
  */
 
 session_start();
-require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
@@ -76,35 +75,27 @@ if (isset($_POST['no_time'])) {
 
 //Validate location
 $location = sanitize($_POST['location']);
-if (empty($location)) {
-  $location = "NULL";
-} else {
-  if (strlen($location) > 255) {
-      header("Location: $redirect_url&msg=badlocation");
-      exit();
-  }
-  $location = "'$location'";
+if (strlen($location) > 255) {
+    header("Location: $redirect_url&msg=badlocation");
+    exit();
 }
 
 //Validate description
 $description = sanitize($_POST['description']);
-if (empty($description)) {
-  $description = "NULL";
-} else {
-  $description = "'$description'";
-}
 
-//If this is a new event, do an insertion, otherwise do an update
+//If this is a new event, do an insertion and update the reminder counter, otherwise do an update
 if ($new_event) {
   mysql_query("INSERT INTO `events` (`status`,`creator_id`,`title`,`date`,`start_time`,`location`,`description`)" . 
-    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,$location,$description)")
+    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,'$location','$description')")
     or die(mysql_error());
+  $_SESSION['responses'] -= 1;
   header("Location: $redirect_url&msg=eventcreatesuccess");
 } else {
   mysql_query("UPDATE `events` SET `status`='$status',`creator_id`='" . $_SESSION['user_id'] . 
-    "',`title`='$title',`date`=$date,`start_time`=$time,`location`=$location," . 
-    "`description`=$description WHERE `event_id`='$event_id'")
+    "',`title`='$title',`date`=$date,`start_time`=$time,`location`='$location'," . 
+    "`description`='$description' WHERE `event_id`='$event_id'")
     or die(mysql_error());
   header("Location: $redirect_url&msg=eventupdatesuccess");
 }
+exit();
 ?>
