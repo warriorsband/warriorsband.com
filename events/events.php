@@ -6,6 +6,7 @@
  *  Lists band events and provides buttons for execs to create new events
  */
 
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 function printcell_maybe($item) {
@@ -20,13 +21,14 @@ function printcell_maybe($item) {
 
 $no_events = FALSE;
 
-$result = mysql_query(
-  "SELECT `event_id`,`status`,`creator_id`,`title`,DATE_FORMAT(`date`,'%b %e %Y')," .
-  "TIME_FORMAT(`start_time`,'%l:%i %p'),`location` " .
+$result = $mysqli->query(
+  "SELECT `event_id`,`status`,`creator_id`,`title`,DATE_FORMAT(`date`,'%b %e %Y') AS `fdate`," .
+  "TIME_FORMAT(`start_time`,'%l:%i %p') AS `ftime`,`location` " .
   "FROM `events` " .
-  "WHERE `status` = 1 AND (`date` = NULL OR `date` >= NOW()) " .
+  "WHERE (`date` = NULL OR `date` >= NOW()) " .
   "ORDER BY IF(ISNULL(`date`),1,0),`date`,IF(ISNULL(`start_time`),1,0),`start_time`");
-if (mysql_num_rows($result) == 0) {
+handle_sql_error($mysqli);
+if ($result->num_rows == 0) {
   $no_events = TRUE;
 }
 ?>
@@ -36,18 +38,28 @@ if (mysql_num_rows($result) == 0) {
   Here's a list of our upcoming events!
 </div>
 <br />
-<?php if(auth_view_events()) { ?>
+<?php
+if(auth_view_events()) {
+?>
 <br />
-<?php if ($no_events == TRUE) { ?>
+<?php
+  if ($no_events == TRUE) {
+?>
 <div class="center">
-  There are no currently scheduled events.
+  There are currently no scheduled events.
 </div>
-<?php } else { ?>
+<?php
+  } else {
+?>
 <table>
   <tr>
-<?php if ($_SESSION['responses'] > 0) { ?>
+<?php
+    if ($_SESSION['responses'] > 0) {
+?>
     <th></th>
-<?php } ?>
+<?php
+    }
+?>
     <th>Date</th>
     <th>Time</th>
     <th>Event</th>
@@ -56,37 +68,48 @@ if (mysql_num_rows($result) == 0) {
     <th></th>
   </tr>
 <?php
-while ($row = mysql_fetch_row($result)) {
-  $row2 = mysql_fetch_array( mysql_query(
-    "SELECT COUNT(*)" .
-    "FROM `event_responses`" .
-    "WHERE `event_id`='" . $row[0] . "' AND `response`='1'"));
-  if (logged_in() && $_SESSION['responses'] > 0) {
-    $row3 = mysql_fetch_array( mysql_query(
-      "SELECT COUNT(*) FROM `event_responses` WHERE `event_id`='" . $row[0] . "' AND `user_id`='" .
-      $_SESSION['user_id'] . "'"));
-    if ($row3[0] == 0) {
-      echo '<td><a href="' . $domain . '?page=event&event_id=' . $row[0] . '#respond">Respond</a></td>';
-    } else {
-      echo '<td></td>';
+    while ($event_row = $result->fetch_assoc()) {
+      $responses_row = $mysqli->query(
+        "SELECT COUNT(*)" .
+        "FROM `event_responses`" .
+        "WHERE `event_id`='" . $event_row['event_id'] . "' AND `response`='1'")->fetch_row();
+      handle_sql_error($mysqli);
+      if (logged_in()) {
+        $userresponse_row = $mysqli->query(
+          "SELECT COUNT(*) " .
+          "FROM `event_responses` " .
+          "WHERE `event_id`='" . $event_row['event_id'] . "' AND `user_id`='" . $_SESSION['user_id'] . "'")->fetch_row();
+        handle_sql_error($mysqli);
+        if ($_SESSION['responses'] > 0) {
+          if ($event_row['status'] == 1 && $userresponse_row[0] == 0) {
+            echo '<td><a href="' . $domain . '?page=event&event_id=' . $event_row['event_id'] . '#respond">Respond</a></td>';
+          } else {
+            echo '<td></td>';
+          }
+        }
+      }
+      printcell_maybe($event_row['fdate']);
+      printcell_maybe($event_row['ftime']);
+      echo '<td>'.$event_row['title'].'</td>';
+      printcell_maybe($event_row['location']);
+      if (intval($event_row['status']) == 1) {
+        echo '<td>'.$responses_row[0].'</td>';
+      } else {
+        echo '<td></td>';
+      }
+      echo '<td><a href="' . $domain . '?page=event&event_id=' . $event_row['event_id'] . '">Event Details</a></td>';
+      echo '</tr>';
     }
-  }
-  printcell_maybe($row[4]);
-  printcell_maybe($row[5]);
-  echo '<td>'.$row[3].'</td>';
-  printcell_maybe($row[6]);
-  if (intval($row[1]) == 1) {
-    echo '<td>'.$row2[0].'</td>';
-  } else {
-    echo '<td></td>';
-  }
-  echo '<td><a href="' . $domain . '?page=event&event_id=' . $row[0] . '">Event Details</a></td>';
-  echo '</tr>';
-}
-mysql_free_result($result); ?>
+    $result->free();
+?>
 </table>
-<?php } } else { ?>
+<?php
+  }
+} else {
+?>
 <div class="center">
   You are not authorized to view events.
 </div>
-<?php } ?>
+<?php
+}
+?>

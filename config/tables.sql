@@ -8,10 +8,12 @@ CREATE TABLE `users`
     `last_login_attempt` DATETIME NOT NULL,
     `login_attempts` TINYINT UNSIGNED DEFAULT 0 NOT NULL,
     `user_type` TINYINT(1) UNSIGNED DEFAULT 1 NOT NULL,
-    `last_name` VARCHAR(255) NOT NULL,
-    `first_name` VARCHAR(255) NOT NULL,
-    `term` VARCHAR(64) NOT NULL,
+    `last_name` VARCHAR(64) NOT NULL,
+    `first_name` VARCHAR(64) NOT NULL,
+    `program` VARCHAR(64) DEFAULT '' NOT NULL,
+    `term` TINYINT UNSIGNED DEFAULT 0 NOT NULL,
     `instrument` TINYINT UNSIGNED DEFAULT 0 NOT NULL,
+    `fun_fact` VARCHAR(255) DEFAULT '' NOT NULL,
     PRIMARY KEY (`user_id`)
 );
 

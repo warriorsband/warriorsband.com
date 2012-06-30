@@ -74,6 +74,15 @@ span.header3 {
 	color: #fed403;
 	font: italic 1em Arial, Helvetica, sans-serif;
 }
+/* The small font used for tips and form field explanations */
+span.tiph {
+	color: #000000;
+	font: 0.625em Arial, Helvetica, sans-serif;
+}
+span.tip {
+	color: #fed403;
+	font: 0.625em Arial, Helvetica, sans-serif;
+}
 /* Set the look of textboxes and buttons */
 input, textarea, select {
 	color: #000000;

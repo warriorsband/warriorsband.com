@@ -1,7 +1,6 @@
 <?php
 
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require_once("Mail.php");
@@ -34,13 +33,15 @@ if (isset($_POST['comment'])) {
 }
 ?>
 <h3>Post Comment / Report Bug</h3>
-  If you run into any problems with the site, or if you have comments/suggestions regarding 
-  site features, design, etc, write it down here. Just, like, let it all out man. Good Guy Paul 
-  will get be sent an email with your message.
+  <p>Please post a bug report here if you run into any problems with the site: things not working 
+  correctly, not displaying correctly, etc. Paul will get an e-mail about it and fix it.</p>
+
+  <p>If you've got any suggestions for site features/layout, you can also post that here. Nothing 
+  about the site is final, so suggestions are welcome!</p>
 <br /><br />
 <div class="center">
   <form action="/bugreport.php" method="POST">
-    <textarea name="comment" rows="8" cols="80"></textarea>
+    <textarea name="comment" rows="8" cols="80" maxlength="10000"></textarea>
     <br /><br />
     <input type="submit" value="Submit" />
   </form>

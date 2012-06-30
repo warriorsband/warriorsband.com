@@ -8,8 +8,7 @@
  */
 
 //Hash a password securely
-function hash_password($input)
-{
+function hash_password($input) {
   $salt = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM)); 
   $hash = hash("sha256", $salt . $input); 
   $final = $salt . $hash; 
@@ -17,11 +16,16 @@ function hash_password($input)
 }
 
 //Sanitize user input
-function sanitize($data){
+function sanitize($data) {
   $data=trim($data);
   $data=htmlspecialchars($data);
   $data=mysql_real_escape_string($data);
   return $data;
+}
+
+//Format inputted text (at the moment, just replaces newlines with spaces)
+function format_text($text) {
+  return str_replace("\\r\\n"," ",$text);
 }
 
 //Check if a user is logged in
@@ -31,16 +35,29 @@ function logged_in() {
   } else { return FALSE; }
 }
 
-//Display a generic permissions error and exit
-function deny_and_exit() {
-  echo "Permission denied.";
+//If verbose errors is set in the config, prints the provided
+//error string and exits. Otherwise, prints a generic message and exits.
+function error_and_exit($err) {
+  global $verbose_errors;
+  if ($verbose_errors) {
+    echo "Error: $err";
+  } else {
+    echo "Error";
+  }
+  exit();
+}
+//Print an error and exit in an html-formatted way
+function print_and_exit($msg) {
+  echo "<div class=\"center\">$msg</div>";
   exit();
 }
 
-//Display a generic error message and exit
-function error_and_exit() {
-  echo "Error";
-  exit();
+//If the provious SQL query ended in error, print the error
+//(if verbose_errors is set), and exit.
+function handle_sql_error($mysqli) {
+  if ($mysqli->errno) {
+    error_and_exit("SQL error: " . $mysqli->error);
+  }
 }
 
 //Functions for input authentication
@@ -174,7 +191,8 @@ function auth_view_profile($user_id, $user_type) {
 }
 //Can the user edit a part of this profile?
 function auth_edit_profile($user_id, $user_type) {
-  return (is_same_user($user_id) || user_type_greater_eq(2));
+  return (is_same_user($user_id) || 
+    (user_type_greater_than($user_type) && user_type_greater_eq(3)));
 }
 //Can the user view the profile e-mail address?
 function auth_view_email($user_id, $user_type) {
@@ -188,22 +206,13 @@ function auth_edit_email($user_id, $user_type) {
 function auth_edit_password($user_id, $user_type) {
   return is_same_user($user_id);
 }
-//Can the user view the profile first name?
-function auth_view_first_name($user_id, $user_type) {
+//Can the user view the profile name?
+function auth_view_name($user_id, $user_type) {
   return TRUE;
 }
 //Can the user edit the profile first name?
-function auth_edit_first_name($user_id, $user_type) {
-  return (user_type_greater_eq(2) && 
-    (is_same_user($user_id) || user_type_greater_than($user_type)));
-}
-//Can the user view the profile last name?
-function auth_view_last_name($user_id, $user_type) {
-  return TRUE;
-}
-//Can the user edit the profile last name?
-function auth_edit_last_name($user_id, $user_type) {
-  return (user_type_greater_eq(2) && 
+function auth_edit_name($user_id, $user_type) {
+  return (user_type_greater_eq(3) && 
     (is_same_user($user_id) || user_type_greater_than($user_type)));
 }
 //Can the user view the profile user type?
@@ -214,6 +223,15 @@ function auth_view_user_type($user_id, $user_type) {
 function auth_edit_user_type($user_id, $user_type) {
   return (user_type_greater_eq(3) &&
     (is_same_user($user_id) || user_type_greater_than($user_type)));
+}
+//Can the user view the misc. info? (program, instrument, etc)
+function auth_view_misc_info($user_id, $user_type) {
+  return TRUE;
+}
+//Can the user edit the misc. info? (program, instrument, etc)
+function auth_edit_misc_info($user_id, $user_type) {
+  return (is_same_user($user_id) || 
+    (user_type_greater_than($user_type) && user_type_greater_eq(3)));
 }
 //Can the user delete this profile?
 function auth_delete_account($user_id, $user_type) {

@@ -34,9 +34,6 @@ function print_msg() {
       case "emptyname":
         echo "Error: First and last name cannot be empty.";
         break;
-      case "nametoolong":
-        echo "Error: First and last name must be less than 255 characters.";
-        break;
       case "nonalphaname":
         echo "Error: First and last name must be letters and dashes only.";
         break;
@@ -48,28 +45,34 @@ function print_msg() {
         echo "Error: Cannot create a new user with equivalent or greater user type to your own.";
         break;
       case "maxlogins":
-        echo "Maximum number of login attempts exceeded. Try again in 30 minutes.";
+        echo "Error: Maximum number of login attempts exceeded. Try again in 30 minutes.";
         break;
       case "logoutfail":
-        echo "You must be logged in before you can log out.";
+        echo "Error: You must be logged in before you can log out.";
         break;
       case "badtitle":
-        echo "Event titles must be between 4 and 255 characters long.";
+        echo "Error: Event titles must be between 4 and 255 characters long.";
         break;
       case "baddate":
-        echo "The date provided must be valid.";
+        echo "Error: The date provided must be valid.";
         break;
       case "badtime":
-        echo "The time provided must be valid.";
+        echo "Error: The time provided must be valid.";
         break;
       case "badlocation":
-        echo "Event locations must be at most 255 characters long.";
+        echo "Error: Event locations must be at most 255 characters long.";
         break;
       case "commentrequired":
-        echo "If you answer \"Maybe\", you must provide a comment to elaborate (10 chars minimum).";
+        echo "Error: If you answer \"Maybe\", you must provide a comment to elaborate (10 chars minimum).";
         break;
       case "bugreportfail":
-        echo "There was a problem sending the bug report.";
+        echo "Error: There was a problem sending the bug report.";
+        break;
+      case "jointhebandfail":
+        echo "Error: There was a problem sending the form.";
+        break;
+      case "emptymessage":
+        echo "Error: Message cannot be empty.";
         break;
       //Form submission success messages
       case "profileupdatesuccess":
@@ -102,6 +105,9 @@ function print_msg() {
       case "bugreportsuccess":
         echo "Comment / Bug Report sent successfully.";
         break;
+      case "jointhebandsuccess":
+        echo "Form sent successfully.";
+        break;
       //Confirmation messages
       case "confirmdelete":
         echo "If you are CERTAIN this should be deleted, click the delete ";
@@ -116,7 +122,6 @@ function print_msg() {
     echo '<br />';
   }
 }
-
 //Print the reminder for responding to events
 function print_eventreminder() {
   if (isset($_SESSION['responses']) && $_SESSION['responses'] > 0) {
@@ -127,6 +132,10 @@ function print_eventreminder() {
     echo '</div>';
   }
 }
+
+
+//Functions for converting database codes to printable strings
+
 //Converts user_type to a printable string
 function user_type_to_str($user_type) {
   if ($user_type == 1) {
@@ -137,6 +146,58 @@ function user_type_to_str($user_type) {
     return "Admin Exec";
   } elseif ($user_type == 4) {
     return "Admin";
+  } else {
+    return "";
+  }
+}
+//Convert a term code to a printable string
+function term_to_str($term) {
+  if ($term == 1) {
+    return "1A";
+  } elseif ($term == 2) {
+    return "1A Co-op";
+  } elseif ($term == 3) {
+    return "1B";
+  } elseif ($term == 4) {
+    return "1B Co-op";
+  } elseif ($term == 5) {
+    return "2A";
+  } elseif ($term == 6) {
+    return "2A Co-op";
+  } elseif ($term == 7) {
+    return "2B";
+  } elseif ($term == 8) {
+    return "2B Co-op";
+  } elseif ($term == 9) {
+    return "3A";
+  } elseif ($term == 10) {
+    return "3A Co-op";
+  } elseif ($term == 11) {
+    return "3B";
+  } elseif ($term == 12) {
+    return "3B Co-op";
+  } elseif ($term == 13) {
+    return "4A";
+  } elseif ($term == 14) {
+    return "4A Co-op";
+  } elseif ($term == 15) {
+    return "4B";
+  } elseif ($term == 16) {
+    return "4B Co-op";
+  } elseif ($term == 17) {
+    return "Grad";
+  } else {
+    return "";
+  }
+}
+//Convert an instrument code to a printable string
+function instrument_to_str($instrument) {
+  if ($instrument == 1) {
+    return "Flute";
+  } elseif ($instrument == 2) {
+    return "Trumpet";
+  } elseif ($instrument == 3) {
+    return "Bass Drum";
   } else {
     return "";
   }
@@ -153,7 +214,6 @@ function response_to_str($response) {
     return "";
   }
 }
-
 //Converts an event status code to a printable string
 function event_status_to_str($status, $long = FALSE) {
   if ($status == 1) {
@@ -172,7 +232,7 @@ function event_status_to_str($status, $long = FALSE) {
   return $output;
 }
 
-//Functions which print the content of the registration e-mail message
+//Functions which print the content of email messages
 function registration_email_subject() {
   return "Warriors Band website registration";
 }
@@ -194,8 +254,15 @@ function registration_email_message($temp_password, $submitter_name, $submitter_
   $signature = "This is an automated message - please do not reply.\n\nWarriors Band";
   return $message . $comment . $signature;
 }
-function registration_email_from() {
-  return "registration_noreply@warriorsband.com";
+function jointheband_email_subject($name) {
+  return "\"Join the Band\" website message from $name";
+}
+function jointheband_email_message($name, $email, $msg) {
+  $body = "$name ($email) has filled out the \"Join the Band\" comment form on the Warriors Band " .
+    "website. Here's the content of their message:\n\n" .
+    "--------------------\n$msg\n--------------------\n\n\n" .
+    "This is an automated message.\n\nWarriors Band";
+  return $body;
 }
 
 //Outputs 'class="alt"' on even-numbered rows, so that it can be used to define the 

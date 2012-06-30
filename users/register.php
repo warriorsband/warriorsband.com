@@ -12,7 +12,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
 
 //Ensure that the user has exec level or above
 if (!auth_register_user()) {
-  error_and_exit();
+  print_and_exit("You do not have permission to register users.");
 }
 ?>
 
@@ -33,11 +33,11 @@ if (!auth_register_user()) {
     </tr>
     <tr class="alt" >
       <th>First name</th>
-      <td><input type="text" name="first_name" maxlength="255" /></td>
+      <td><input type="text" name="first_name" maxlength="64" /></td>
     </tr>
     <tr>
       <th>Last name</th>
-      <td><input type="text" name="last_name" maxlength="255" /></td>
+      <td><input type="text" name="last_name" maxlength="64" /></td>
     </tr>
     <tr class="alt" >
       <th>Custom message</th>

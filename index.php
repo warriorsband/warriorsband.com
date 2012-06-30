@@ -55,6 +55,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=events">Events</a>
             </td></tr>
+            <tr <?php echo row_color() ?> ><td>
+              <a href="/?page=jointheband">Join the Band</a>
+            </td></tr>
 <?php if (logged_in()) {
   row_color(TRUE); ?>
             <tr><th class="center">Member links</th></tr>
@@ -86,7 +89,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
 <?php } row_color(TRUE); ?>
           </table>
         </td>
-        <td id="content" class="contenttd">
+        <td id="content" class="contenttd" valign="top">
 <?php
 if (isset($_GET['page'])) {
   switch ($_GET['page']) {
@@ -95,6 +98,9 @@ if (isset($_GET['page'])) {
       break;
     case "about":
       require($_SERVER['DOCUMENT_ROOT'].'/about.php');
+      break;
+    case "bugreport":
+      require($_SERVER['DOCUMENT_ROOT'].'/bugreport.php');
       break;
     case "event":
       require($_SERVER['DOCUMENT_ROOT'].'/events/event.php');
@@ -105,8 +111,8 @@ if (isset($_GET['page'])) {
     case "events":
       require($_SERVER['DOCUMENT_ROOT'].'/events/events.php');
       break;
-    case "bugreport":
-      require($_SERVER['DOCUMENT_ROOT'].'/bugreport.php');
+    case "jointheband":
+      require($_SERVER['DOCUMENT_ROOT'].'/jointheband.php');
       break;
     case "login":
       require($_SERVER['DOCUMENT_ROOT'].'/auth/login.php');

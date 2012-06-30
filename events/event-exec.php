@@ -7,6 +7,7 @@
 
 session_start();
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 //Ensure that the user is allowed to edit events
@@ -23,21 +24,23 @@ if (isset($_POST['event_id'])) {
   $new_event = FALSE;
   $redirect_url .= "&event_id=$event_id";
 
-  //Fetch the event's info
-  if (!($row = mysql_fetch_array( mysql_query("SELECT * FROM `events` WHERE `event_id`='$event_id'")))) {
-    echo "No such event with that event ID.";
-    exit();
+  //Make sure the event exists
+  $num_events = $mysqli->query(
+    "SELECT COUNT(*) FROM `events` WHERE `event_id`='$event_id'")->fetch_row();
+  handle_sql_error($mysqli);
+  if ($num_events[0] == 0) {
+    error_and_exit("No event with that event ID.");
   }
 }
 
 //Validate status
 $status = intval($_POST['status']);
 if (($status < 1) || ($status > 9)) {
-  error_and_exit();
+  error_and_exit("Invalid status");
 }
 
 //Validate title
-$title = sanitize($_POST['title']);
+$title = format_text(sanitize($_POST['title']));
 if (empty($title) || strlen($title) == 0 || strlen($title) > 255) {
     header("Location: $redirect_url&msg=badtitle");
     exit();
@@ -52,8 +55,8 @@ if (isset($_POST['no_date'])) {
   $date_year = intval($_POST['date_year']);
   $date = "'$date_year-$date_month-$date_day'";
   if (!checkdate($date_month, $date_day, $date_year)) {
-      header("Location: $redirect_url&msg=baddate");
-      exit();
+    header("Location: $redirect_url&msg=baddate");
+    exit();
   }
 }
 
@@ -74,7 +77,7 @@ if (isset($_POST['no_time'])) {
 }
 
 //Validate location
-$location = sanitize($_POST['location']);
+$location = format_text(sanitize($_POST['location']));
 if (strlen($location) > 255) {
     header("Location: $redirect_url&msg=badlocation");
     exit();
@@ -82,19 +85,28 @@ if (strlen($location) > 255) {
 
 //Validate description
 $description = sanitize($_POST['description']);
+if (strlen($location) > 10000) {
+  error_and_exit("Description must be less than 10000 characters.");
+}
 
 //If this is a new event, do an insertion and update the reminder counter, otherwise do an update
 if ($new_event) {
-  mysql_query("INSERT INTO `events` (`status`,`creator_id`,`title`,`date`,`start_time`,`location`,`description`)" . 
-    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,'$location','$description')")
-    or die(mysql_error());
+  $mysqli->query(
+    "INSERT INTO `events` " .
+    "(`status`,`creator_id`,`title`,`date`,`start_time`,`location`,`description`)" . 
+    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,'$location','$description')");
+  handle_sql_error($mysqli);
+  //Regenerate session id prior to setting any session variable
+  //to mitigate session fixation attacks
+  session_regenerate_id();
   $_SESSION['responses'] -= 1;
   header("Location: $redirect_url&msg=eventcreatesuccess");
 } else {
-  mysql_query("UPDATE `events` SET `status`='$status',`creator_id`='" . $_SESSION['user_id'] . 
+  $mysqli->query(
+    "UPDATE `events` SET `status`='$status',`creator_id`='" . $_SESSION['user_id'] . 
     "',`title`='$title',`date`=$date,`start_time`=$time,`location`='$location'," . 
-    "`description`='$description' WHERE `event_id`='$event_id'")
-    or die(mysql_error());
+    "`description`='$description' WHERE `event_id`='$event_id'");
+  handle_sql_error($mysqli);
   header("Location: $redirect_url&msg=eventupdatesuccess");
 }
 exit();

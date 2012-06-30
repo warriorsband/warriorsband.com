@@ -3,14 +3,16 @@
 /*
  *  event.php
  *  
- *  A form which edits an existing event or creates a new event by posting to 
+ *  A form which view or edits an existing event or creates a new event by posting to 
  *  event-exec.php
  */
 
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+
 //Ensure that the user is allowed to view events
 if (!auth_view_events()) {
-  echo '<div class="center">You are not authorised to view events.</div>';
-  exit();
+  print_and_exit("You are not authorized to view events.");
 }
 
 row_color(TRUE);
@@ -40,23 +42,25 @@ if (auth_edit_events()) {
 
     //Get the event details from the database
     //If no row is found, print an error and exit.
-    if (!($row = mysql_fetch_array( mysql_query(
-      "SELECT `status`,`title`,`date`,TIME_FORMAT(`start_time`, '%h%i%p'),`location`,`description` " .
-      "FROM `events` WHERE `event_id`='$event_id'")))) {
-      echo "No such event with that event ID.";
-      exit();
+    $event_row = $mysqli->query(
+      "SELECT `status`,`title`,`date`,TIME_FORMAT(`start_time`, '%h%i%p') AS `time`," .
+      "`location`,`description` " .
+      "FROM `events` WHERE `event_id`='$event_id'")->fetch_assoc();
+    handle_sql_error($mysqli);
+    if (!$event_row) {
+      print_and_exit("No such event with that event ID.");
     }
-    $status = intval($row['status']);
-    $title = $row['title'];
-    $date = explode("-", $row['date']);
+    $status = intval($event_row['status']);
+    $title = $event_row['title'];
+    $date = explode("-", $event_row['date']);
     $date_year = intval($date[0]);
     $date_month = intval($date[1]);
     $date_day = intval($date[2]);
-    $time_hour = intval(substr($row[3],0,2));
-    $time_minute = intval(substr($row[3],2,2));
-    $time_ampm = substr($row[3],4,2);
-    $location = $row['location'];
-    $description = $row['description'];
+    $time_hour = intval(substr($event_row['time'],0,2));
+    $time_minute = intval(substr($event_row['time'],2,2));
+    $time_ampm = substr($event_row['time'],4,2);
+    $location = $event_row['location'];
+    $description = $event_row['description'];
   } else {
     $action = "create";
   }
@@ -70,56 +74,72 @@ else {
 
     //Get the event details from the database
     //If no row is found, print an error and exit.
-    if (!($row = mysql_fetch_array( mysql_query(
-      "SELECT `status`,`title`,DATE_FORMAT(`date`,'%b %e %Y'),TIME_FORMAT(`start_time`, '%l:%i %p')," .
-      "`location`,`description` FROM `events` WHERE `event_id`='$event_id'")))) {
-      echo "No such event with that event ID.";
-      exit();
+    $event_row = $mysqli->query(
+      "SELECT `status`,`title`,DATE_FORMAT(`date`,'%b %e %Y') AS `date`," .
+      "TIME_FORMAT(`start_time`, '%l:%i %p') AS `time`,`location`,`description` " .
+      "FROM `events` " .
+      "WHERE `event_id`='$event_id'")->fetch_assoc();
+    handle_sql_error($mysqli);
+    if (!$event_row) {
+      print_and_exit("No such event with that event ID.");
     }
   } else {
-    echo '<div class="center">The ID of an event must be specified in order to view it.</div>';
-    exit();
+    print_and_exit("No event ID specified.");
   }
 }
 
 if ($action != "create") {
   //Get list of respondees' names
-  $yess = mysql_query(
+  $yess = $mysqli->query(
     "SELECT `first_name` " .
     "FROM `users` " .
     "INNER JOIN `event_responses` " .
     "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='1'")
-    or die(mysql_error());
-  $nos = mysql_query(
+    "WHERE `event_id`='$event_id' AND `response`='1'");
+    handle_sql_error($mysqli);
+  $nos = $mysqli->query(
     "SELECT `first_name` " .
     "FROM `users` " .
     "INNER JOIN `event_responses` " .
     "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='2'")
-    or die(mysql_error());
-  $maybes = mysql_query(
+    "WHERE `event_id`='$event_id' AND `response`='2'");
+    handle_sql_error($mysqli);
+  $maybes = $mysqli->query(
     "SELECT `first_name` " .
     "FROM `users` " .
     "INNER JOIN `event_responses` " .
     "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='3'")
-    or die(mysql_error());
+    "WHERE `event_id`='$event_id' AND `response`='3'");
+    handle_sql_error($mysqli);
 }
 
 //Start displaying page
-if ($action == "create") { ?>
+if ($action == "create") {
+?>
 <h1>Create Event</h1>
-<?php } elseif ($action == "edit") { ?>
+<?php
+} elseif ($action == "edit") {
+?>
 <h1>View/Edit Event</h1>
-<?php } else { ?>
+<?php
+} else {
+?>
 <h1>View Event</h1>
-<?php } ?>
+<?php
+}
+?>
 
 <br /><br />
 <table>
 <?php
-if ($action != "view") {
+if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>Title</th>
+    <td><?php echo $event_row['title']; ?></td>
+  </tr>
+<?php
+} else {
 ?>
   <form action="/events/event-exec.php" method="POST">
 <?php
@@ -128,26 +148,20 @@ if ($action != "view") {
     <input type="hidden" name="event_id" value="<?php echo $event_id; ?>" />
 <?php
   }
-}
-if ($action == "view") {
-?>
-  <tr <?php echo row_color() ?> >
-    <th>Title</th>
-    <td><?php echo $row['title']; ?></td>
-  </tr>
-<?php
-} else {
 ?>
     <tr <?php echo row_color() ?> >
-      <th>Title (required)</th>
+      <th>Title<br /><span class="tiph">(required)</span></th>
       <td><input type="text" name="title" maxlength="255" value="<?php echo $title; ?>" /></td>
     </tr>
 <?php
-} if ($action == "view") {
+}
+
+//Display date
+if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Date</th>
-    <td><?php echo $row[2]; ?></td>
+    <td><?php echo $event_row['date']; ?></td>
   </tr>
 <?php
 } else {
@@ -156,37 +170,11 @@ if ($action == "view") {
       <th>Date</th>
       <td>
         <select name="date_day">
-          <option value="1" <?php selected(1,$date_day); ?>>1</option>
-          <option value="2" <?php selected(2,$date_day); ?>>2</option>
-          <option value="3" <?php selected(3,$date_day); ?>>3</option>
-          <option value="4" <?php selected(4,$date_day); ?>>4</option>
-          <option value="5" <?php selected(5,$date_day); ?>>5</option>
-          <option value="6" <?php selected(6,$date_day); ?>>6</option>
-          <option value="7" <?php selected(7,$date_day); ?>>7</option>
-          <option value="8" <?php selected(8,$date_day); ?>>8</option>
-          <option value="9" <?php selected(9,$date_day); ?>>9</option>
-          <option value="10" <?php selected(10,$date_day); ?>>10</option>
-          <option value="11" <?php selected(11,$date_day); ?>>11</option>
-          <option value="12" <?php selected(12,$date_day); ?>>12</option>
-          <option value="13" <?php selected(13,$date_day); ?>>13</option>
-          <option value="14" <?php selected(14,$date_day); ?>>14</option>
-          <option value="15" <?php selected(15,$date_day); ?>>15</option>
-          <option value="16" <?php selected(16,$date_day); ?>>16</option>
-          <option value="17" <?php selected(17,$date_day); ?>>17</option>
-          <option value="18" <?php selected(18,$date_day); ?>>18</option>
-          <option value="19" <?php selected(19,$date_day); ?>>19</option>
-          <option value="20" <?php selected(20,$date_day); ?>>20</option>
-          <option value="21" <?php selected(21,$date_day); ?>>21</option>
-          <option value="22" <?php selected(22,$date_day); ?>>22</option>
-          <option value="23" <?php selected(23,$date_day); ?>>23</option>
-          <option value="24" <?php selected(24,$date_day); ?>>24</option>
-          <option value="25" <?php selected(25,$date_day); ?>>25</option>
-          <option value="26" <?php selected(26,$date_day); ?>>26</option>
-          <option value="27" <?php selected(27,$date_day); ?>>27</option>
-          <option value="28" <?php selected(28,$date_day); ?>>28</option>
-          <option value="29" <?php selected(29,$date_day); ?>>29</option>
-          <option value="30" <?php selected(30,$date_day); ?>>30</option>
-          <option value="31" <?php selected(31,$date_day); ?>>31</option>
+<?php
+    for ($i = 0; $i <= 31; $i++) {
+      echo "<option value=\"$i\" " . selected($i,$date_day) . ">$i</option>";
+    }
+?>
         </select> / 
         <select name="date_month">
           <option value="1" <?php selected(1,$date_month); ?>>January</option>
@@ -203,36 +191,25 @@ if ($action == "view") {
           <option value="12" <?php selected(12,$date_month); ?>>December</option>
         </select> / 
         <select name="date_year">
-          <option value="2012" <?php selected(2012,$date_year); ?>>2012</option>
-          <option value="2013" <?php selected(2013,$date_year); ?>>2013</option>
-          <option value="2014" <?php selected(2014,$date_year); ?>>2014</option>
-          <option value="2015" <?php selected(2015,$date_year); ?>>2015</option>
-          <option value="2016" <?php selected(2016,$date_year); ?>>2016</option>
-          <option value="2017" <?php selected(2017,$date_year); ?>>2017</option>
-          <option value="2018" <?php selected(2018,$date_year); ?>>2018</option>
-          <option value="2019" <?php selected(2019,$date_year); ?>>2019</option>
-          <option value="2020" <?php selected(2020,$date_year); ?>>2020</option>
-          <option value="2021" <?php selected(2021,$date_year); ?>>2021</option>
-          <option value="2022" <?php selected(2022,$date_year); ?>>2022</option>
-          <option value="2023" <?php selected(2023,$date_year); ?>>2023</option>
-          <option value="2024" <?php selected(2024,$date_year); ?>>2024</option>
-          <option value="2025" <?php selected(2025,$date_year); ?>>2025</option>
-          <option value="2026" <?php selected(2026,$date_year); ?>>2026</option>
-          <option value="2027" <?php selected(2027,$date_year); ?>>2027</option>
-          <option value="2028" <?php selected(2028,$date_year); ?>>2028</option>
-          <option value="2029" <?php selected(2029,$date_year); ?>>2029</option>
-          <option value="2030" <?php selected(2030,$date_year); ?>>2030</option>
+<?php
+    for ($i = 2012; $i <= 2030; $i++) {
+      echo "<option value=\"$i\" " . selected($i,$date_year) . ">$i</option>";
+    }
+?>
         </select>
         &nbsp &nbsp
         <input type="checkbox" name="no_date" value="true" /> Leave date blank
       </td>
     </tr>
 <?php
-} if ($action == "view") {
+}
+
+//Display time
+if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Start Time</th>
-    <td><?php echo $row[3]; ?></td>
+    <td><?php echo $event_row['time']; ?></td>
   </tr>
 <?php
 } else {
@@ -277,11 +254,14 @@ if ($action == "view") {
       </td>
     </tr>
 <?php
-} if ($action == "view") {
+}
+
+//Display location
+if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Location</th>
-    <td><?php echo $row['location']; ?></td>
+    <td><?php echo $event_row['location']; ?></td>
   </tr>
 <?php
 } else {
@@ -291,26 +271,32 @@ if ($action == "view") {
       <td><input type="text" name="location" maxlength="255" value="<?php echo $location; ?>"/></td>
     </tr>
 <?php
-} if ($action == "view") {
+}
+
+//Display description
+if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Description</th>
-    <td><?php echo $row['description']; ?></td>
+    <td><?php echo $event_row['description']; ?></td>
   </tr>
 <?php
 } else {
 ?>
     <tr <?php echo row_color() ?> >
       <th>Description</th>
-      <td><textarea name="description" rows="6" cols="80"><?php echo $description; ?></textarea></td>
+      <td><textarea name="description" rows="6" cols="80" maxlength="10000"><?php echo $description; ?></textarea></td>
     </tr>
 <?php
-} if ($action == "view") {
+}
+
+//Display status
+if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Active?</th>
     <td>
-      <?php echo event_status_to_str($row['status'],TRUE); ?>
+      <?php echo event_status_to_str($event_row['status'],TRUE); ?>
     </td>
   </tr>
 <?php
@@ -326,28 +312,34 @@ if ($action == "view") {
       </td>
     </tr>
 <?php
-} if ($action != "create") {
+}
+
+//Display the list of responses
+if ($action != "create") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Who's Going</th>
     <td>
       Definitely Attending: 
 <?php
-  while($yesrow = mysql_fetch_row($yess)) {
-    echo $yesrow[0] . ", ";
+  while($yesrow = $yess->fetch_assoc()) {
+    echo $yesrow['first_name'] . ", ";
   }
+  $yess->free();
 ?>
       <br />Maybe attending: 
 <?php
-  while($mayberow = mysql_fetch_row($maybes)) {
-    echo $mayberow[0] . ", ";
+  while($mayberow = $maybes->fetch_assoc()) {
+    echo $mayberow['first_name'] . ", ";
   }
+  $maybes->free();
 ?>
       <br />Not attending: 
 <?php
-  while($norow = mysql_fetch_row($nos)) {
-    echo $norow[0] . ", ";
+  while($norow = $nos->fetch_assoc()) {
+    echo $norow['first_name'] . ", ";
   }
+  $nos->free();
   if ($action == "edit") {
     echo "<br /><a href=\"$domain?page=eventresponses&event_id=$event_id\">View full response list</a>";
   }
@@ -355,7 +347,10 @@ if ($action == "view") {
     </td>
   </tr>
 <?php
-} if ($action == "create") {
+}
+
+//Display appropriate submit button (if any)
+if ($action == "create") {
 ?>
     <tr <?php echo row_color() ?> >
       <th></th>
@@ -382,27 +377,37 @@ if ($action == "edit") { ?>
 <div class="center">
   <form action="/events/deleteevent-exec.php" method="POST">
     <input type="hidden" name="event_id" value="<?php echo $event_id ?>" />
-<?php if (isset($_GET['msg']) && ($_GET['msg'] == "confirmdelete")) { ?>
+<?php
+  if (isset($_GET['msg']) && ($_GET['msg'] == "confirmdelete")) {
+?>
     <input type="hidden" name="confirm" value="true" />
-<?php } ?>
+<?php
+  }
+?>
     <input type="submit" value="Delete This Event" />
   </form>
 </div>
-<?php } ?>
+<?php
+}
+?>
 
 <?php
 //If the user is logged in, and the event is existing and active, show a response form
-if (logged_in() && isset($event_id) && ($row['status'] == 1)) {
-  //Get existing response if there is one
-  if ($row = mysql_fetch_array( mysql_query(
-    "SELECT `response`,`comment` FROM `event_responses` WHERE `event_id`='$event_id' AND `user_id`='" .
-    $_SESSION['user_id'] . "'"))) {
-    $response = $row['response'];
-    $comment = $row['comment'];
-  } else {
-    $response = 1;
-    $comment = "";
-  }
+if (logged_in()) {
+  if (isset($event_id) && ($event_row['status'] == 1)) {
+    //Get existing response if there is one
+    $response_row = $mysqli->query(
+      "SELECT `response`,`comment` " .
+      "FROM `event_responses` " .
+      "WHERE `event_id`='$event_id' AND `user_id`='" . $_SESSION['user_id'] . "'")->fetch_assoc();
+    handle_sql_error($mysqli);
+    if ($response_row) {
+      $response = $response_row['response'];
+      $comment = $response_row['comment'];
+    } else {
+      $response = 1;
+      $comment = "";
+    }
 ?>
 <br /><br />
 <table><tr><td class="contenttd">
@@ -421,5 +426,11 @@ if (logged_in() && isset($event_id) && ($row['status'] == 1)) {
   </form>
 </td></tr></table>
 <?php
+  } else {
+?>
+<br /><br />
+<div class="center">This event is not open to attendance responses at this time.</div>
+<?php
+  }
 }
 ?>

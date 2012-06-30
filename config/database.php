@@ -6,13 +6,15 @@
  *  Connect to the database with the provided parameters
  */
 
+//Database connection parameters
 $username = "root";
 $password = "shbang111";
 $hostname = "localhost";
 $database = "database";
 
-$dbhandle = mysql_connect($hostname, $username, $password)
- or die("Unable to connect to MySQL");
-$selected = mysql_select_db($database,$dbhandle)
-or die("Could not select $database");
+//You should not need to edit this
+$mysqli = new mysqli("localhost", $username, $password, $database);
+if ($mysqli->connect_errno) {
+  echo "Failed to connect to MySQL database.";
+}
 ?>
