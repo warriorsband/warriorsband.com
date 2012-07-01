@@ -77,11 +77,15 @@ span.header3 {
 /* The small font used for tips and form field explanations */
 span.tiph {
 	color: #000000;
-	font: 0.625em Arial, Helvetica, sans-serif;
+	font: 0.6875em Arial, Helvetica, sans-serif;
 }
 span.tip {
 	color: #fed403;
-	font: 0.625em Arial, Helvetica, sans-serif;
+	font: 0.6875em Arial, Helvetica, sans-serif;
+}
+span.emph {
+	color: #ff0000;
+	font: 1em Arial, Helvetica, sans-serif;
 }
 /* Set the look of textboxes and buttons */
 input, textarea, select {
@@ -106,6 +110,9 @@ a:visited {
 .justify {
     text-align: justify;
 }
+.left {
+    text-align: left;
+}
 /* Set the header font properties */
 h1, h2, h3 {
     margin: 0;
@@ -126,4 +133,14 @@ div.msg {
     border: 1px solid #fed403;
     padding: 5px;
     margin: 20px;
+}
+div.ctext6 {
+    text-align: left;
+    width:600px;
+    margin: 0 auto;
+}
+div.ctext8 {
+    text-align: left;
+    width:800px;
+    margin: 0 auto;
 }

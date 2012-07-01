@@ -34,8 +34,10 @@ if ($result->num_rows == 0) {
 ?>
 
 <h3>Events</h3>
-<div class="center">
-  Here's a list of our upcoming events!
+<div class="ctext8">
+  Here's a list of our upcoming events! Click "Event Details" to view full event info or to 
+  respond to an event. If you haven't yet responded to an active event, a "Respond" link will 
+  also appear beside it.
 </div>
 <br />
 <?php
@@ -54,7 +56,7 @@ if(auth_view_events()) {
 <table>
   <tr>
 <?php
-    if ($_SESSION['responses'] > 0) {
+    if (isset($_SESSION['responses']) && $_SESSION['responses'] > 0) {
 ?>
     <th></th>
 <?php
@@ -80,7 +82,7 @@ if(auth_view_events()) {
           "FROM `event_responses` " .
           "WHERE `event_id`='" . $event_row['event_id'] . "' AND `user_id`='" . $_SESSION['user_id'] . "'")->fetch_row();
         handle_sql_error($mysqli);
-        if ($_SESSION['responses'] > 0) {
+        if (isset($_SESSION['responses']) && $_SESSION['responses'] > 0) {
           if ($event_row['status'] == 1 && $userresponse_row[0] == 0) {
             echo '<td><a href="' . $domain . '?page=event&event_id=' . $event_row['event_id'] . '#respond">Respond</a></td>';
           } else {

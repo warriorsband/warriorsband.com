@@ -58,6 +58,10 @@ if (isset($_POST['no_date'])) {
     header("Location: $redirect_url&msg=baddate");
     exit();
   }
+  if (mktime(0,0,0,$date_month,$date_day,$date_year) < time()) {
+    header("Location: $redirect_url&msg=pastdate");
+    exit();
+  }
 }
 
 //Construct and validate time

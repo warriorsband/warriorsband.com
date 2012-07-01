@@ -200,7 +200,8 @@ function auth_view_email($user_id, $user_type) {
 }
 //Can the user edit the profile e-mail address?
 function auth_edit_email($user_id, $user_type) {
-  return FALSE;
+  return (user_type_greater_eq(3) &&
+    (is_same_user($user_id) || user_type_greater_than($user_type)));
 }
 //Can the user edit the profile password?
 function auth_edit_password($user_id, $user_type) {

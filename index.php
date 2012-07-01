@@ -133,11 +133,31 @@ if (isset($_GET['page'])) {
       require($_SERVER['DOCUMENT_ROOT'].'/404.php');
   }
 } else { ?>
-          <div class="center">
-            Woo, new site! Still heavily under construction.<br /><br />
+          <div class="ctext6">
+            Woo, new site! Still heavily under construction.<br />
+            If you're lost, try the links on the left, or scroll down to view<br />
+            a list of site features.
           </div>
+          <br /><br />
           <div class="center">
             <img src="/images/band_photo.jpg" />
+          </div>
+          <br />
+          <div style="width:600px; margin:0 auto">
+            Current main features of the site:
+            <ul>
+              <li><span class="emph">Accounts/profiles:</span> You can be registered by e-mail, log in, and edit your profile</li>
+              <li><span class="emph">Events:</span> Execs can create events for all to see</li>
+              <li><span class="emph">Event Responses:</span> You can let us know which events you can attend, and see who's attending each event</li>
+              <li><span class="emph">Member List:</span> See who's in the band and find out a bit about them</li>
+            </ul>
+            <br />
+            Next things on Paul's list of stuff to do
+            <ul>
+              <li>Add ability to sort events list (ex: active events only, future events only, all, etc)</li>
+              <li>Add photos page</li>
+              <li>Add history page</li>
+            </ul>
           </div>
 <?php } ?>
         </td>

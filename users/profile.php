@@ -74,7 +74,19 @@ if (auth_view_email($user_id, $user_type)) {
 ?>
     <tr <?php echo row_color() ?> >
       <th>E-mail</th>
+<?php
+  if (auth_edit_email($user_id, $user_type)) {
+?>
+      <td>
+        <input type="text" name="email" maxlength="255" value="<?php echo $user_row['email']; ?>" />
+      </td>
+<?php
+  } else {
+?>
       <td><?php echo $user_row['email']; ?></td>
+<?php
+  }
+?>
     </tr>
 <?php
 }
@@ -136,10 +148,8 @@ if (auth_view_misc_info($user_id, $user_type)) {
 <?php
     for ($i = 0; $i <= $maxsize_term; $i++) {
       echo "<option value=\"$i\" ";
-      echo selected($i,$user_row['term']);
-      echo ">";
-      echo term_to_str($i);
-      echo "</option>";
+      selected($i,$user_row['term']);
+      echo ">" . term_to_str($i) . "</option>";
     }
 ?>
         </select>
@@ -152,10 +162,8 @@ if (auth_view_misc_info($user_id, $user_type)) {
 <?php
     for ($i = 0; $i <= $maxsize_instrument; $i++) {
       echo "<option value=\"$i\" ";
-      echo selected($i,$user_row['instrument']);
-      echo ">";
-      echo instrument_to_str($i);
-      echo "</option>";
+      selected($i,$user_row['instrument']);
+      echo ">" . instrument_to_str($i) . "</option>";
     }
 ?>
         </select>

@@ -29,7 +29,7 @@ if (!isset($_POST['event_id'])) {
 $event_id = intval($_POST['event_id']);
 
 //If the confirm flag is not set, refer back to the profile page with a confirm message
-if (isset($_POST['confirm'] && $_POST['confirm'] != "true") {
+if (isset($_POST['confirm']) && $_POST['confirm'] != "true") {
   header("Location: $domain?page=event&event_id=$event_id&msg=confirmdelete");
   exit();
 }

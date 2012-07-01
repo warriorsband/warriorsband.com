@@ -36,5 +36,5 @@ $email_password = "gma1337acusphail";
 
 //Maximum sizes of various user profile fields and database types
 $maxsize_term = 17;
-$maxsize_instrument = 3;
+$maxsize_instrument = 15;
 ?>

@@ -33,11 +33,13 @@ if (isset($_POST['comment'])) {
 }
 ?>
 <h3>Post Comment / Report Bug</h3>
+<div class="ctext8">
   <p>Please post a bug report here if you run into any problems with the site: things not working 
   correctly, not displaying correctly, etc. Paul will get an e-mail about it and fix it.</p>
 
   <p>If you've got any suggestions for site features/layout, you can also post that here. Nothing 
   about the site is final, so suggestions are welcome!</p>
+</div>
 <br /><br />
 <div class="center">
   <form action="/bugreport.php" method="POST">

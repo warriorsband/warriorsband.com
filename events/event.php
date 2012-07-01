@@ -7,6 +7,7 @@
  *  event-exec.php
  */
 
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
@@ -117,14 +118,25 @@ if ($action != "create") {
 if ($action == "create") {
 ?>
 <h1>Create Event</h1>
+<div class="ctext8">
+  Just fill in the required fields and click "Create Event". Note that all of this can be 
+  updated later, and only the title is required right now; so you can fill out as much as you know 
+  about the event at this time, and update it later.
+</div>
 <?php
 } elseif ($action == "edit") {
 ?>
 <h1>View/Edit Event</h1>
+<div class="center">
+  <a href="<?php echo "$domain?page=events"?>">Back to list of events</a>
+</div>
 <?php
 } else {
 ?>
 <h1>View Event</h1>
+<div class="center">
+  <a href="<?php echo "$domain?page=events"?>">Back to list of events</a>
+</div>
 <?php
 }
 ?>
@@ -171,8 +183,10 @@ if ($action == "view") {
       <td>
         <select name="date_day">
 <?php
-    for ($i = 0; $i <= 31; $i++) {
-      echo "<option value=\"$i\" " . selected($i,$date_day) . ">$i</option>";
+    for ($i = 1; $i <= 31; $i++) {
+          echo "<option value=\"$i\" ";
+          selected($i,$date_day);
+          echo ">$i</option>";
     }
 ?>
         </select> / 
@@ -278,7 +292,7 @@ if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Description</th>
-    <td><?php echo $event_row['description']; ?></td>
+    <td><?php echo nl2br($event_row['description']); ?></td>
   </tr>
 <?php
 } else {
@@ -291,7 +305,8 @@ if ($action == "view") {
 }
 
 //Display status
-if ($action == "view") {
+if (logged_in()) {
+  if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Active?</th>
@@ -300,7 +315,7 @@ if ($action == "view") {
     </td>
   </tr>
 <?php
-} else {
+  } else {
 ?>
     <tr <?php echo row_color() ?> >
       <th>Active?</th>
@@ -308,14 +323,15 @@ if ($action == "view") {
         <input type="radio" name="status" value="1" <?php checked(1,$status); ?> /> Active
         <input type="radio" name="status" value="2" <?php checked(2,$status); ?> /> Inactive
         <br />
-        Active events are open to attendance responses from members; inactive events are not.
+        <span class="tip">(Active events are open to attendance responses from members; inactive events are not.)</span>
       </td>
     </tr>
 <?php
+  }
 }
 
 //Display the list of responses
-if ($action != "create") {
+if (logged_in() && $action != "create") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Who's Going</th>

@@ -6,6 +6,9 @@
  *  List all the responses to a given event
  */
 
+$redirect_page = "eventresponses";
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
@@ -54,7 +57,7 @@ if ($no_responses) {
 <table>
   <tr>
     <th>Name</th>
-    <th>Response</th>
+    <th>Attending?</th>
     <th>Comment</th>
   </tr>
 <?php

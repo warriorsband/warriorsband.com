@@ -26,7 +26,7 @@ if (auth_view_emails()) {
 ?>
 
 <h3>Member List</h3>
-<div>
+<div class="ctext8">
   This is a list of all the current members of the band. You can click on the profile link of any 
   member to view their profile page (though currently there is not much there!).
 </div>

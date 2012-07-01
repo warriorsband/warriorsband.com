@@ -56,6 +56,9 @@ function print_msg() {
       case "baddate":
         echo "Error: The date provided must be valid.";
         break;
+      case "pastdate":
+        echo "Error: Can't create an event in the past.";
+        break;
       case "badtime":
         echo "Error: The time provided must be valid.";
         break;
@@ -193,11 +196,35 @@ function term_to_str($term) {
 //Convert an instrument code to a printable string
 function instrument_to_str($instrument) {
   if ($instrument == 1) {
-    return "Flute";
+    return "Piccolo";
   } elseif ($instrument == 2) {
-    return "Trumpet";
+    return "Flute";
   } elseif ($instrument == 3) {
+    return "Clarinet";
+  } elseif ($instrument == 4) {
+    return "Alto Saxophone";
+  } elseif ($instrument == 5) {
+    return "Tenor Saxophone";
+  } elseif ($instrument == 6) {
+    return "Baritone Saxophone";
+  } elseif ($instrument == 7) {
+    return "French Horn";
+  } elseif ($instrument == 8) {
+    return "Trumpet";
+  } elseif ($instrument == 9) {
+    return "Baritone";
+  } elseif ($instrument == 10) {
+    return "Trombone";
+  } elseif ($instrument == 11) {
+    return "Soussaphone";
+  } elseif ($instrument == 12) {
     return "Bass Drum";
+  } elseif ($instrument == 13) {
+    return "Snare Drum";
+  } elseif ($instrument == 14) {
+    return "Auxiliary Percussion";
+  } elseif ($instrument == 15) {
+    return "Other";
   } else {
     return "";
   }

@@ -51,11 +51,13 @@ if (isset($_POST['name']) && isset($_POST['email']) && isset($_POST['message']))
 }
 ?>
 <h3>Join the Band / Ask a Question</h3>
-  <p>Interesting in joining the band? Want to find out more about us? Leave your name, e-mail and 
+<div class="ctext8">
+  <p>Interested in joining the band? Want to find out more about us? Leave your name, e-mail and 
   message here and we'll get back to you with whatever it is you'd like to know.</p>
 
   <p>You can also just show up at a practice (Thursdays at 5:30 PM in PAC 1001) and grab/bring an 
   instrument, no registration required!</p>
+</div>
 <br /><br />
 <table>
   <form action="/jointheband.php" method="POST">
