@@ -9,6 +9,8 @@ session_start();
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
+require_once("Mail.php");
 
 //Ensure that the user is allowed to edit events
 if (!auth_edit_events()) error_and_exit();
@@ -33,10 +35,23 @@ if (isset($_POST['event_id'])) {
   }
 }
 
-//Validate status
-$status = intval($_POST['status']);
-if (($status < 1) || ($status > 9)) {
-  error_and_exit("Invalid status");
+//If the mark_upcoming field is provided and the event is not upcoming, set it to be.
+//Set the flag to send email notifications later also.
+if (isset($_POST['mark_upcoming'])) {
+  //If the event exists already, get its current status and make sure it has not
+  //already been marked as upcoming
+  if (!$new_event) {
+    $event_status = $mysqli->query(
+      "SELECT `status` FROM `events` WHERE `event_id`='$event_id'")->fetch_row();
+    if (intval($event_status[0]) == 1) {
+      error_and_exit("Event already marked as upcoming.");
+    }
+  }
+  $status = 1;
+  $send_notification_emails = TRUE;
+} else {
+  $status = 2;
+  $send_notification_emails = FALSE;
 }
 
 //Validate title
@@ -87,30 +102,62 @@ if (strlen($location) > 255) {
     exit();
 }
 
-//Validate description
-$description = sanitize($_POST['description']);
+//Validate details
+$details = sanitize($_POST['details']);
 if (strlen($location) > 10000) {
-  error_and_exit("Description must be less than 10000 characters.");
+  error_and_exit("Details must be less than 10000 characters.");
+}
+
+//If we need to send out notification emails, do so
+if ($send_notification_emails) {
+  //Get list of names and email addresses
+  $result = $mysqli->query("SELECT `first_name`,`last_name`,`email` FROM `users`");
+  $recipients = array();
+  while ($user_row = $result->fetch_assoc()) {
+    $recipients[] = $user_row['first_name'] . " " . $user_row['last_name'] . " <" . $user_row['email'] . ">";
+  }
+  $result->free();
+
+  //Set up the e-mail details
+  $from = "Warriors Band <$email_username>";
+  $subject = event_notification_email_subject($title);
+  $body = event_notification_email_message();
+  $headers = array ('From' => $from, 
+    'Subject' => $subject);
+  $smtp = Mail::factory('smtp',
+    array ('host' => $email_host,
+    'port' => $email_port,
+    'auth' => true,
+    'username' => $email_username,
+    'password' => $email_password));
+
+  $mail = $smtp->send($recipients, $headers, $body);
+
+  if (PEAR::isError($mail)) {
+    header("Location: $redirect_url&msg=notificationemailfail");
+    exit();
+  }
 }
 
 //If this is a new event, do an insertion and update the reminder counter, otherwise do an update
 if ($new_event) {
   $mysqli->query(
     "INSERT INTO `events` " .
-    "(`status`,`creator_id`,`title`,`date`,`start_time`,`location`,`description`)" . 
-    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,'$location','$description')");
+    "(`status`,`creator_id`,`title`,`date`,`start_time`,`location`,`details`)" . 
+    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,'$location','$details')");
   handle_sql_error($mysqli);
-  //Regenerate session id prior to setting any session variable
-  //to mitigate session fixation attacks
-  session_regenerate_id();
-  $_SESSION['responses'] -= 1;
-  header("Location: $redirect_url&msg=eventcreatesuccess");
 } else {
   $mysqli->query(
     "UPDATE `events` SET `status`='$status',`creator_id`='" . $_SESSION['user_id'] . 
     "',`title`='$title',`date`=$date,`start_time`=$time,`location`='$location'," . 
-    "`description`='$description' WHERE `event_id`='$event_id'");
+    "`details`='$details' WHERE `event_id`='$event_id'");
   handle_sql_error($mysqli);
+}
+
+//Redirect
+if ($new_event) {
+  header("Location: $domain?page=events&msg=eventcreatesuccess");
+} else {
   header("Location: $redirect_url&msg=eventupdatesuccess");
 }
 exit();

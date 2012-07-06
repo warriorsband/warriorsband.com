@@ -6,8 +6,10 @@
  *  Lists band events and provides buttons for execs to create new events
  */
 
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 
 function printcell_maybe($item) {
   echo "<td>";
@@ -19,13 +21,30 @@ function printcell_maybe($item) {
   echo "</td>";
 }
 
+// If a filter for the events list is provided, use it, otherwise default to "future"
+$events_filter = "future";
+$events_filter_sql = "(`date` IS NULL OR `date` >= NOW())";
+if (isset($_GET['filter'])) {
+  $events_filter = sanitize($_GET['filter']);
+  switch ($events_filter) {
+    case "future":
+      $events_filter_sql = "(`date` IS NULL OR `date` >= NOW())";
+      break;
+    case "past":
+      $events_filter_sql = "(`date` IS NULL OR `date` < NOW())";
+      break;
+    default:
+      error_and_exit("Invalid filter provided.");
+  }
+}
+
 $no_events = FALSE;
 
 $result = $mysqli->query(
   "SELECT `event_id`,`status`,`creator_id`,`title`,DATE_FORMAT(`date`,'%b %e %Y') AS `fdate`," .
   "TIME_FORMAT(`start_time`,'%l:%i %p') AS `ftime`,`location` " .
   "FROM `events` " .
-  "WHERE (`date` = NULL OR `date` >= NOW()) " .
+  "WHERE $events_filter_sql " .
   "ORDER BY IF(ISNULL(`date`),1,0),`date`,IF(ISNULL(`start_time`),1,0),`start_time`");
 handle_sql_error($mysqli);
 if ($result->num_rows == 0) {
@@ -34,12 +53,21 @@ if ($result->num_rows == 0) {
 ?>
 
 <h3>Events</h3>
-<div class="ctext8">
+<div>
   Here's a list of our upcoming events! Click "Event Details" to view full event info or to 
-  respond to an event. If you haven't yet responded to an active event, a "Respond" link will 
+  respond to an event. If you haven't yet responded to an upcoming event, a "Respond" link will 
   also appear beside it.
 </div>
 <br />
+<form action="<?php echo "$domain" ?>" method="GET">
+  <input type="hidden" name="page" value="events" />
+  Show: 
+  <select name="filter">
+    <option value="future" <?php selected("future",$events_filter) ?>>Future events</option>
+    <option value="past" <?php selected("past",$events_filter) ?>>Past events</option>
+  </select>
+  <input type="submit" value="Refresh" />
+</form>
 <?php
 if(auth_view_events()) {
 ?>
@@ -99,7 +127,7 @@ if(auth_view_events()) {
       } else {
         echo '<td></td>';
       }
-      echo '<td><a href="' . $domain . '?page=event&event_id=' . $event_row['event_id'] . '">Event Details</a></td>';
+      echo '<td><a href="' . $domain . '?page=event&amp;event_id=' . $event_row['event_id'] . '">Event Details</a></td>';
       echo '</tr>';
     }
     $result->free();

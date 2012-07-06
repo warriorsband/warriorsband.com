@@ -8,7 +8,6 @@
  */
 
 session_start();
-require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
@@ -73,8 +72,8 @@ $hashedpassword= hash_password($temp_password);
 //Insert username and the hashed password to MySQL database
 $mysqli->query(
   "INSERT INTO `users` " .
-  "(`last_name`, `first_name`, `email`, `password`, `last_login_attempt`) " .
-  "VALUES ('$last_name', '$first_name', '$email', '$hashedpassword', NOW())");
+  "(`status`,`last_name`, `first_name`, `email`, `password`, `last_login_attempt`) " .
+  "VALUES (2, '$last_name', '$first_name', '$email', '$hashedpassword', NOW())");
 handle_sql_error($mysqli);
 
 //Send an email to the newly registered account

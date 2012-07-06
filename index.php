@@ -133,9 +133,9 @@ if (isset($_GET['page'])) {
       require($_SERVER['DOCUMENT_ROOT'].'/404.php');
   }
 } else { ?>
-          <div class="ctext6">
+          <div class="ctext8">
             Woo, new site! Still heavily under construction.<br />
-            If you're lost, try the links on the left, or scroll down to view<br />
+            If you're lost, try the links on the left, or scroll down to view
             a list of site features.
           </div>
           <br /><br />
@@ -155,6 +155,7 @@ if (isset($_GET['page'])) {
             Next things on Paul's list of stuff to do
             <ul>
               <li>Add ability to sort events list (ex: active events only, future events only, all, etc)</li>
+              <li>E-mail notifications for new events and reminders for responding to events</li>
               <li>Add photos page</li>
               <li>Add history page</li>
             </ul>

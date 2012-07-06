@@ -27,14 +27,16 @@ if (auth_edit_events()) {
   // Default selections for the form
   $status = 2;
   $title = "";
+  $no_date = FALSE;
   $date_year = 2012;
   $date_month = 1;
   $date_day = 1;
+  $no_time = FALSE;
   $time_hour = 5;
   $time_minute = 30;
   $time_ampm = "PM";
   $location = "";
-  $description = "";
+  $details = "";
 
   //If an event ID was specified, try to load that event
   if (isset($_GET['event_id'])) {
@@ -45,7 +47,7 @@ if (auth_edit_events()) {
     //If no row is found, print an error and exit.
     $event_row = $mysqli->query(
       "SELECT `status`,`title`,`date`,TIME_FORMAT(`start_time`, '%h%i%p') AS `time`," .
-      "`location`,`description` " .
+      "`location`,`details` " .
       "FROM `events` WHERE `event_id`='$event_id'")->fetch_assoc();
     handle_sql_error($mysqli);
     if (!$event_row) {
@@ -53,15 +55,31 @@ if (auth_edit_events()) {
     }
     $status = intval($event_row['status']);
     $title = $event_row['title'];
-    $date = explode("-", $event_row['date']);
-    $date_year = intval($date[0]);
-    $date_month = intval($date[1]);
-    $date_day = intval($date[2]);
-    $time_hour = intval(substr($event_row['time'],0,2));
-    $time_minute = intval(substr($event_row['time'],2,2));
-    $time_ampm = substr($event_row['time'],4,2);
+    if (is_null($event_row['date'])) {
+      $no_date = TRUE;
+      $date_year = 2012;
+      $date_month = 1;
+      $date_day = 1;
+    } else {
+      $no_date = FALSE;
+      $date = explode("-", $event_row['date']);
+      $date_year = intval($date[0]);
+      $date_month = intval($date[1]);
+      $date_day = intval($date[2]);
+    }
+    if (is_null($event_row['time'])) {
+      $no_time = TRUE;
+      $time_hour = 5;
+      $time_minute = 30;
+      $time_ampm = "PM";
+    } else {
+      $no_time = FALSE;
+      $time_hour = intval(substr($event_row['time'],0,2));
+      $time_minute = intval(substr($event_row['time'],2,2));
+      $time_ampm = substr($event_row['time'],4,2);
+    }
     $location = $event_row['location'];
-    $description = $event_row['description'];
+    $details = $event_row['details'];
   } else {
     $action = "create";
   }
@@ -77,7 +95,7 @@ else {
     //If no row is found, print an error and exit.
     $event_row = $mysqli->query(
       "SELECT `status`,`title`,DATE_FORMAT(`date`,'%b %e %Y') AS `date`," .
-      "TIME_FORMAT(`start_time`, '%l:%i %p') AS `time`,`location`,`description` " .
+      "TIME_FORMAT(`start_time`, '%l:%i %p') AS `time`,`location`,`details` " .
       "FROM `events` " .
       "WHERE `event_id`='$event_id'")->fetch_assoc();
     handle_sql_error($mysqli);
@@ -87,31 +105,6 @@ else {
   } else {
     print_and_exit("No event ID specified.");
   }
-}
-
-if ($action != "create") {
-  //Get list of respondees' names
-  $yess = $mysqli->query(
-    "SELECT `first_name` " .
-    "FROM `users` " .
-    "INNER JOIN `event_responses` " .
-    "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='1'");
-    handle_sql_error($mysqli);
-  $nos = $mysqli->query(
-    "SELECT `first_name` " .
-    "FROM `users` " .
-    "INNER JOIN `event_responses` " .
-    "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='2'");
-    handle_sql_error($mysqli);
-  $maybes = $mysqli->query(
-    "SELECT `first_name` " .
-    "FROM `users` " .
-    "INNER JOIN `event_responses` " .
-    "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='3'");
-    handle_sql_error($mysqli);
 }
 
 //Start displaying page
@@ -184,9 +177,9 @@ if ($action == "view") {
         <select name="date_day">
 <?php
     for ($i = 1; $i <= 31; $i++) {
-          echo "<option value=\"$i\" ";
-          selected($i,$date_day);
-          echo ">$i</option>";
+      echo "<option value=\"$i\" ";
+      selected($i,$date_day);
+      echo ">$i</option>";
     }
 ?>
         </select> / 
@@ -207,12 +200,14 @@ if ($action == "view") {
         <select name="date_year">
 <?php
     for ($i = 2012; $i <= 2030; $i++) {
-      echo "<option value=\"$i\" " . selected($i,$date_year) . ">$i</option>";
+      echo "<option value=\"$i\" ";
+      selected($i,$date_year);
+      echo ">$i</option>";
     }
 ?>
         </select>
         &nbsp &nbsp
-        <input type="checkbox" name="no_date" value="true" /> Leave date blank
+        <input type="checkbox" name="no_date" value="true" <?php checked(TRUE,$no_date); ?>/> Leave date blank
       </td>
     </tr>
 <?php
@@ -264,7 +259,7 @@ if ($action == "view") {
           <option value="PM" <?php selected("PM",$time_ampm); ?>>PM</option>
         </select>
         &nbsp &nbsp
-        <input type="checkbox" name="no_time" value="true" /> Leave time blank
+        <input type="checkbox" name="no_time" value="true" <?php checked(TRUE,$no_time) ?> /> Leave time blank
       </td>
     </tr>
 <?php
@@ -287,57 +282,53 @@ if ($action == "view") {
 <?php
 }
 
-//Display description
+//Display details
 if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
-    <th>Description</th>
-    <td><?php echo nl2br($event_row['description']); ?></td>
+    <th>Details</th>
+    <td><?php echo nl2br($event_row['details']); ?></td>
   </tr>
 <?php
 } else {
 ?>
     <tr <?php echo row_color() ?> >
-      <th>Description</th>
-      <td><textarea name="description" rows="6" cols="80" maxlength="10000"><?php echo $description; ?></textarea></td>
+      <th>Details</th>
+      <td><textarea name="details" rows="6" cols="80" maxlength="10000"><?php echo $details; ?></textarea></td>
     </tr>
 <?php
 }
+?>
 
-//Display status
-if (logged_in()) {
-  if ($action == "view") {
-?>
-  <tr <?php echo row_color() ?> >
-    <th>Active?</th>
-    <td>
-      <?php echo event_status_to_str($event_row['status'],TRUE); ?>
-    </td>
-  </tr>
-<?php
-  } else {
-?>
-    <tr <?php echo row_color() ?> >
-      <th>Active?</th>
-      <td>
-        <input type="radio" name="status" value="1" <?php checked(1,$status); ?> /> Active
-        <input type="radio" name="status" value="2" <?php checked(2,$status); ?> /> Inactive
-        <br />
-        <span class="tip">(Active events are open to attendance responses from members; inactive events are not.)</span>
-      </td>
-    </tr>
-<?php
-  }
-}
-
-//Display the list of responses
-if (logged_in() && $action != "create") {
-?>
   <tr <?php echo row_color() ?> >
     <th>Who's Going</th>
     <td>
+<?php
+//If appropriate, display message saying the user doesn't have permission to view attendees
+//(note since "create" can only occur for logged-in users, we can skip checking it here)
+if (!logged_in() && $event_row['status'] == 1) {
+?>
+      Only logged-in members can view event attendees.
+<?php
+}
+//If appropriate, display "event isn't open yet" message
+elseif ($action == "view" && $event_row['status'] == 2) {
+?>
+      This event has not yet been made open to responses.
+<?php
+}
+//If appropriate, display the list of attendees
+elseif (logged_in() && $action != "create" && $event_row['status'] == 1) {
+?>
       Definitely Attending: 
 <?php
+  $yess = $mysqli->query(
+    "SELECT `first_name` " .
+    "FROM `users` " .
+    "INNER JOIN `event_responses` " .
+    "ON `users`.`user_id`=`event_responses`.`user_id` " .
+    "WHERE `event_id`='$event_id' AND `response`='1'");
+    handle_sql_error($mysqli);
   while($yesrow = $yess->fetch_assoc()) {
     echo $yesrow['first_name'] . ", ";
   }
@@ -345,6 +336,13 @@ if (logged_in() && $action != "create") {
 ?>
       <br />Maybe attending: 
 <?php
+  $maybes = $mysqli->query(
+    "SELECT `first_name` " .
+    "FROM `users` " .
+    "INNER JOIN `event_responses` " .
+    "ON `users`.`user_id`=`event_responses`.`user_id` " .
+    "WHERE `event_id`='$event_id' AND `response`='3'");
+    handle_sql_error($mysqli);
   while($mayberow = $maybes->fetch_assoc()) {
     echo $mayberow['first_name'] . ", ";
   }
@@ -352,6 +350,13 @@ if (logged_in() && $action != "create") {
 ?>
       <br />Not attending: 
 <?php
+  $nos = $mysqli->query(
+    "SELECT `first_name` " .
+    "FROM `users` " .
+    "INNER JOIN `event_responses` " .
+    "ON `users`.`user_id`=`event_responses`.`user_id` " .
+    "WHERE `event_id`='$event_id' AND `response`='2'");
+    handle_sql_error($mysqli);
   while($norow = $nos->fetch_assoc()) {
     echo $norow['first_name'] . ", ";
   }
@@ -359,12 +364,41 @@ if (logged_in() && $action != "create") {
   if ($action == "edit") {
     echo "<br /><a href=\"$domain?page=eventresponses&event_id=$event_id\">View full response list</a>";
   }
+}
+//If appropriate, display a checkbox to mark event as upcoming
+elseif ($action == "create") {
+?>
+      <input type="checkbox" name="mark_upcoming" value="" />Open this event to responses immediately <br />
+      <span class="tip">
+        (Note: Opening an event sends a notification e-mail to all members, and can't be undone. 
+        Only do this if you're sure the event details are filled-in and it's time to find out who 
+        can attend. You can always do this later by editing the event.)
+      </span>
+<?php
+}
+//If appropriate, display a checkbox to mark event as upcoming
+elseif ($action == "edit" && $event_row['status'] == 2) {
+?>
+      This event has not yet been made open to responses. <br />
+      <input type="checkbox" name="mark_upcoming" value="" />Open this event to responses <br />
+      <span class="tip">
+        (Note: Opening an event sends a notification e-mail to all members, and can't be undone. 
+        Only do this if you're sure the event details are filled-in and it's time to find out who 
+        can attend.)
+      </span>
+<?php
+}
+//This should never happen, but just in case, if none of the above apply, show error
+else {
+?>
+      Error
+<?php
+}
 ?>
     </td>
   </tr>
-<?php
-}
 
+<?php
 //Display appropriate submit button (if any)
 if ($action == "create") {
 ?>

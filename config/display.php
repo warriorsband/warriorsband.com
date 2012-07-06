@@ -77,6 +77,9 @@ function print_msg() {
       case "emptymessage":
         echo "Error: Message cannot be empty.";
         break;
+      case "notificationemailfail":
+        echo "Error: There was a problem sending the event notification e-mails.";
+        break;
       //Form submission success messages
       case "profileupdatesuccess":
         echo "Profile updated successfully.";
@@ -260,36 +263,81 @@ function event_status_to_str($status, $long = FALSE) {
 }
 
 //Functions which print the content of email messages
+function email_footer() {
+  return implode("\r\n", array(
+    "",
+    "",
+    "Warriors Band",
+    "",
+    "",
+    "",
+    "This is an automated message - if you have any questions, you can reply to",
+    "this e-mail and we'll be happy to get back to you."));
+}
+
 function registration_email_subject() {
-  return "Warriors Band website registration";
+  return "WarriorsBand.com Registration";
 }
 function registration_email_message($temp_password, $submitter_name, $submitter_comment) {
-  $message = "One of your band execs, $submitter_name, has registered your e-mail address\n" .
-  "for a warriorsband.com account. To use your\n" .
-  "account:\n\n" .
-  "1. Visit http://warriorsband.dyndns.org/?page=profile\n" .
-  "2. Log in with your e-mail address and the following temporary password:\n\n" .
-  "    $temp_password\n\n" .
-  "3. On the page that appears, change your password (6 characters minimum)\n\n" .
-  "Welcome to the band!\n\n\n";
+  $message = implode("\r\n", array(
+    "One of your band execs, $submitter_name, has registered your e-mail address",
+    "for a warriorsband.com account. To use your account:",
+    "",
+    "1. Visit http://www.warriorsband.com/?page=profile",
+    "2. Log in with your e-mail address and the following temporary password:",
+    "",
+    "    $temp_password",
+    "",
+    "3. On the page that appears, change your password (6 characters minimum)",
+    "",
+    "Welcome to the band!",
+    "",
+    "",
+    ""));
   $comment = "";
   if (!empty($submitter_comment)) {
-    $comment = "--------------------\n" .
-      "$submitter_name's comment:\n$submitter_comment\n" .
-      "---------------------\n\n\n";
+    $comment = implode("\r\n", array(
+      "--------------------",
+      "$submitter_name's comment:",
+      "$submitter_comment",
+      "---------------------",
+      "",
+      "",
+      ""));
   }
-  $signature = "This is an automated message - please do not reply.\n\nWarriors Band";
-  return $message . $comment . $signature;
+  $extra_footer = implode("\r\n", array(
+    "",
+    "If you did not request this e-mail, or if it was sent to you in error, you",
+    "can disregard it and this will be the only e-mail you receive from us."));
+  return $message . $comment . email_footer() . $extra_footer;
 }
 function jointheband_email_subject($name) {
   return "\"Join the Band\" website message from $name";
 }
 function jointheband_email_message($name, $email, $msg) {
-  $body = "$name ($email) has filled out the \"Join the Band\" comment form on the Warriors Band " .
-    "website. Here's the content of their message:\n\n" .
-    "--------------------\n$msg\n--------------------\n\n\n" .
-    "This is an automated message.\n\nWarriors Band";
-  return $body;
+  return implode("\r\n", array(
+    "$name ($email) has filled out the \"Join the Band\" comment",
+    "form on the Warriors Band website. Here's the content of their message:",
+    "",
+    "--------------------",
+    "$msg",
+    "--------------------",
+    "",
+    "",
+    "Warriors Band",
+    "",
+    "This is an automated message."));
+}
+function event_notification_email_subject($event) {
+  return "WarriorsBand.com: New upcoming event: $event";
+}
+function event_notification_email_message() {
+  $message = implode("\r\n", array(
+    "There's a new upcoming event on WarriorsBand.com. Please log in at",
+    "http://www.warriorsband.com/auth/login.php and let us know if you can make it!",
+    "",
+    "Thanks,"));
+  return $message . email_footer();
 }
 
 //Outputs 'class="alt"' on even-numbered rows, so that it can be used to define the 

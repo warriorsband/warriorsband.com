@@ -7,7 +7,8 @@
  */
 
 //Site domain
-$domain= "http://warriorsband.dyndns.org/";
+//$domain= "http://warriorsband.dyndns.org/";
+$domain= "http://64.7.147.151/";
 
 //Define length of salt,minimum=10, maximum=35
 $length_salt=15;

@@ -54,7 +54,7 @@ $pass=sanitize($_POST["password"]);
 
 //Get user info for the provided email address
 $user_row = $mysqli->query(
-  "SELECT `email`,`user_id`,`first_name`,`password`,`last_login_attempt`,`login_attempts`,`user_type` " .
+  "SELECT *"
   "FROM `users` " .
   "WHERE `email`='$email'"
   )->fetch_assoc();
@@ -123,8 +123,12 @@ $_SESSION['first_name'] = $user_row['first_name'];
 $_SESSION['responses'] = intval($responses);
 
 //The user has logged in successfully. Redirect.
-if (isset($_POST['redirect_page'])) {
-  $redirect_url = "$domain?page=" . htmlspecialchars($_POST['redirect_page']);
+//If the user has an "inactive" status, i.e. has not changed their password,
+//redirect to the change password page.
+if ($user_row['status'] == 2) {
+  $redirect_url = "$domain?page=changepass";
+} elseif (isset($_POST['redirect_page'])) {
+  $redirect_url = "$domain?page=" . htmlspecialchars($redirect_page);
 } else {
   $redirect_url = $domain;
 }
