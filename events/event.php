@@ -298,86 +298,76 @@ if ($action == "view") {
     </tr>
 <?php
 }
-?>
 
+if ($action != "create") {
+?>
   <tr <?php echo row_color() ?> >
     <th>Who's Going</th>
     <td>
 <?php
 //If appropriate, display message saying the user doesn't have permission to view attendees
 //(note since "create" can only occur for logged-in users, we can skip checking it here)
-if (!logged_in() && $event_row['status'] == 1) {
+  if (!logged_in() && $event_row['status'] == 1) {
 ?>
       Only logged-in members can view event attendees.
 <?php
-}
+  }
 //If appropriate, display "event isn't open yet" message
-elseif ($action == "view" && $event_row['status'] == 2) {
+  elseif ($action == "view" && $event_row['status'] == 2) {
 ?>
       This event has not yet been made open to responses.
 <?php
-}
+  }
 //If appropriate, display the list of attendees
-elseif (logged_in() && $action != "create" && $event_row['status'] == 1) {
+  elseif (logged_in() && $action != "create" && $event_row['status'] == 1) {
 ?>
       Definitely Attending: 
 <?php
-  $yess = $mysqli->query(
-    "SELECT `first_name` " .
-    "FROM `users` " .
-    "INNER JOIN `event_responses` " .
-    "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='1'");
-    handle_sql_error($mysqli);
-  while($yesrow = $yess->fetch_assoc()) {
-    echo $yesrow['first_name'] . ", ";
-  }
-  $yess->free();
+    $yess = $mysqli->query(
+      "SELECT `first_name` " .
+      "FROM `users` " .
+      "INNER JOIN `event_responses` " .
+      "ON `users`.`user_id`=`event_responses`.`user_id` " .
+      "WHERE `event_id`='$event_id' AND `response`='1'");
+      handle_sql_error($mysqli);
+    while($yesrow = $yess->fetch_assoc()) {
+      echo $yesrow['first_name'] . ", ";
+    }
+    $yess->free();
 ?>
       <br />Maybe attending: 
 <?php
-  $maybes = $mysqli->query(
-    "SELECT `first_name` " .
-    "FROM `users` " .
-    "INNER JOIN `event_responses` " .
-    "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='3'");
-    handle_sql_error($mysqli);
-  while($mayberow = $maybes->fetch_assoc()) {
-    echo $mayberow['first_name'] . ", ";
-  }
-  $maybes->free();
+    $maybes = $mysqli->query(
+      "SELECT `first_name` " .
+      "FROM `users` " .
+      "INNER JOIN `event_responses` " .
+      "ON `users`.`user_id`=`event_responses`.`user_id` " .
+      "WHERE `event_id`='$event_id' AND `response`='3'");
+      handle_sql_error($mysqli);
+    while($mayberow = $maybes->fetch_assoc()) {
+      echo $mayberow['first_name'] . ", ";
+    }
+    $maybes->free();
 ?>
       <br />Not attending: 
 <?php
-  $nos = $mysqli->query(
-    "SELECT `first_name` " .
-    "FROM `users` " .
-    "INNER JOIN `event_responses` " .
-    "ON `users`.`user_id`=`event_responses`.`user_id` " .
-    "WHERE `event_id`='$event_id' AND `response`='2'");
-    handle_sql_error($mysqli);
-  while($norow = $nos->fetch_assoc()) {
-    echo $norow['first_name'] . ", ";
+    $nos = $mysqli->query(
+      "SELECT `first_name` " .
+      "FROM `users` " .
+      "INNER JOIN `event_responses` " .
+      "ON `users`.`user_id`=`event_responses`.`user_id` " .
+      "WHERE `event_id`='$event_id' AND `response`='2'");
+      handle_sql_error($mysqli);
+    while($norow = $nos->fetch_assoc()) {
+      echo $norow['first_name'] . ", ";
+    }
+    $nos->free();
+    if ($action == "edit") {
+      echo "<br /><a href=\"$domain?page=eventresponses&event_id=$event_id\">View full response list</a>";
+    }
   }
-  $nos->free();
-  if ($action == "edit") {
-    echo "<br /><a href=\"$domain?page=eventresponses&event_id=$event_id\">View full response list</a>";
-  }
-}
 //If appropriate, display a checkbox to mark event as upcoming
-elseif ($action == "create") {
-?>
-      <input type="checkbox" name="mark_upcoming" value="" />Open this event to responses immediately <br />
-      <span class="tip">
-        (Note: Opening an event sends a notification e-mail to all members, and can't be undone. 
-        Only do this if you're sure the event details are filled-in and it's time to find out who 
-        can attend. You can always do this later by editing the event.)
-      </span>
-<?php
-}
-//If appropriate, display a checkbox to mark event as upcoming
-elseif ($action == "edit" && $event_row['status'] == 2) {
+  elseif ($action == "edit" && $event_row['status'] == 2) {
 ?>
       This event has not yet been made open to responses. <br />
       <input type="checkbox" name="mark_upcoming" value="" />Open this event to responses <br />
@@ -387,12 +377,13 @@ elseif ($action == "edit" && $event_row['status'] == 2) {
         can attend.)
       </span>
 <?php
-}
+  }
 //This should never happen, but just in case, if none of the above apply, show error
-else {
+  else {
 ?>
       Error
 <?php
+  }
 }
 ?>
     </td>

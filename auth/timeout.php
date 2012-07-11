@@ -1,4 +1,12 @@
 <?php
+
+/*
+ *  timeout.php
+ *
+ *  Ends a session if it has been inactive for $sessiontimeout or more seconds.
+ *  If not, updates the LAST_ACTIVITY time of the session.
+ */
+
 require($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 //Session Lifetime control for inactivity

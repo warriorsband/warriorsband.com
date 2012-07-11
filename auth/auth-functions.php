@@ -8,8 +8,18 @@
  */
 
 //Hash a password securely
+//(NOTE: mcrypt wasn't available on the server at the time of writing this. If things 
+//have changed and you are able to get mcrypt on the PHP install, you should just use
+//the mcrypt line instead of all the file crap.)
 function hash_password($input) {
-  $salt = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM)); 
+  $fp = @fopen('/dev/urandom','rb');
+  if ($fp === FALSE) {
+    echo "can't read /dev/urandom";
+    exit();
+  }
+  $salt = bin2hex(@fread($fp, 32));
+  @fclose($fp);
+  //$salt = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM)); 
   $hash = hash("sha256", $salt . $input); 
   $final = $salt . $hash; 
   return $final;
@@ -237,7 +247,7 @@ function auth_edit_misc_info($user_id, $user_type) {
 //Can the user delete this profile?
 function auth_delete_account($user_id, $user_type) {
   return (!is_same_user($user_id) && user_type_greater_eq(2) &&
-    user_type_greater_than($user_type));
+    (user_type_greater_than($user_type) || user_type_greater_eq(3)));
 }
 
 // Event authentication functions

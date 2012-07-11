@@ -12,6 +12,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
+set_include_path(get_include_path().'/Sites/warriorsband.com/pear'.PATH_SEPARATOR);
 require_once("Mail.php");
 
 //pre-define success
@@ -73,7 +74,7 @@ $hashedpassword= hash_password($temp_password);
 $mysqli->query(
   "INSERT INTO `users` " .
   "(`status`,`last_name`, `first_name`, `email`, `password`, `last_login_attempt`) " .
-  "VALUES (2, '$last_name', '$first_name', '$email', '$hashedpassword', NOW())");
+  "VALUES (3, '$last_name', '$first_name', '$email', '$hashedpassword', NOW())");
 handle_sql_error($mysqli);
 
 //Send an email to the newly registered account

@@ -7,7 +7,7 @@
  *  Accepts the following via POST:
  *
  *    event_id: ID of the user to delete
- *    confirm: whether to confirm the deletion
+ *    confirm: the deletion is only performed if this has value "true"
  */
 
 session_start();

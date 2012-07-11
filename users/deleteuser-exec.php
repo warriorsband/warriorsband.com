@@ -4,8 +4,9 @@
  *  deleteuser-exec.php
  *
  *  Allows an authenticated user with sufficient permissions to delete a user.
- *  Accepts the following via GET:
+ *  Accepts the following via POST:
  *
+ *    confirm: "true" if the deletion has been confirmed and should be done
  *    user_id: ID of the user to delete
  */
 

@@ -7,13 +7,13 @@
  */
 
 //Database connection parameters
-$username = "root";
-$password = "shbang111";
+$username = "warriorsband";
+$password = "ccwb2007";
 $hostname = "localhost";
-$database = "database";
+$database = "warriorsband_db";
 
 //You should not need to edit this
-$mysqli = new mysqli("localhost", $username, $password, $database);
+$mysqli = new mysqli($hostname, $username, $password, $database);
 if ($mysqli->connect_errno) {
   echo "Failed to connect to MySQL database.";
 }

@@ -8,8 +8,6 @@
  *
  *    redirect_url: An optional string indicating the URL (relative to the domain and starting 
  *                  with a /) to redirect to if login is successful.
- *    error:        An optional string indicating what error occurred during the login 
- *                  validation process.
  */
 
 if (isset($_GET['redirect_page'])) {

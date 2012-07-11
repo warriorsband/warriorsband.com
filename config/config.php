@@ -8,7 +8,7 @@
 
 //Site domain
 //$domain= "http://warriorsband.dyndns.org/";
-$domain= "http://64.7.147.151/";
+$domain= "http://www.warriorsband.com/";
 
 //Define length of salt,minimum=10, maximum=35
 $length_salt=15;
@@ -32,10 +32,10 @@ $verbose_errors=TRUE;
 //E-mail configuration settings
 $email_host = "ssl://smtp.gmail.com";
 $email_port = "465";
-$email_username = "ironmaiden1158@gmail.com";
-$email_password = "gma1337acusphail";
+$email_username = "warriorsband@gmail.com";
+$email_password = "loudandfast";
 
 //Maximum sizes of various user profile fields and database types
-$maxsize_term = 17;
-$maxsize_instrument = 15;
+$maxsize_term = 22;
+$maxsize_instrument = 16;
 ?>

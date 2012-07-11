@@ -98,6 +98,12 @@ if (!empty($_POST['password']) && auth_edit_password($user_id, $user_type) &&
 
   $hash = hash_password($newpassword);
   $updates .= "`password`='$hash',";
+
+  //If the user has the "needs to change password" status (3), change their
+  //status back to "active" (1)
+  if ($user_row['status'] == 3) {
+    $updates .= "`status`=1,";
+  }
 }
 
 //Update first name
@@ -242,6 +248,22 @@ if (isset($_POST['fun_fact']) && auth_edit_misc_info($user_id, $user_type)) {
     }
 
     $updates .= "`fun_fact`='$fun_fact',";
+  }
+}
+
+//Update on-campus status
+if (isset($_POST['on_campus']) && auth_edit_misc_info($user_id, $user_type)) {
+  //Sanitize the field
+  $on_campus = intval($_POST['on_campus']);
+
+  //Only update if the user type has changed
+  if ($on_campus != $user_row['on_campus']) {
+    //Make sure the value is in the correct range
+    if ($on_campus < 0 || $on_campus > 1) {
+      error_and_exit("Invalid on-campus code");
+    }
+
+    $updates .= "`on_campus`='$on_campus',";
   }
 }
 

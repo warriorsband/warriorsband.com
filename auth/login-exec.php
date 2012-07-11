@@ -15,11 +15,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 
-//Set the redirect page if one was provided
-if (isset($_POST['redirect_page'])) {
-  $redirect_page = sanitize($_POST['redirect_page']);
-}
-
 //Redirect back to the login page with the appropriate redirect and error codes
 function redirect_and_exit($error) {
   global $redirect_page, $domain;
@@ -38,6 +33,11 @@ function redirect_and_exit($error) {
   exit();
 }
 
+//Set the redirect page if one was provided
+if (isset($_POST['redirect_page'])) {
+  $redirect_page = sanitize($_POST['redirect_page']);
+}
+
 //Set default to not validated
 if (!isset($_SESSION['logged_in'])) {
   $_SESSION['logged_in'] = FALSE;
@@ -54,7 +54,7 @@ $pass=sanitize($_POST["password"]);
 
 //Get user info for the provided email address
 $user_row = $mysqli->query(
-  "SELECT *"
+  "SELECT *" .
   "FROM `users` " .
   "WHERE `email`='$email'"
   )->fetch_assoc();
@@ -98,7 +98,7 @@ $num_events_row = $mysqli->query(
   "WHERE `status`='1' AND `date`>=NOW()"
   )->fetch_row();
 handle_sql_error($mysqli);
-//Get the numb of these events the user has already responded to
+//Get the number of these events the user has already responded to
 $num_responses_row = $mysqli->query(
   "SELECT COUNT(*) " .
   "FROM `events` " .
@@ -123,9 +123,9 @@ $_SESSION['first_name'] = $user_row['first_name'];
 $_SESSION['responses'] = intval($responses);
 
 //The user has logged in successfully. Redirect.
-//If the user has an "inactive" status, i.e. has not changed their password,
+//If the user has an "needs password change" status,
 //redirect to the change password page.
-if ($user_row['status'] == 2) {
+if ($user_row['status'] == 3) {
   $redirect_url = "$domain?page=changepass";
 } elseif (isset($_POST['redirect_page'])) {
   $redirect_url = "$domain?page=" . htmlspecialchars($redirect_page);

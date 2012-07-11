@@ -3,6 +3,8 @@
 /*
  *  event-exec.php
  *
+ *  Validates and executes event creation/update requests
+ *
  */
 
 session_start();
@@ -10,6 +12,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
+set_include_path(get_include_path().'/Sites/warriorsband.com/pear'.PATH_SEPARATOR);
 require_once("Mail.php");
 
 //Ensure that the user is allowed to edit events
@@ -110,11 +113,13 @@ if (strlen($location) > 10000) {
 
 //If we need to send out notification emails, do so
 if ($send_notification_emails) {
-  //Get list of names and email addresses
-  $result = $mysqli->query("SELECT `first_name`,`last_name`,`email` FROM `users`");
+  //Get list of recipients (all names/emails of members who are currently marked as on campus)
+  $result = $mysqli->query("SELECT `first_name`,`last_name`,`email`,`on_campus` FROM `users`");
   $recipients = array();
   while ($user_row = $result->fetch_assoc()) {
-    $recipients[] = $user_row['first_name'] . " " . $user_row['last_name'] . " <" . $user_row['email'] . ">";
+    if ($user_row['on_campus'] == 1) {
+      $recipients[] = $user_row['first_name'] . " " . $user_row['last_name'] . " <" . $user_row['email'] . ">";
+    }
   }
   $result->free();
 

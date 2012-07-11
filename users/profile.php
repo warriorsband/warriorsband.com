@@ -11,8 +11,6 @@
  *  Accepts the following via GET:
  *
  *    user_id: The ID of the user whose information is requested.
- *    error: A code indicating what sort of error occurred when submitting a profile change.
- *    success: A code indicating which element of the profile was updated successfully.
  */
 
 $redirect_page = "profile";
@@ -173,6 +171,18 @@ if (auth_view_misc_info($user_id, $user_type)) {
       <th>Fun Fact</th>
       <td><textarea name="fun_fact" rows="4" cols="60" maxlength="255"><?php echo $user_row['fun_fact']; ?></textarea></td>
     </tr>
+    <tr <?php echo row_color(); ?> >
+      <th>On Campus?</th>
+      <td>
+        <input type="radio" name="on_campus" value="1" <?php checked(1,$user_row['on_campus']); ?> /> Yes
+        <input type="radio" name="on_campus" value="0" <?php checked(0,$user_row['on_campus']); ?> /> No
+        <br />
+        <span class="tip">
+          (Pick "yes" if you'll be showing up to some practices/events this term. Otherwise, pick "no" and 
+          you won't receive notication e-mails for events, surveys, etc)
+        </span>
+      </td>
+    </tr>
 <?php
   } else {
 ?>
@@ -191,6 +201,10 @@ if (auth_view_misc_info($user_id, $user_type)) {
     <tr <?php echo row_color(); ?> >
       <th>Fun Fact</th>
       <td><?php echo $user_row['fun_fact']; ?></td>
+    </tr>
+    <tr <?php echo row_color(); ?> >
+      <th>On Campus?</th>
+      <td><?php echo on_campus_to_str($user_row['on_campus']); ?></td>
     </tr>
 <?php
   }

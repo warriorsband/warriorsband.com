@@ -167,31 +167,41 @@ function term_to_str($term) {
   } elseif ($term == 4) {
     return "1B Co-op";
   } elseif ($term == 5) {
-    return "2A";
+    return "1B Summer";
   } elseif ($term == 6) {
-    return "2A Co-op";
+    return "2A";
   } elseif ($term == 7) {
-    return "2B";
+    return "2A Co-op";
   } elseif ($term == 8) {
-    return "2B Co-op";
+    return "2B";
   } elseif ($term == 9) {
-    return "3A";
+    return "2B Co-op";
   } elseif ($term == 10) {
-    return "3A Co-op";
+    return "2B Summer";
   } elseif ($term == 11) {
-    return "3B";
+    return "3A";
   } elseif ($term == 12) {
-    return "3B Co-op";
+    return "3A Co-op";
   } elseif ($term == 13) {
-    return "4A";
+    return "3B";
   } elseif ($term == 14) {
-    return "4A Co-op";
+    return "3B Co-op";
   } elseif ($term == 15) {
-    return "4B";
+    return "3B Summer";
   } elseif ($term == 16) {
-    return "4B Co-op";
+    return "4A";
   } elseif ($term == 17) {
+    return "4A Co-op";
+  } elseif ($term == 18) {
+    return "4B";
+  } elseif ($term == 19) {
+    return "4B Co-op";
+  } elseif ($term == 20) {
+    return "4B Summer";
+  } elseif ($term == 21) {
     return "Grad";
+  } elseif ($term == 22) {
+    return "Other";
   } else {
     return "";
   }
@@ -228,6 +238,18 @@ function instrument_to_str($instrument) {
     return "Auxiliary Percussion";
   } elseif ($instrument == 15) {
     return "Other";
+  } elseif ($intrument == 16) {
+    return "Too many to list";
+  } else {
+    return "";
+  }
+}
+//Convert on_campus code to a printable string
+function on_campus_to_str($on_campus) {
+  if ($on_campus == 0) {
+    return "No - this member won't be making it to band events this term";
+  } elseif ($on_campus == 1) {
+    return "Yes - this member will be around for some/all band events this term!";
   } else {
     return "";
   }
