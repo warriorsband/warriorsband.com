@@ -1,12 +1,12 @@
 <?php
-
-require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
+set_include_path(get_include_path().'/Sites/warriorsband.com/pear'.PATH_SEPARATOR);
 require_once("Mail.php");
 
 if (isset($_POST['comment'])) {
-  $from = "Warriors Band <" . registration_email_from() . ">";
+  $from = "Warriors Band <" . $email_username . ">";
   $to = "<ironmaiden1158@gmail.com>";
   $subject = "Warriors Band Comment / Bug Report";
 

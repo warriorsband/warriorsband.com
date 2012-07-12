@@ -24,12 +24,9 @@ function printcell_maybe($item) {
 // If a filter for the events list is provided, use it, otherwise default to "future"
 $events_filter = "future";
 $events_filter_sql = "(`date` IS NULL OR `date` >= NOW())";
-if (isset($_GET['filter'])) {
+if (isset($_GET['filter']) && $_GET['filter'] != "future") {
   $events_filter = sanitize($_GET['filter']);
   switch ($events_filter) {
-    case "future":
-      $events_filter_sql = "(`date` IS NULL OR `date` >= NOW())";
-      break;
     case "past":
       $events_filter_sql = "(`date` IS NULL OR `date` < NOW())";
       break;
@@ -59,7 +56,7 @@ if ($result->num_rows == 0) {
   also appear beside it.
 </div>
 <br />
-<form action="<?php echo "$domain" ?>" method="GET">
+<form action="<?php echo $domain ?>" method="GET">
   <input type="hidden" name="page" value="events" />
   Show: 
   <select name="filter">

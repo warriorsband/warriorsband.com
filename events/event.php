@@ -370,11 +370,12 @@ if ($action != "create") {
   elseif ($action == "edit" && $event_row['status'] == 2) {
 ?>
       This event has not yet been made open to responses. <br />
-      <input type="checkbox" name="mark_upcoming" value="" />Open this event to responses <br />
+      <input type="checkbox" name="mark_upcoming" value="" />Open this event to responses<br />
+      <input type="checkbox" name="send_email" value="" />Also send notification e-mail<br />
       <span class="tip">
-        (Note: Opening an event sends a notification e-mail to all members, and can't be undone. 
-        Only do this if you're sure the event details are filled-in and it's time to find out who 
-        can attend.)
+        (Note: Opening an event to responses can't be undone; neither can sending the notification 
+        e-mail to all on-campus members. Only do either of these if you're sure the event details 
+        are filled in and it's time to find out who can attend.)
       </span>
 <?php
   }

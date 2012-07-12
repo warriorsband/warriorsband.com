@@ -20,14 +20,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 
 row_color(TRUE);
 
-//Print out the profile's full name (only works once the query has been made)
-function print_name() {
-  global $row;
-  if ((isset($row['first_name'])) && (isset($row['last_name']))) {
-    echo $row['first_name']." ".$row['last_name'];
-  }
-}
-
 //If no user ID is provided, assume the user is accessing their own profile.
 //(note that since we've included auth.php, we can assume the user is logged in
 //and thus that $_SESSION['user_id'] is set and valid)
@@ -58,7 +50,11 @@ if (!auth_view_profile($user_id, $user_type)) {
 ?>
 
 <h1>Member Profile</h1>
-<h2><?php print_name(); ?></h2>
+<h2><?php echo $user_row['first_name'] . ' ' . $user_row['last_name'] ?></h2>
+<div class="center">
+  <a href="<?php echo "$domain?page=users"?>">Back to member list</a>
+</div>
+<br /><br />
 <table>
 <?php
 if (auth_edit_profile($user_id, $user_type)) {

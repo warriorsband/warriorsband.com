@@ -61,6 +61,17 @@ td.content {
     text-align: left;
     vertical-align: top;
 }
+/* Tables for holding floating images */
+table.imageleft {
+    float:left;
+    margin: 10px;
+    padding: 5px;
+}
+table.imageright {
+    float:right
+    margin: 10px;
+    padding: 5px;
+}
 /* Set the fonts of the page header text */
 span.header1 {
 	color: #fed403;
@@ -122,7 +133,7 @@ h1, h2, h3 {
 	font: italic bold 2em Arial, Helvetica, sans-serif;
 }
 h2 {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 	font: italic 1em Arial, Helvetica, sans-serif;
 }
 h3 {

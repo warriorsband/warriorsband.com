@@ -13,9 +13,30 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 
 row_color(TRUE);
 
+// If a filter for the users list is provided, use it, otherwise default to "all"
+$users_filter = "all";
+$users_filter_sql = "";
+if (isset($_GET['filter']) && $_GET['filter'] != "all") {
+  $users_filter = sanitize($_GET['filter']);
+  switch ($users_filter) {
+    case "exec":
+      $users_filter_sql = "WHERE `user_type` BETWEEN 2 AND 3 ";
+      break;
+    case "unactivated":
+      $users_filter_sql = "WHERE `last_login` IS NULL ";
+      break;
+    case "old":
+      $users_filter_sql = "WHERE `last_login` < DATE_SUB(NOW(), INTERVAL 1 YEAR) ";
+      break;
+    default:
+      error_and_exit("Invalid filter provided.");
+  }
+}
+
 $result = $mysqli->query(
   "SELECT `first_name`,`last_name`,`email`,`user_type`, `user_id` " .
   "FROM `users` " .
+  $users_filter_sql .
   "ORDER BY `last_name`, `first_name`");
 handle_sql_error($mysqli);
 
@@ -30,7 +51,25 @@ if (auth_view_emails()) {
   This is a list of all the current members of the band. You can click on the profile link of any 
   member to view their profile page (though currently there is not much there!).
 </div>
-<br /><br />
+<br />
+<form action="<?php echo $domain ?>" method="GET">
+  <input type="hidden" name="page" value="users" />
+  Show: 
+  <select name="filter">
+    <option value="all" <?php selected("all",$users_filter) ?>>All members</option>
+    <option value="exec" <?php selected("exec",$users_filter) ?>>Execs only</option>
+<?php
+if (user_type_greater_eq(2)) {
+?>
+    <option value="unactivated" <?php selected("unactivated",$users_filter) ?>>Unactivated members</option>
+    <option value="old" <?php selected("old",$users_filter) ?>>Last login &gt;1 year ago</option>
+<?php
+}
+?>
+  </select>
+  <input type="submit" value="Refresh" />
+</form>
+<br />
 <table>
   <tr>
     <th>First Name</th>

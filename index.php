@@ -114,6 +114,9 @@ if (isset($_GET['page'])) {
     case "events":
       require($_SERVER['DOCUMENT_ROOT'].'/events/events.php');
       break;
+    case "history":
+      require($_SERVER['DOCUMENT_ROOT'].'/history/history.php');
+      break;
     case "jointheband":
       require($_SERVER['DOCUMENT_ROOT'].'/jointheband.php');
       break;
@@ -139,7 +142,9 @@ if (isset($_GET['page'])) {
           <div class="ctext8">
             Woo, new site! Still heavily under construction.<br />
             If you're lost, try the links on the left, or scroll down to view
-            a list of site features.
+            a list of site features. If something isn't displaying correctly on your browser, or 
+            you find any other problems with the site, please let me know with the Bug Report link 
+            on the left. Thanks!
           </div>
           <br /><br />
           <div class="center">
@@ -175,6 +180,8 @@ if (isset($_GET['page'])) {
             Next things on Paul's list of stuff to do
             <ul>
               <li>History page (similar to old site)</li>
+              <li>Show day of the week for event dates</li>
+              <li>Add a title field for execs' profiles</li>
               <li>Photos page (admin can upload .zip file of appropriately-sized .jpg's and a new album 
               gets created. Admins can delete albums also.)</li>
               <li>Limited surveys (execs can create small surveys, members get an e-mail reminder and 

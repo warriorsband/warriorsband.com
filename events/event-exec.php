@@ -38,23 +38,28 @@ if (isset($_POST['event_id'])) {
   }
 }
 
+//Get the event's current status if it exists already; otherwise default to 2
+if (!$new_event) {
+  $row = $mysqli->query(
+    "SELECT `status` FROM `events` WHERE `event_id`='$event_id'")->fetch_row();
+  $status = intval($row[0]);
+} else {
+  $status = 2;
+}
+$send_notification_emails = FALSE;
+
 //If the mark_upcoming field is provided and the event is not upcoming, set it to be.
 //Set the flag to send email notifications later also.
 if (isset($_POST['mark_upcoming'])) {
   //If the event exists already, get its current status and make sure it has not
   //already been marked as upcoming
-  if (!$new_event) {
-    $event_status = $mysqli->query(
-      "SELECT `status` FROM `events` WHERE `event_id`='$event_id'")->fetch_row();
-    if (intval($event_status[0]) == 1) {
-      error_and_exit("Event already marked as upcoming.");
-    }
+  if ($status == 1) {
+    error_and_exit("Event already marked as upcoming.");
   }
   $status = 1;
-  $send_notification_emails = TRUE;
-} else {
-  $status = 2;
-  $send_notification_emails = FALSE;
+  if (isset($_POST['send_email'])) {
+    $send_notification_emails = TRUE;
+  }
 }
 
 //Validate title
@@ -95,7 +100,7 @@ if (isset($_POST['no_time'])) {
     header("Location: $redirect_url&msg=badtime");
     exit();
   }
-  $time = "'" . date("H:i", strtotime("$time_hour:$time_minute $time_ampm")) . "'";
+  $time = "'" . date("H:i", strtotime("$time_hour:".str_pad($time_minute,2,"0",STR_PAD_LEFT).$time_ampm)) . "'";
 }
 
 //Validate location
