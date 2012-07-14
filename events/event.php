@@ -321,7 +321,7 @@ if ($action != "create") {
 //If appropriate, display the list of attendees
   elseif (logged_in() && $action != "create" && $event_row['status'] == 1) {
 ?>
-      Definitely Attending: 
+      Definitely attending: 
 <?php
     $yess = $mysqli->query(
       "SELECT `first_name` " .
@@ -371,7 +371,13 @@ if ($action != "create") {
 ?>
       This event has not yet been made open to responses. <br />
       <input type="checkbox" name="mark_upcoming" value="" />Open this event to responses<br />
+<?php
+    if (user_type_greater_eq(3)) {
+?>
       <input type="checkbox" name="send_email" value="" />Also send notification e-mail<br />
+<?php
+    }
+?>
       <span class="tip">
         (Note: Opening an event to responses can't be undone; neither can sending the notification 
         e-mail to all on-campus members. Only do either of these if you're sure the event details 
@@ -468,7 +474,7 @@ if (logged_in()) {
   </form>
 </td></tr></table>
 <?php
-  } else {
+  } elseif ($action != "create") {
 ?>
 <br /><br />
 <div class="center">This event is not open to attendance responses at this time.</div>

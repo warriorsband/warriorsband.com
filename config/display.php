@@ -50,6 +50,9 @@ function print_msg() {
       case "logoutfail":
         echo "Error: You must be logged in before you can log out.";
         break;
+      case "sessiontimeout":
+        echo "Error: Your session has timed out; you'll have to log in again.";
+        break;
       case "badtitle":
         echo "Error: Event titles must be between 4 and 255 characters long.";
         break;
@@ -229,7 +232,7 @@ function instrument_to_str($instrument) {
   } elseif ($instrument == 10) {
     return "Trombone";
   } elseif ($instrument == 11) {
-    return "Soussaphone";
+    return "Sousaphone";
   } elseif ($instrument == 12) {
     return "Bass Drum";
   } elseif ($instrument == 13) {
@@ -238,7 +241,7 @@ function instrument_to_str($instrument) {
     return "Auxiliary Percussion";
   } elseif ($instrument == 15) {
     return "Other";
-  } elseif ($intrument == 16) {
+  } elseif ($instrument == 16) {
     return "Too many to list";
   } else {
     return "";

@@ -57,7 +57,7 @@ if (isset($_POST['mark_upcoming'])) {
     error_and_exit("Event already marked as upcoming.");
   }
   $status = 1;
-  if (isset($_POST['send_email'])) {
+  if (isset($_POST['send_email']) && user_type_greater_eq(3)) {
     $send_notification_emails = TRUE;
   }
 }
