@@ -87,20 +87,34 @@ if (isset($_POST['no_date'])) {
   }
 }
 
-//Construct and validate time
-if (isset($_POST['no_time'])) {
-  $time = "NULL";
+//Construct and validate start and end time
+if (isset($_POST['no_start_time'])) {
+  $start_time = "NULL";
 } else {
-  $time_hour = intval($_POST['time_hour']);
-  $time_minute = intval($_POST['time_minute']);
-  $time_ampm = sanitize($_POST['time_ampm']);
-  if (($time_hour < 1) || ($time_hour > 12) ||
-      ($time_minute < 0) || ($time_minute > 59) ||
-      (($time_ampm != "AM") && ($time_ampm != "PM"))) {
+  $start_time_hour = intval($_POST['start_time_hour']);
+  $start_time_minute = intval($_POST['start_time_minute']);
+  $start_time_ampm = sanitize($_POST['start_time_ampm']);
+  if (($start_time_hour < 1) || ($start_time_hour > 12) ||
+      ($start_time_minute < 0) || ($start_time_minute > 59) ||
+      (($start_time_ampm != "AM") && ($start_time_ampm != "PM"))) {
     header("Location: $redirect_url&msg=badtime");
     exit();
   }
-  $time = "'" . date("H:i", strtotime("$time_hour:".str_pad($time_minute,2,"0",STR_PAD_LEFT).$time_ampm)) . "'";
+  $start_time = "'" . date("H:i", strtotime("$start_time_hour:".str_pad($start_time_minute,2,"0",STR_PAD_LEFT).$start_time_ampm)) . "'";
+}
+if (isset($_POST['no_end_time'])) {
+  $end_time = "NULL";
+} else {
+  $end_time_hour = intval($_POST['end_time_hour']);
+  $end_time_minute = intval($_POST['end_time_minute']);
+  $end_time_ampm = sanitize($_POST['end_time_ampm']);
+  if (($end_time_hour < 1) || ($end_time_hour > 12) ||
+      ($end_time_minute < 0) || ($end_time_minute > 59) ||
+      (($end_time_ampm != "AM") && ($end_time_ampm != "PM"))) {
+    header("Location: $redirect_url&msg=badtime");
+    exit();
+  }
+  $end_time = "'" . date("H:i", strtotime("$end_time_hour:".str_pad($end_time_minute,2,"0",STR_PAD_LEFT).$end_time_ampm)) . "'";
 }
 
 //Validate location
@@ -153,13 +167,13 @@ if ($send_notification_emails) {
 if ($new_event) {
   $mysqli->query(
     "INSERT INTO `events` " .
-    "(`status`,`creator_id`,`title`,`date`,`start_time`,`location`,`details`)" . 
-    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$time,'$location','$details')");
+    "(`status`,`creator_id`,`title`,`date`,`start_time`,`end_time`,`location`,`details`)" . 
+    "VALUES ('$status','" . $_SESSION['user_id'] . "','$title',$date,$start_time,$end_time,'$location','$details')");
   handle_sql_error($mysqli);
 } else {
   $mysqli->query(
     "UPDATE `events` SET `status`='$status',`creator_id`='" . $_SESSION['user_id'] . 
-    "',`title`='$title',`date`=$date,`start_time`=$time,`location`='$location'," . 
+    "',`title`='$title',`date`=$date,`start_time`=$start_time,`end_time`=$end_time,`location`='$location'," . 
     "`details`='$details' WHERE `event_id`='$event_id'");
   handle_sql_error($mysqli);
 }

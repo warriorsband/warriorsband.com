@@ -51,7 +51,7 @@ function print_msg() {
         echo "Error: You must be logged in before you can log out.";
         break;
       case "sessiontimeout":
-        echo "Error: Your session has timed out; you'll have to log in again.";
+        echo "Your session has timed out; you'll have to log in again.";
         break;
       case "badtitle":
         echo "Error: Event titles must be between 4 and 255 characters long.";

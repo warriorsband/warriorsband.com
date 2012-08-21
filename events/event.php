@@ -31,10 +31,14 @@ if (auth_edit_events()) {
   $date_year = 2012;
   $date_month = 1;
   $date_day = 1;
-  $no_time = FALSE;
-  $time_hour = 5;
-  $time_minute = 30;
-  $time_ampm = "PM";
+  $no_start_time = FALSE;
+  $no_end_time = TRUE;
+  $start_time_hour = 5;
+  $start_time_minute = 30;
+  $start_time_ampm = "PM";
+  $end_time_hour = 7;
+  $end_time_minute = 0;
+  $end_time_ampm = "PM";
   $location = "";
   $details = "";
 
@@ -46,7 +50,9 @@ if (auth_edit_events()) {
     //Get the event details from the database
     //If no row is found, print an error and exit.
     $event_row = $mysqli->query(
-      "SELECT `status`,`title`,`date`,TIME_FORMAT(`start_time`, '%h%i%p') AS `time`," .
+      "SELECT `status`,`title`,`date`," .
+      "TIME_FORMAT(`start_time`, '%h%i%p') AS `start_time`," .
+      "TIME_FORMAT(`end_time`, '%h%i%p') AS `end_time`," .
       "`location`,`details` " .
       "FROM `events` WHERE `event_id`='$event_id'")->fetch_assoc();
     handle_sql_error($mysqli);
@@ -67,16 +73,27 @@ if (auth_edit_events()) {
       $date_month = intval($date[1]);
       $date_day = intval($date[2]);
     }
-    if (is_null($event_row['time'])) {
-      $no_time = TRUE;
-      $time_hour = 5;
-      $time_minute = 30;
-      $time_ampm = "PM";
+    if (is_null($event_row['start_time'])) {
+      $no_start_time = TRUE;
+      $start_time_hour = 5;
+      $start_time_minute = 30;
+      $start_time_ampm = "PM";
     } else {
-      $no_time = FALSE;
-      $time_hour = intval(substr($event_row['time'],0,2));
-      $time_minute = intval(substr($event_row['time'],2,2));
-      $time_ampm = substr($event_row['time'],4,2);
+      $no_start_time = FALSE;
+      $start_time_hour = intval(substr($event_row['start_time'],0,2));
+      $start_time_minute = intval(substr($event_row['start_time'],2,2));
+      $start_time_ampm = substr($event_row['start_time'],4,2);
+    }
+    if (is_null($event_row['end_time'])) {
+      $no_end_time = TRUE;
+      $end_time_hour = 7;
+      $end_time_minute = 0;
+      $end_time_ampm = "PM";
+    } else {
+      $no_end_time = FALSE;
+      $end_time_hour = intval(substr($event_row['end_time'],0,2));
+      $end_time_minute = intval(substr($event_row['end_time'],2,2));
+      $end_time_ampm = substr($event_row['end_time'],4,2);
     }
     $location = $event_row['location'];
     $details = $event_row['details'];
@@ -95,7 +112,9 @@ else {
     //If no row is found, print an error and exit.
     $event_row = $mysqli->query(
       "SELECT `status`,`title`,DATE_FORMAT(`date`,'%b %e %Y') AS `date`," .
-      "TIME_FORMAT(`start_time`, '%l:%i %p') AS `time`,`location`,`details` " .
+      "TIME_FORMAT(`start_time`, '%l:%i %p') AS `start_time`," .
+      "TIME_FORMAT(`end_time`, '%l:%i %p') AS `end_time`," .
+      "`location`,`details` " .
       "FROM `events` " .
       "WHERE `event_id`='$event_id'")->fetch_assoc();
     handle_sql_error($mysqli);
@@ -207,18 +226,18 @@ if ($action == "view") {
 ?>
         </select>
         &nbsp &nbsp
-        <input type="checkbox" name="no_date" value="true" <?php checked(TRUE,$no_date); ?>/> Leave date blank
+        <input type="checkbox" name="no_date" value="true" <?php checked(TRUE,$no_date); ?>/> Leave blank
       </td>
     </tr>
 <?php
 }
 
-//Display time
+//Display start time
 if ($action == "view") {
 ?>
   <tr <?php echo row_color() ?> >
     <th>Start Time</th>
-    <td><?php echo $event_row['time']; ?></td>
+    <td><?php echo $event_row['start_time']; ?></td>
   </tr>
 <?php
 } else {
@@ -226,40 +245,91 @@ if ($action == "view") {
     <tr <?php echo row_color() ?> >
       <th>Start Time</th>
       <td>
-        <select name="time_hour">
-          <option value="1" <?php selected(1,$time_hour); ?>>1</option>
-          <option value="2" <?php selected(2,$time_hour); ?>>2</option>
-          <option value="3" <?php selected(3,$time_hour); ?>>3</option>
-          <option value="4" <?php selected(4,$time_hour); ?>>4</option>
-          <option value="5" <?php selected(5,$time_hour); ?>>5</option>
-          <option value="6" <?php selected(6,$time_hour); ?>>6</option>
-          <option value="7" <?php selected(7,$time_hour); ?>>7</option>
-          <option value="8" <?php selected(8,$time_hour); ?>>8</option>
-          <option value="9" <?php selected(9,$time_hour); ?>>9</option>
-          <option value="10" <?php selected(10,$time_hour); ?>>10</option>
-          <option value="11" <?php selected(11,$time_hour); ?>>11</option>
-          <option value="12" <?php selected(12,$time_hour); ?>>12</option>
+        <select name="start_time_hour">
+          <option value="1" <?php selected(1,$start_time_hour); ?>>1</option>
+          <option value="2" <?php selected(2,$start_time_hour); ?>>2</option>
+          <option value="3" <?php selected(3,$start_time_hour); ?>>3</option>
+          <option value="4" <?php selected(4,$start_time_hour); ?>>4</option>
+          <option value="5" <?php selected(5,$start_time_hour); ?>>5</option>
+          <option value="6" <?php selected(6,$start_time_hour); ?>>6</option>
+          <option value="7" <?php selected(7,$start_time_hour); ?>>7</option>
+          <option value="8" <?php selected(8,$start_time_hour); ?>>8</option>
+          <option value="9" <?php selected(9,$start_time_hour); ?>>9</option>
+          <option value="10" <?php selected(10,$start_time_hour); ?>>10</option>
+          <option value="11" <?php selected(11,$start_time_hour); ?>>11</option>
+          <option value="12" <?php selected(12,$start_time_hour); ?>>12</option>
         </select> : 
-        <select name="time_minute">
-          <option value="0" <?php selected(0,$time_minute); ?>>00</option>
-          <option value="5" <?php selected(5,$time_minute); ?>>05</option>
-          <option value="10" <?php selected(10,$time_minute); ?>>10</option>
-          <option value="15" <?php selected(15,$time_minute); ?>>15</option>
-          <option value="20" <?php selected(20,$time_minute); ?>>20</option>
-          <option value="25" <?php selected(25,$time_minute); ?>>25</option>
-          <option value="30" <?php selected(30,$time_minute); ?>>30</option>
-          <option value="35" <?php selected(35,$time_minute); ?>>35</option>
-          <option value="40" <?php selected(40,$time_minute); ?>>40</option>
-          <option value="45" <?php selected(45,$time_minute); ?>>45</option>
-          <option value="50" <?php selected(50,$time_minute); ?>>50</option>
-          <option value="55" <?php selected(55,$time_minute); ?>>55</option>
+        <select name="start_time_minute">
+          <option value="0" <?php selected(0,$start_time_minute); ?>>00</option>
+          <option value="5" <?php selected(5,$start_time_minute); ?>>05</option>
+          <option value="10" <?php selected(10,$start_time_minute); ?>>10</option>
+          <option value="15" <?php selected(15,$start_time_minute); ?>>15</option>
+          <option value="20" <?php selected(20,$start_time_minute); ?>>20</option>
+          <option value="25" <?php selected(25,$start_time_minute); ?>>25</option>
+          <option value="30" <?php selected(30,$start_time_minute); ?>>30</option>
+          <option value="35" <?php selected(35,$start_time_minute); ?>>35</option>
+          <option value="40" <?php selected(40,$start_time_minute); ?>>40</option>
+          <option value="45" <?php selected(45,$start_time_minute); ?>>45</option>
+          <option value="50" <?php selected(50,$start_time_minute); ?>>50</option>
+          <option value="55" <?php selected(55,$start_time_minute); ?>>55</option>
         </select>
-        <select name="time_ampm">
-          <option value="AM" <?php selected("AM",$time_ampm); ?>>AM</option>
-          <option value="PM" <?php selected("PM",$time_ampm); ?>>PM</option>
+        <select name="start_time_ampm">
+          <option value="AM" <?php selected("AM",$start_time_ampm); ?>>AM</option>
+          <option value="PM" <?php selected("PM",$start_time_ampm); ?>>PM</option>
         </select>
         &nbsp &nbsp
-        <input type="checkbox" name="no_time" value="true" <?php checked(TRUE,$no_time) ?> /> Leave time blank
+        <input type="checkbox" name="no_start_time" value="true" <?php checked(TRUE,$no_start_time) ?> /> Leave blank
+      </td>
+    </tr>
+<?php
+}
+//Display end time
+if ($action == "view") {
+?>
+  <tr <?php echo row_color() ?> >
+    <th>End Time</th>
+    <td><?php echo $event_row['end_time']; ?></td>
+  </tr>
+<?php
+} else {
+?>
+    <tr <?php echo row_color() ?> >
+      <th>End Time</th>
+      <td>
+        <select name="end_time_hour">
+          <option value="1" <?php selected(1,$end_time_hour); ?>>1</option>
+          <option value="2" <?php selected(2,$end_time_hour); ?>>2</option>
+          <option value="3" <?php selected(3,$end_time_hour); ?>>3</option>
+          <option value="4" <?php selected(4,$end_time_hour); ?>>4</option>
+          <option value="5" <?php selected(5,$end_time_hour); ?>>5</option>
+          <option value="6" <?php selected(6,$end_time_hour); ?>>6</option>
+          <option value="7" <?php selected(7,$end_time_hour); ?>>7</option>
+          <option value="8" <?php selected(8,$end_time_hour); ?>>8</option>
+          <option value="9" <?php selected(9,$end_time_hour); ?>>9</option>
+          <option value="10" <?php selected(10,$end_time_hour); ?>>10</option>
+          <option value="11" <?php selected(11,$end_time_hour); ?>>11</option>
+          <option value="12" <?php selected(12,$end_time_hour); ?>>12</option>
+        </select> : 
+        <select name="end_time_minute">
+          <option value="0" <?php selected(0,$end_time_minute); ?>>00</option>
+          <option value="5" <?php selected(5,$end_time_minute); ?>>05</option>
+          <option value="10" <?php selected(10,$end_time_minute); ?>>10</option>
+          <option value="15" <?php selected(15,$end_time_minute); ?>>15</option>
+          <option value="20" <?php selected(20,$end_time_minute); ?>>20</option>
+          <option value="25" <?php selected(25,$end_time_minute); ?>>25</option>
+          <option value="30" <?php selected(30,$end_time_minute); ?>>30</option>
+          <option value="35" <?php selected(35,$end_time_minute); ?>>35</option>
+          <option value="40" <?php selected(40,$end_time_minute); ?>>40</option>
+          <option value="45" <?php selected(45,$end_time_minute); ?>>45</option>
+          <option value="50" <?php selected(50,$end_time_minute); ?>>50</option>
+          <option value="55" <?php selected(55,$end_time_minute); ?>>55</option>
+        </select>
+        <select name="end_time_ampm">
+          <option value="AM" <?php selected("AM",$end_time_ampm); ?>>AM</option>
+          <option value="PM" <?php selected("PM",$end_time_ampm); ?>>PM</option>
+        </select>
+        &nbsp &nbsp
+        <input type="checkbox" name="no_end_time" value="true" <?php checked(TRUE,$no_end_time) ?> /> Leave blank
       </td>
     </tr>
 <?php

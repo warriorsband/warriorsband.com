@@ -140,6 +140,10 @@ if (isset($_GET['page'])) {
   }
 } else { ?>
           <div class="ctext8">
+            The first practice for Fall 2012 is Thursday, September 13th, 5:30 - 7:00 PM in PAC 1001!<br />
+            New members welcome, instruments provided!<br />
+            Practices will continue every Thursday at the same time and place.<br /><br />
+
             Woo, new site! Still heavily under construction.<br />
             If you're lost, try the links on the left, or scroll down to view
             a list of site features. If something isn't displaying correctly on your browser, or 
