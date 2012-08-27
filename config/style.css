@@ -61,17 +61,25 @@ td.content {
     text-align: left;
     vertical-align: top;
 }
-/* Tables for holding floating images */
-table.imageleft {
-    float:left;
+/* divs for holding floating images */
+div.imagefloat {
+    border: 1px solid #fed403;
     margin: 10px;
-    padding: 5px;
+    padding: 3px;
+    font: italic 0.75em Arial, Helvetica, sans-serif;
 }
-table.imageright {
-    float:right
-    margin: 10px;
-    padding: 5px;
+div.imagefloat img {
+    border: 1px solid #fed403;
+    vertical-align: middle;
+    margin-bottom: 3px;
 }
+.floatleft {
+    float: left;
+}
+.floatright {
+    float: right;
+}
+
 /* Set the fonts of the page header text */
 span.header1 {
 	color: #fed403;

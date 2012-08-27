@@ -359,7 +359,7 @@ function event_notification_email_subject($event) {
 function event_notification_email_message() {
   $message = implode("\r\n", array(
     "There's a new upcoming event on WarriorsBand.com. Please log in at",
-    "http://www.warriorsband.com/auth/login.php and let us know if you can make it!",
+    "http://www.warriorsband.com/?page=login and let us know if you can make it!",
     "",
     "Thanks,"));
   return $message . email_footer();

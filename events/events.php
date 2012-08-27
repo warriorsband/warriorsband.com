@@ -129,7 +129,7 @@ if(auth_view_events()) {
       if (intval($event_row['status']) == 1) {
         echo '<td>'.$responses_row[0].'</td>';
       } else {
-        echo '<td></td>';
+        echo '<td>---</td>';
       }
       echo '<td><a href="' . $domain . '?page=event&amp;event_id=' . $event_row['event_id'] . '">Event Details</a></td>';
       echo '</tr>';
