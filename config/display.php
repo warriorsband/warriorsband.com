@@ -83,6 +83,9 @@ function print_msg() {
       case "notificationemailfail":
         echo "Error: There was a problem sending the event notification e-mails.";
         break;
+      case "registrationfail":
+        echo "Error sending registration email.";
+        break;
       //Form submission success messages
       case "profileupdatesuccess":
         echo "Profile updated successfully.";
@@ -90,11 +93,11 @@ function print_msg() {
       case "registrationsuccess":
         echo "Registration e-mail sent. New user registered successfully!";
         break;
-      case "registrationfail":
-        echo "Error sending registration email.";
-        break;
       case "userdeletesuccess":
         echo "Account deleted successfully.";
+        break;
+      case "passwordresetsuccess":
+        echo "User's password was reset successfully.";
         break;
       case "eventdeletesuccess":
         echo "Event deleted successfully.";
@@ -121,6 +124,10 @@ function print_msg() {
       case "confirmdelete":
         echo "If you are CERTAIN this should be deleted, click the delete ";
         echo "button again and it will be PERMANENTLY deleted.";
+        break;
+      case "confirmpasswordreset":
+        echo "If you are CERTAIN this user's password should be reset, click ";
+        echo "the reset button again and it will be reset by e-mail.";
         break;
       default:
         echo "Error: Unknown msg code.";
@@ -308,7 +315,7 @@ function registration_email_message($temp_password, $submitter_name, $submitter_
     "One of your band execs, $submitter_name, has registered your e-mail address",
     "for a warriorsband.com account. To use your account:",
     "",
-    "1. Visit http://www.warriorsband.com/?page=profile",
+    "1. Visit http://www.warriorsband.com/?page=login",
     "2. Log in with your e-mail address and the following temporary password:",
     "",
     "    $temp_password",
@@ -386,4 +393,32 @@ function checked($item, $checkeditem) {
   if (isset($checkeditem) && ($item == $checkeditem)) {
     echo 'checked="checked"';
   }
+}
+function passwordreset_email_subject() {
+  return "WarriorsBand.com Password Reset";
+}
+function passwordreset_email_message($temp_password, $submitter_name) {
+  $message = implode("\r\n", array(
+    "One of your band execs/admins, $submitter_name, has initiated a password",
+    "reset for your warriorsband.com account.",
+    "",
+    "If you requested this, follow the directions below to log in to your",
+    "account. If you did not request this, I guess you should go yell at",
+    "$submitter_name.",
+    "",
+    "To log in with your reset password:",
+    "",
+    "1. Visit http://www.warriorsband.com/?page=profile",
+    "2. Log in with your e-mail address and the following temporary password:",
+    "",
+    "    $temp_password",
+    "",
+    "3. On the page that appears, change your password (6 characters minimum)",
+    "",
+    "",
+    "If you have any issues, reply to this e-mail or contact a band exec.",
+    "",
+    "",
+    ""));
+  return $message . email_footer();
 }

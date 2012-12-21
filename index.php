@@ -9,6 +9,17 @@
  */
 
 session_start(); 
+
+// If the request URL doesn't start with "www.", redirect with "www." added.
+// This is necessary because "warriorsband.com" and "www.warriorsband.com" 
+// count as separate domains, and thus have separate PHP sessions. Without 
+// this, users who log in on "warriorsband.com" will redirect to 
+// "www.warriorsband.com" and have to log in again.
+if (substr($_SERVER['HTTP_HOST'],0,4) !== 'www.') {
+  header('Location: http://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+  exit();
+}
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
@@ -121,19 +132,19 @@ if (isset($_GET['page'])) {
       require($_SERVER['DOCUMENT_ROOT'].'/history/history.php');
       break;
     case "history1":
-      require($_SERVER['DOCUMENT_ROOT'].'/history/history.php');
+      require($_SERVER['DOCUMENT_ROOT'].'/history/annotated.php');
       break;
     case "history2":
-      require($_SERVER['DOCUMENT_ROOT'].'/history/history.php');
+      require($_SERVER['DOCUMENT_ROOT'].'/history/playboy.php');
       break;
     case "history3":
-      require($_SERVER['DOCUMENT_ROOT'].'/history/history.php');
+      require($_SERVER['DOCUMENT_ROOT'].'/history/queen.php');
       break;
     case "history4":
-      require($_SERVER['DOCUMENT_ROOT'].'/history/history.php');
+      require($_SERVER['DOCUMENT_ROOT'].'/history/olympics.php');
       break;
     case "history5":
-      require($_SERVER['DOCUMENT_ROOT'].'/history/history.php');
+      require($_SERVER['DOCUMENT_ROOT'].'/history/halifax.php');
       break;
     case "jointheband":
       require($_SERVER['DOCUMENT_ROOT'].'/jointheband.php');
@@ -158,14 +169,10 @@ if (isset($_GET['page'])) {
   }
 } else { ?>
           <div class="ctext8">
-            The first practice for Fall 2012 is Thursday, September 13th, 5:30 - 7:00 PM in PAC 1001!<br />
-            New members welcome, instruments provided!<br />
-            Practices will continue every Thursday at the same time and place.<br /><br />
-
-            Woo, new site! Still heavily under construction.<br />
+            Woo, new site!<br />
             If you're lost, try the links on the left, or scroll down to view
             a list of site features. If something isn't displaying correctly on your browser, or 
-            you find any other problems with the site, please let me know with the Bug Report link 
+            you find any other problems with the site, please let Paul know with the Bug Report link 
             on the left. Thanks!
           </div>
           <br /><br />
@@ -201,9 +208,6 @@ if (isset($_GET['page'])) {
             <br />
             Next things on Paul's list of stuff to do
             <ul>
-              <li>History page (similar to old site)</li>
-              <li>Show day of the week for event dates</li>
-              <li>Add a title field for execs' profiles</li>
               <li>Photos page (admin can upload .zip file of appropriately-sized .jpg's and a new album 
               gets created. Admins can delete albums also.)</li>
               <li>Limited surveys (execs can create small surveys, members get an e-mail reminder and 

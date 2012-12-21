@@ -23,18 +23,18 @@ function printcell_maybe($item) {
 
 // If a filter for the events list is provided, use it, otherwise default to "future"
 $events_filter = "future";
-$events_filter_sql = "WHERE (`date` IS NULL OR `date` >= NOW()) ";
+$events_filter_sql = "WHERE (`date` IS NULL OR `date` >= DATE(NOW())) ";
 if (isset($_GET['filter'])) {
   $events_filter = sanitize($_GET['filter']);
   switch ($events_filter) {
     case "future":
-      $events_filter_sql = "WHERE (`date` IS NULL OR `date` >= NOW()) ";
+      $events_filter_sql = "WHERE (`date` IS NULL OR `date` >= DATE(NOW())) ";
       break;
     case "all":
       $events_filter_sql = "";
       break;
     case "past":
-      $events_filter_sql = "WHERE (`date` IS NULL OR `date` < NOW()) ";
+      $events_filter_sql = "WHERE (`date` IS NULL OR `date` < DATE(NOW())) ";
       break;
     default:
       error_and_exit("Invalid filter provided.");
@@ -44,7 +44,7 @@ if (isset($_GET['filter'])) {
 $no_events = FALSE;
 
 $result = $mysqli->query(
-  "SELECT `event_id`,`status`,`creator_id`,`title`,DATE_FORMAT(`date`,'%b %e %Y') AS `fdate`," .
+  "SELECT `event_id`,`status`,`creator_id`,`title`,DATE_FORMAT(`date`,'%a %b %e %Y') AS `fdate`," .
   "TIME_FORMAT(`start_time`,'%l:%i %p') AS `ftime`,`location` " .
   "FROM `events` " .
   $events_filter_sql .

@@ -243,11 +243,12 @@ if (auth_edit_profile($user_id, $user_type)) {
 }
 ?>
 </table>
+<br />
 
 <?php
 if (auth_delete_account($user_id, $user_type)) {
 ?>
-<br /><br />
+<br />
 <div class="center">
   <form action="/users/deleteuser-exec.php" method="POST">
     <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
@@ -259,6 +260,24 @@ if (auth_delete_account($user_id, $user_type)) {
   }
 ?>
     <input style="width:150px" type="submit" value="Delete this account" />
+  </form>
+</div>
+<?php
+}
+if (auth_password_reset($user_id, $user_type)) {
+?>
+<br />
+<div class="center">
+  <form action="/users/passwordreset-exec.php" method="POST">
+    <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+<?php
+  if ((isset($_GET['msg'])) && ($_GET['msg'] == "confirmpasswordreset")) {
+?>
+    <input type="hidden" name="confirm" value="true" />
+<?php
+  }
+?>
+    <input style="width:150px" type="submit" value="Reset password" />
   </form>
 </div>
 <?php

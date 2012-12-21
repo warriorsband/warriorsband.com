@@ -246,8 +246,11 @@ function auth_edit_misc_info($user_id, $user_type) {
 }
 //Can the user delete this profile?
 function auth_delete_account($user_id, $user_type) {
-  return (!is_same_user($user_id) && user_type_greater_eq(2) &&
-    (user_type_greater_than($user_type) || user_type_greater_eq(3)));
+  return (user_type_greater_eq(3) || user_type_greater_than($user_id));
+}
+//Can the user perform a password reset on this profile?
+function auth_password_reset($user_id, $user_type) {
+  return (user_type_greater_eq(3) || user_type_greater_than($user_id));
 }
 
 // Event authentication functions
