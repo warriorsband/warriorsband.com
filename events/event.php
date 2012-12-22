@@ -375,6 +375,7 @@ if ($action != "create") {
     <th>Who's Going</th>
     <td>
 <?php
+
 //If appropriate, display message saying the user doesn't have permission to view attendees
 //(note since "create" can only occur for logged-in users, we can skip checking it here)
   if (!logged_in() && $event_row['status'] == 1) {
@@ -382,54 +383,56 @@ if ($action != "create") {
       Only logged-in members can view event attendees.
 <?php
   }
+
 //If appropriate, display "event isn't open yet" message
   elseif ($action == "view" && $event_row['status'] == 2) {
 ?>
       This event has not yet been made open to responses.
 <?php
   }
+
 //If appropriate, display the list of attendees
   elseif (logged_in() && $action != "create" && $event_row['status'] == 1) {
 ?>
       Definitely attending: 
 <?php
     $yess = $mysqli->query(
-      "SELECT `first_name` " .
+      "SELECT `first_name`,`last_name` " .
       "FROM `users` " .
       "INNER JOIN `event_responses` " .
       "ON `users`.`user_id`=`event_responses`.`user_id` " .
       "WHERE `event_id`='$event_id' AND `response`='1'");
       handle_sql_error($mysqli);
     while($yesrow = $yess->fetch_assoc()) {
-      echo $yesrow['first_name'] . ", ";
+      echo $yesrow['first_name'] . " " . $yesrow['last_name'] . ", ";
     }
     $yess->free();
 ?>
       <br />Maybe attending: 
 <?php
     $maybes = $mysqli->query(
-      "SELECT `first_name` " .
+      "SELECT `first_name`, `last_name` " .
       "FROM `users` " .
       "INNER JOIN `event_responses` " .
       "ON `users`.`user_id`=`event_responses`.`user_id` " .
       "WHERE `event_id`='$event_id' AND `response`='3'");
       handle_sql_error($mysqli);
     while($mayberow = $maybes->fetch_assoc()) {
-      echo $mayberow['first_name'] . ", ";
+      echo $mayberow['first_name'] . " " . $mayberow['last_name'] . ", ";
     }
     $maybes->free();
 ?>
       <br />Not attending: 
 <?php
     $nos = $mysqli->query(
-      "SELECT `first_name` " .
+      "SELECT `first_name`, `last_name` " .
       "FROM `users` " .
       "INNER JOIN `event_responses` " .
       "ON `users`.`user_id`=`event_responses`.`user_id` " .
       "WHERE `event_id`='$event_id' AND `response`='2'");
       handle_sql_error($mysqli);
     while($norow = $nos->fetch_assoc()) {
-      echo $norow['first_name'] . ", ";
+      echo $norow['first_name'] . " " . $norow['last_name'] ", ";
     }
     $nos->free();
     if ($action == "edit") {
