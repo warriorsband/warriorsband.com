@@ -31,7 +31,7 @@ $result = $mysqli->query(
   "SELECT `first_name`,`last_name`,`response`,`comment` " .
   "FROM `event_responses` INNER JOIN `users` ON `event_responses`.`user_id` = `users`.`user_id` " .
   "WHERE `event_id`='$event_id' " .
-  "ORDER BY `last_name`,`first_name`");
+  "ORDER BY `response_id`");
 handle_sql_error($mysqli);
 
 if ($result->num_rows == 0) {
