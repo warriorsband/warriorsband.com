@@ -1,0 +1,50 @@
+There should be a file in this directory called config.php, containing the
+following code. If you are viewing this through the github repo, config.php
+is not there, so that our password is not shown in plaintext. You could get
+things working by creating a config.php file yourself with the following
+content, modified appropriately.
+
+
+
+
+
+<?php
+
+/*
+ *  config.php
+ *
+ *  General settings for the website
+ */
+
+//Site domain
+$domain= "http://www.YOURDOMAIN.com/";
+
+//Define length of salt,minimum=10, maximum=35
+$length_salt=15;
+
+//Define session timeout in seconds
+//minimum 60 (for one minute)
+$sessiontimeout=1800;
+
+//Maximum number of login attempts before being locked out
+$max_login_attempts=3;
+
+//Cooldown time (in seconds) after being locked out before a correct
+//login will be accepted
+$login_cooldown=1800;
+
+//If set to true, error messages for unexpected errors (like SQL errors, or improper
+//values posted by a form) will be more verbose and descriptive. Useful for debugging,
+//but for security reasons it might be good to disable this if things are running smoothly.
+$verbose_errors=TRUE;
+
+//E-mail configuration settings
+$email_host = "ssl://smtp.gmail.com";
+$email_port = "465";
+$email_username = "YOUREMAIL@gmail.com";
+$email_password = "YOURPASSWORD";
+
+//Maximum sizes of various user profile fields and database types
+$maxsize_term = 22;
+$maxsize_instrument = 16;
+?>
