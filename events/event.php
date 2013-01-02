@@ -432,7 +432,7 @@ if ($action != "create") {
       "WHERE `event_id`='$event_id' AND `response`='2'");
       handle_sql_error($mysqli);
     while($norow = $nos->fetch_assoc()) {
-      echo $norow['first_name'] . " " . $norow['last_name'] ", ";
+      echo $norow['first_name'] . " " . $norow['last_name'] . ", ";
     }
     $nos->free();
     if ($action == "edit") {
