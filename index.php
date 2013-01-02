@@ -96,6 +96,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=event">Create new event</a>
             </td></tr>
+            <!--
+            <tr <?php echo row_color() ?> ><td>
+              <a href="/?page=photoupload">Upload photos</a>
+            </td></tr>
+            -->
 <?php } } else { ?>
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=login">Login</a>
@@ -160,6 +165,9 @@ if (isset($_GET['page'])) {
       break;
     case "register":
       require($_SERVER['DOCUMENT_ROOT'].'/users/register.php');
+      break;
+    case "uploadphotos":
+      require($_SERVER['DOCUMENT_ROOT'].'/photos/upload.php');
       break;
     case "users":
       require($_SERVER['DOCUMENT_ROOT'].'/users/users.php');

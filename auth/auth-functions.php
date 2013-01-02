@@ -180,94 +180,96 @@ function user_type_less_eq($user_type) {
  * perform an action
  */
 
-// Registration authentication functions
-
+// Can the user register a new user?
 function auth_register_user() {
   return user_type_greater_eq(2);
 }
 
-// Member list authentication functions
-
-//Can the user view emails on the member list?
+// Can the user view emails on the member list?
 function auth_view_emails() {
+  return user_type_greater_eq(2);
+}
+
+// Can the user upload photos?
+function auth_upload_photos() {
   return user_type_greater_eq(2);
 }
 
 // Profile authentication functions
 
-//Can the user view this profile?
+// Can the user view this profile?
 function auth_view_profile($user_id, $user_type) {
   return TRUE;
 }
-//Can the user edit a part of this profile?
+// Can the user edit a part of this profile?
 function auth_edit_profile($user_id, $user_type) {
   return (is_same_user($user_id) || 
     (user_type_greater_than($user_type) && user_type_greater_eq(3)));
 }
-//Can the user view the profile e-mail address?
+// Can the user view the profile e-mail address?
 function auth_view_email($user_id, $user_type) {
   return (is_same_user($user_id) || user_type_greater_eq(2));
 }
-//Can the user edit the profile e-mail address?
+// Can the user edit the profile e-mail address?
 function auth_edit_email($user_id, $user_type) {
   return (user_type_greater_eq(3) &&
     (is_same_user($user_id) || user_type_greater_than($user_type)));
 }
-//Can the user edit the profile password?
+// Can the user edit the profile password?
 function auth_edit_password($user_id, $user_type) {
   return is_same_user($user_id);
 }
-//Can the user view the profile name?
+// Can the user view the profile name?
 function auth_view_name($user_id, $user_type) {
   return TRUE;
 }
-//Can the user edit the profile first name?
+// Can the user edit the profile first name?
 function auth_edit_name($user_id, $user_type) {
   return (user_type_greater_eq(3) && 
     (is_same_user($user_id) || user_type_greater_than($user_type)));
 }
-//Can the user view the profile user type?
+// Can the user view the profile user type?
 function auth_view_user_type($user_id, $user_type) {
   return user_type_greater_eq(2);
 }
-//Can the user edit the profile user type?
+// Can the user edit the profile user type?
 function auth_edit_user_type($user_id, $user_type) {
   return (user_type_greater_eq(3) &&
     (is_same_user($user_id) || user_type_greater_than($user_type)));
 }
-//Can the user view the misc. info? (program, instrument, etc)
+// Can the user view the misc. info? (program, instrument, etc)
 function auth_view_misc_info($user_id, $user_type) {
   return TRUE;
 }
-//Can the user edit the misc. info? (program, instrument, etc)
+// Can the user edit the misc. info? (program, instrument, etc)
 function auth_edit_misc_info($user_id, $user_type) {
   return (is_same_user($user_id) || 
     (user_type_greater_than($user_type) && user_type_greater_eq(3)));
 }
-//Can the user delete this profile?
+// Can the user delete this profile?
 function auth_delete_account($user_id, $user_type) {
   return (user_type_greater_eq(3) || user_type_greater_than($user_id));
 }
-//Can the user perform a password reset on this profile?
+// Can the user perform a password reset on this profile?
 function auth_password_reset($user_id, $user_type) {
   return (user_type_greater_eq(3) || user_type_greater_than($user_id));
 }
 
 // Event authentication functions
 
-//Can the user view events?
+// Can the user view events?
 function auth_view_events() {
   return TRUE;
 }
-//Can the user edit events?
+// Can the user edit events?
 function auth_edit_events() {
   return user_type_greater_eq(2);
 }
-//Can the user delete events?
+// Can the user delete events?
 function auth_delete_events() {
   return user_type_greater_eq(2);
 }
-//Can the user view the full list of event responses?
+// Can the user view the full list of event responses?
 function auth_view_responses() {
   return user_type_greater_eq(2);
 }
