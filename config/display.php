@@ -86,6 +86,18 @@ function print_msg() {
       case "registrationfail":
         echo "Error sending registration email.";
         break;
+      case "fileuploaderror":
+        echo "Error: An unkown error occurred during file upload.";
+        break;
+      case "ziperror":
+        echo "Error: Photo album upload file must be a ZIP archive.";
+        break;
+      case "albumsizeerror":
+        echo "Error: Photo album file size must be at most 20MB.";
+        break;
+      case "albumexistserror":
+        echo "Error: A photo album with that name already exists.";
+        break;
       //Form submission success messages
       case "profileupdatesuccess":
         echo "Profile updated successfully.";

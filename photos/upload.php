@@ -8,8 +8,6 @@
  */
 
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 // Ensure that the user is authorized to upload photos
 if (!auth_upload_photos()) {
@@ -31,7 +29,7 @@ if (!auth_upload_photos()) {
     </tr>
     <tr class="alt" >
       <th>ZIP file</th>
-      <td><input type="file" name="zipfile" /></td>
+      <td><input type="file" name="file" /></td>
     </tr>
     <tr>
       <th></th>

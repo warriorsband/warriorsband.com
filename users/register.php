@@ -9,7 +9,6 @@
 
 $redirect_page = "register";
 require($_SERVER['DOCUMENT_ROOT'].'/auth/auth.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 //Ensure that the user has exec level or above

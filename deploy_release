@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -e
+
+# deploy_release
+#
+# Stashes any uncommitted changes, checks out and pulls the master branch,
+# uploads it to the webserver (prompting for the password for user
+# "warriorsband"), and then checks out the devel branch, restoring stashed
+# changes.
+
+git stash
+git pull origin master
+git checkout master
+rsync -ah --progress --del --exclude-from "deploy_excludes.txt" \
+    ~/Documents/Programming/warriorsband/ \
+    warriorsband@warriorsband.com:~/warriorsband.com/
+git checkout devel
+git stash pop

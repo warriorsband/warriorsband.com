@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+# deploy_devel
+#
+# Checks out the devel branch, stashing any uncommitted changes, and uploads
+# it to the webserver (prompting for the password for user "warriorsband").
+
+git stash
+git pull origin devel
+git checkout devel
+rsync -ah --progress --del --exclude-from "deploy_excludes.txt" \
+    ~/Documents/Programming/warriorsband/ \
+    warriorsband@warriorsband.com:~/warriorsband.com/
+git stash pop
