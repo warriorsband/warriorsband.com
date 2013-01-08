@@ -11,7 +11,7 @@ set -e
 git stash
 git pull origin master
 git checkout master
-rsync -ah --chmod=g+rwx --progress --del --exclude-from "deploy_excludes.txt" \
+rsync -ah --progress --del --exclude-from "deploy_excludes.txt" \
     `dirname $0`/www/ \
     warriorsband@warriorsband.com:~/warriorsband.com/
 git checkout devel
