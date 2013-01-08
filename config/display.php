@@ -132,6 +132,9 @@ function print_msg() {
       case "jointhebandsuccess":
         echo "Form sent successfully.";
         break;
+      case "photouploadsuccess":
+        echo "Photo album uploaded successfully.";
+        break;
       //Confirmation messages
       case "confirmdelete":
         echo "If you are CERTAIN this should be deleted, click the delete ";

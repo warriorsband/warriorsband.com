@@ -12,7 +12,6 @@
 session_start();
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/config/display.php');
 
 // sanitize_album_name(): Returns the given album name with all occurrences of
 //   non-printable or non-ASCII characters removed
@@ -26,6 +25,16 @@ function sanitize_filename($filename) {
   return preg_replace("/[^a-zA-Z0-9_]/", "_", $filename);
 }
 
+// rm_album_dir(): Removes all the files in a directory and then removes the
+//   directory itself.
+function rm_album_dir($dir) {
+  foreach (scandir($dir) as $item) {
+        if ($item == '.' || $item == '..') continue;
+            unlink($dir . "/" . $item);
+  }
+  rmdir($dir);
+}
+
 // Make sure the user is logged in, has sufficient permissions, and that the
 // submitted name/file are appropriate
 if (!logged_in()) {
@@ -35,7 +44,6 @@ if (!auth_upload_photos()) {
   error_and_exit("Insufficient permissions");
 }
 if ($_FILES['file']['error'] > 0) {
-  error_and_exit("DEBUG: 1");
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
 }
 $file_extension = end(explode(".", $_FILES["file"]["name"]));
@@ -59,12 +67,22 @@ if (is_dir($album_dir) || file_exists($album_dir)) {
 // The album does not already exist, so create a directory for it. Remember to
 // delete this directory during cleanup if something fails later on!
 if (!mkdir($album_dir)) {
-  error_and_exit("DEBUG: 2");
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
 }
 
 // Unzip the contents of the zip file into the created directory
-// TODO
+$zip = new ZipArchive;
+if (!$zip->open($_FILES["file"]["tmp_name"])) {
+  rmdir($album_dir);
+  header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
+}
+if (!$zip->extractTo($album_dir)) {
+  rm_album_dir($album_dir);
+  header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
+}
+$zip->close();
 
-exit();
+// Redirect to the album page, indicating that the upload was successful
+// TODO: make this redirect to the actual album page, not the upload page
+header("Location: $domain?page=uploadphotos&msg=photouploadsuccess");
 ?>
