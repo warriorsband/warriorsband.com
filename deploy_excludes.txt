@@ -2,8 +2,4 @@
 .gitignore
 pear
 *.swp
-deploy_devel
-deploy_excludes.txt
-deploy_release
-deploy_working
 images/albums/*

@@ -40,7 +40,7 @@ row_color(TRUE);
 <br/>
 <br/>
 <div style="width:802px;margin:10px;padding:3px;border:1px solid #fed403">
-  <img src="images/misc/national_bball_s1988.jpg" width="800" height="457" />
+  <img src="images/history/national_bball_s1988.jpg" width="800" height="457" />
 </div>
 <p>Letter to Steve Hayman;</p>
 <p>Dear Steve,</p>

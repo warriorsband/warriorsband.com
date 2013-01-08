@@ -37,11 +37,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
     <table id="header" class="contenttable">
       <tr>
         <td class="contenttd logotd">
-          <a href="/"><img id=logo src="/images/logos/logo_small.png" alt="Warriors Band" /></a>
+          <a href="/"><img id=logo src="/images/logo.png" alt="Warriors Band" /></a>
         </td>
         <td class="contenttd headertd">
           <div id="header_text" class="center">
-            <img style="vertical-align:middle" src="/images/logos/uw_crest.png" />
+            <img style="vertical-align:middle" src="/images/uw_crest.png" />
             <span class="header1">University of Waterloo</span><br />
             <span class="header2">WARRIORS BAND</span><br />
             <span class="header3">"One of the Bands in Canada"</span>

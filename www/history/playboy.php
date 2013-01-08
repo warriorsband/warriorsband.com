@@ -96,7 +96,7 @@ row_color(TRUE);
 </p>
 <hr>
 <p>
-  To see the original click <a href="images/misc/playboy.jpg">Here</a>
+  To see the original click <a href="images/history/playboy.jpg">Here</a>
 </p>
 <p>
   I'm not sure if they ever did get a reply

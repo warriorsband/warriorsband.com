@@ -10,6 +10,6 @@ git stash
 git pull origin devel
 git checkout devel
 rsync -ah --chmod=g+rwx --progress --del --exclude-from "deploy_excludes.txt" \
-    ~/Documents/Programming/warriorsband/ \
+    `dirname $0`/www/ \
     warriorsband@warriorsband.com:~/warriorsband.com/
 git stash pop
