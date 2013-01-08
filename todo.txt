@@ -1,0 +1,5 @@
+* Add photo upload form/logic
+* Re-organize the git repo into a site/ directory so that development files
+  can be kept outside of the root web directory
+* Add page to view all photo albums
+* Add page to view all photos in an album
