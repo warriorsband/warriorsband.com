@@ -1,9 +1,9 @@
 <?php
 
 /*
- *  photos/upload.php
+ *  albums/upload.php
  *  
- *  A form which posts to photos/upload-exec.php in order to upload a photo
+ *  A form which posts to albums/upload-exec.php in order to upload a photo
  *  album (in a .zip archive) to the website.
  */
 
@@ -21,7 +21,7 @@ if (!auth_upload_photos()) {
   TODO: add photo upload instructions here
   <br /><br />
 </div>
-<form action="/photos/upload-exec.php" method="POST" enctype="multipart/form-data">
+<form action="/albums/upload-exec.php" method="POST" enctype="multipart/form-data">
   <table>
     <tr>
       <th>Album name</th>

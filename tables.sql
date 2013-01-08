@@ -42,6 +42,14 @@ CREATE TABLE `event_responses`
     PRIMARY KEY (`response_id`)
 );
 
+CREATE TABLE `photo_albums`
+(
+    `album_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(255) NOT NULL,
+    `date_posted` DATE,
+    PRIMARY KEY (`album_id`)
+);
+
 INSERT INTO users (`status`, `email`, `password`, `last_name`, `first_name`, `last_login_attempt`, `user_type`) VALUES
 (
     1,

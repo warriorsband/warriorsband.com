@@ -167,7 +167,7 @@ if (isset($_GET['page'])) {
       require($_SERVER['DOCUMENT_ROOT'].'/users/register.php');
       break;
     case "uploadphotos":
-      require($_SERVER['DOCUMENT_ROOT'].'/photos/upload.php');
+      require($_SERVER['DOCUMENT_ROOT'].'/albums/upload.php');
       break;
     case "users":
       require($_SERVER['DOCUMENT_ROOT'].'/users/users.php');

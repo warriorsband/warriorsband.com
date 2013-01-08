@@ -1,7 +1,7 @@
 <?php
 
 /*
- *  photos/upload-exec.php
+ *  albums/upload-exec.php
  *
  *  Takes a ZIP file containing photos, and extracts them into a folder in the
  *  images directory to create an album viewable on the website. Also tries
