@@ -1,3 +1,6 @@
-* Add photo upload form/logic
-* Add page to view all photo albums
+* Complete photo upload logic
+* Add page to view a text list of all photo albums
 * Add page to view all photos in an album
+* Add photo preview to photo albums page
+* Do review of all source code files, add comments, think about security/reliability etc
+* Document site development process (how to use git, how to add a page, etc)
