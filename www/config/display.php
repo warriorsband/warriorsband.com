@@ -98,6 +98,9 @@ function print_msg() {
       case "albumexistserror":
         echo "Error: A photo album with that name already exists.";
         break;
+      case "unsupportedimageformaterror":
+        echo "Error: Uploaded archive contains an unsupported image type.";
+        break;
       //Form submission success messages
       case "profileupdatesuccess":
         echo "Profile updated successfully.";
