@@ -22,7 +22,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/albums/album-functions.php');
 function clear_temp_dir() {
   rm_all_files($photo_temp_dir);
 }
-function undo_db_entry($title) {
+function undo_db_entry($mysqli, $title) {
   $mysqli->query(
     "DELETE FROM `photo_albums` " .
     "WHERE `title`='$title'" );
@@ -49,7 +49,7 @@ if ($_FILES['file']['type'] != "application/zip" || $file_extension != "zip") {
   header("Location: $domain?page=uploadphotos&msg=ziperror");
   exit();
 }
-if ($_FILES['file']['size'] > 20000) {
+if ($_FILES['file']['size'] > 20000000) {
   header("Location: $domain?page=uploadphotos&msg=albumsizeerror");
   exit();
 }
@@ -87,22 +87,24 @@ $album_id = $id_row[0];
 $album_dir = $photo_album_dir . "/" . $album_id;
 $album_images_dir = $album_dir . "/images";
 $album_temp_dir = $album_dir . "/temp";
-$album_thumbs_dir = $album_dir . "/thumbs_dir";
+$album_thumbs_dir = $album_dir . "/thumbs";
+$old = umask(0); //required to set directory permissions properly
 if ( !mkdir($album_dir, 0775) ||
      !mkdir($album_images_dir, 0775) ||
      !mkdir($album_temp_dir, 0775) ||
      !mkdir($album_thumbs_dir, 0775) ) {
-  undo_db_entry();
+  undo_db_entry($mysqli, $album_name);
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
   exit();
 }
+umask($old); //reset umask
 
 // Unzip the contents of the zip file into the temp directory
 $zip = new ZipArchive;
 if ( !$zip->open($_FILES["file"]["tmp_name"]) ||
      !$zip->extractTo($album_temp_dir) ) {
   rm_album_dir($album_dir);
-  undo_db_entry();
+  undo_db_entry($mysqli, $album_name);
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
   exit();
 }
@@ -112,10 +114,10 @@ $zip->close();
 // thumbs/. If a non-JPEG file is encountered, exit.
 foreach (scandir($album_temp_dir) as $item) {
   if ($item == '.' || $item == '..') continue;
-  list($width, $height, $image_type) = getimagesize($album_temp_dir . $item);
+  list($width, $height, $image_type) = getimagesize($album_temp_dir . "/" . $item);
   if ($image_type != IMAGETYPE_JPEG) {
     rm_album_dir($album_dir);
-    undo_db_entry();
+    undo_db_entry($mysqli, $album_name);
     header("Location: $domain?page=uploadphotos&msg=unsupportedimageformaterror");
     exit();
   }
@@ -125,17 +127,24 @@ foreach (scandir($album_temp_dir) as $item) {
     $width, $height, $photo_thumb_width, $photo_thumb_height);
   $image_bounded = imagecreatetruecolor($bounded_width, $bounded_height);
   $image_thumb = imagecreatetruecolor($thumb_width, $thumb_height);
-  $image = imagecreatefromjpeg($album_temp_dir . $item);
-  imagecopyresampled( $image_bounded, $image, 0, 0, 0, 0,
-    $bounded_width, $bounded_height, $width, $height );
-  imagecopyresampled( $image_thumb, $image, 0, 0, 0, 0,
-    $thumb_width, $thumb_height, $width, $height );
-  imagejpeg($image_bounded, $album_image_dir . $item, 100);
-  imagejpeg($image_thumb, $album_thumb_dir . $item, 100);
+  $image = imagecreatefromjpeg($album_temp_dir . "/" . $item);
+  if ( !imagecopyresampled( $image_bounded, $image, 0, 0, 0, 0,
+         $bounded_width, $bounded_height, $width, $height ) ||
+       !imagecopyresampled( $image_thumb, $image, 0, 0, 0, 0,
+         $thumb_width, $thumb_height, $width, $height ) ||
+       !imagejpeg($image_bounded, $album_images_dir . "/" . $item, 100) ||
+       !imagejpeg($image_thumb, $album_thumbs_dir . "/" . $item, 100) ) {
+    rm_album_dir($album_dir);
+    undo_db_entry($mysqli, $album_name);
+    header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
+    exit();
+  }
 }
+echo "DEBUG: image resize success.";
 
 // Success! Remove the temp directory.
 rm_all_dir($album_temp_dir);
+echo "DEBUG: temp dir removed.";
 
 // Redirect to the album page, indicating that the upload was successful
 // TODO: make this redirect to the actual album page, not the upload page
