@@ -23,15 +23,19 @@ if (!auth_upload_photos()) {
 </div>
 <form action="/albums/upload-exec.php" method="POST" enctype="multipart/form-data">
   <table>
-    <tr>
+    <tr <?php echo row_color() ?> >
       <th>Album name</th>
       <td><input type="text" name="album_name" maxlength="64" /></td>
     </tr>
-    <tr class="alt" >
+    <tr <?php echo row_color() ?> >
+      <th>Description</th>
+      <td><textarea name="description" rows="6" cols="80" maxlength="10000"><?php echo $details; ?></textarea></td>
+    </tr>
+    <tr <?php echo row_color() ?> >
       <th>ZIP file</th>
       <td><input type="file" name="file" /></td>
     </tr>
-    <tr>
+    <tr <?php echo row_color() ?> >
       <th></th>
       <td style="text-align:center"><input style="width:150px" type="submit" value="Upload Photo Album" /></td>
     </tr>

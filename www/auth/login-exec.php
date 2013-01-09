@@ -69,7 +69,7 @@ if (!$user_row) {
 $last_login_attempt = strtotime($user_row['last_login_attempt']);
 if ($user_row['login_attempts'] >= $max_login_attempts
   && (time() - $last_login_attempt) < $login_cooldown) {
-  redirect_and_exit("maxlogin");
+  redirect_and_exit("maxlogins");
 }
 
 //Update last login attempt time, and number of login attempts

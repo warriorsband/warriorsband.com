@@ -190,6 +190,11 @@ function auth_view_emails() {
   return user_type_greater_eq(2);
 }
 
+// Can the user view photos?
+function auth_view_photos() {
+  return TRUE;
+}
+
 // Can the user upload photos?
 function auth_upload_photos() {
   return user_type_greater_eq(2);

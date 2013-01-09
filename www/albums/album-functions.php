@@ -7,11 +7,7 @@
  *
  */
 
-// sanitize_album_name(): Returns the given album name with all occurrences of
-//   non-printable or non-ASCII characters removed
-function sanitize_album_name($filename) {
-  return preg_replace("/[^\x20-\x7E]+/", "", $filename);
-}
+require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 
 // rm_all_files(): Removes all the files in a directory (doesn't handle 
 //   directories)

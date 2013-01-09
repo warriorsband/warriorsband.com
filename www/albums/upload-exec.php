@@ -40,6 +40,17 @@ if (!logged_in()) {
 if (!auth_upload_photos()) {
   error_and_exit("Insufficient permissions");
 }
+if (!isset($_POST['album_name']) ||
+    strlen($_POST['album_name']) <= 0 ||
+    strlen($_POST['album_name']) > 64) {
+  header("Location: $domain?page=uploadphotos&msg=invalidalbumnameerror");
+  exit();
+}
+if (isset($_POST['description']) &&
+    strlen($_POST['description']) > 256) {
+  header("Location: $domain?page=uploadphotos&msg=invalidalbumdescriptionerror");
+  exit();
+}
 if ($_FILES['file']['error'] > 0) {
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
   exit();
@@ -55,7 +66,8 @@ if ($_FILES['file']['size'] > 20000000) {
 }
 
 // Sanitize user inputs
-$album_name = sanitize_album_name($_POST['album_name']);
+$album_name = sanitize($_POST['album_name']);
+$description = sanitize($_POST['description']);
 
 // Exit if an album with the same name exists already
 $album_row = $mysqli->query(
@@ -74,8 +86,8 @@ if ($album_row[0] > 0) {
 // name)
 $mysqli->query(
   "INSERT INTO `photo_albums` " .
-  "(`title`,`date_uploaded`) " .
-  "VALUES ('$album_name', NOW())" );
+  "(`title`,`description`,`date_uploaded`) " .
+  "VALUES ('$album_name', '$description', NOW())" );
 handle_sql_error($mysqli);
 
 // Get the album ID and create a directory for the album using the ID
@@ -112,6 +124,7 @@ $zip->close();
 
 // For each image in the temp directory, create resized copies in images/ and
 // thumbs/. If a non-JPEG file is encountered, exit.
+$counter = 0;
 foreach (scandir($album_temp_dir) as $item) {
   if ($item == '.' || $item == '..') continue;
   list($width, $height, $image_type) = getimagesize($album_temp_dir . "/" . $item);
@@ -128,23 +141,23 @@ foreach (scandir($album_temp_dir) as $item) {
   $image_bounded = imagecreatetruecolor($bounded_width, $bounded_height);
   $image_thumb = imagecreatetruecolor($thumb_width, $thumb_height);
   $image = imagecreatefromjpeg($album_temp_dir . "/" . $item);
-  if ( !imagecopyresampled( $image_bounded, $image, 0, 0, 0, 0,
-         $bounded_width, $bounded_height, $width, $height ) ||
-       !imagecopyresampled( $image_thumb, $image, 0, 0, 0, 0,
-         $thumb_width, $thumb_height, $width, $height ) ||
-       !imagejpeg($image_bounded, $album_images_dir . "/" . $item, 100) ||
-       !imagejpeg($image_thumb, $album_thumbs_dir . "/" . $item, 100) ) {
+  imagecopyresampled( $image_bounded, $image, 0, 0, 0, 0,
+    $bounded_width, $bounded_height, $width, $height );
+  imagecopyresampled( $image_thumb, $image, 0, 0, 0, 0,
+    $thumb_width, $thumb_height, $width, $height );
+  $outfile = str_pad($counter, 4, "0", STR_PAD_LEFT);
+  if ( !imagejpeg($image_bounded, $album_images_dir . "/" . $outfile, 100) ||
+       !imagejpeg($image_thumb, $album_thumbs_dir . "/" . $outfile, 100) ) {
     rm_album_dir($album_dir);
     undo_db_entry($mysqli, $album_name);
     header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
     exit();
   }
+  $counter++;
 }
-echo "DEBUG: image resize success.";
 
 // Success! Remove the temp directory.
 rm_all_dir($album_temp_dir);
-echo "DEBUG: temp dir removed.";
 
 // Redirect to the album page, indicating that the upload was successful
 // TODO: make this redirect to the actual album page, not the upload page

@@ -66,6 +66,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=history">History</a>
             </td></tr>
+            <!--
+            <tr <?php echo row_color() ?> ><td>
+              <a href="/?page=history">Photos</a>
+            </td></tr>
+            -->
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=events">Events</a>
             </td></tr>
@@ -117,6 +122,9 @@ if (isset($_GET['page'])) {
       break;
     case "about":
       require($_SERVER['DOCUMENT_ROOT'].'/about.php');
+      break;
+    case "albumlist":
+      require($_SERVER['DOCUMENT_ROOT'].'/albums/albumlist.php');
       break;
     case "bugreport":
       require($_SERVER['DOCUMENT_ROOT'].'/bugreport.php');

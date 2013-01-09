@@ -45,8 +45,9 @@ CREATE TABLE `event_responses`
 CREATE TABLE `photo_albums`
 (
     `album_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(255) NOT NULL,
-    `date_uploaded` DATE,
+    `title` VARCHAR(64) NOT NULL,
+    `description` VARCHAR(255) NOT NULL,
+    `date_uploaded` DATE NOT NULL,
     PRIMARY KEY (`album_id`)
 );
 

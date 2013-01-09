@@ -86,6 +86,12 @@ function print_msg() {
       case "registrationfail":
         echo "Error sending registration email.";
         break;
+      case "invalidalbumnameerror":
+        echo "Error: Album name must be non-empty and at most 64 characters.";
+        break;
+      case "invalidalbumdescriptionerror":
+        echo "Error: Album description must be at most 256 characters.";
+        break;
       case "fileuploaderror":
         echo "Error: An unkown error occurred during file upload.";
         break;
