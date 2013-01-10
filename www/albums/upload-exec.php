@@ -145,7 +145,7 @@ foreach (scandir($album_temp_dir) as $item) {
     $bounded_width, $bounded_height, $width, $height );
   imagecopyresampled( $image_thumb, $image, 0, 0, 0, 0,
     $thumb_width, $thumb_height, $width, $height );
-  $outfile = str_pad($counter, 4, "0", STR_PAD_LEFT);
+  $outfile = str_pad($counter, 4, "0", STR_PAD_LEFT) . ".jpg";
   if ( !imagejpeg($image_bounded, $album_images_dir . "/" . $outfile, 100) ||
        !imagejpeg($image_thumb, $album_thumbs_dir . "/" . $outfile, 100) ) {
     rm_album_dir($album_dir);
@@ -161,7 +161,7 @@ rm_all_dir($album_temp_dir);
 
 // Redirect to the album page, indicating that the upload was successful
 // TODO: make this redirect to the actual album page, not the upload page
-header("Location: $domain?page=uploadphotos&msg=photouploadsuccess");
+header("Location: $domain?page=albumlist&msg=photouploadsuccess");
 exit();
 
 ?>

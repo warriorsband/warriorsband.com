@@ -200,6 +200,11 @@ function auth_upload_photos() {
   return user_type_greater_eq(2);
 }
 
+// Can the user delete photos?
+function auth_delete_photos() {
+  return user_type_greater_eq(2);
+}
+
 // Profile authentication functions
 
 // Can the user view this profile?

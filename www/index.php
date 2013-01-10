@@ -37,7 +37,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
     <table id="header" class="contenttable">
       <tr>
         <td class="contenttd logotd">
-          <a href="/"><img id=logo src="/images/logo.png" alt="Warriors Band" /></a>
+          <a href="/"><img id="logo" src="/images/logo.png" alt="Warriors Band" /></a>
         </td>
         <td class="contenttd headertd">
           <div id="header_text" class="center">
@@ -122,6 +122,9 @@ if (isset($_GET['page'])) {
       break;
     case "about":
       require($_SERVER['DOCUMENT_ROOT'].'/about.php');
+      break;
+    case "album":
+      require($_SERVER['DOCUMENT_ROOT'].'/albums/album.php');
       break;
     case "albumlist":
       require($_SERVER['DOCUMENT_ROOT'].'/albums/albumlist.php');

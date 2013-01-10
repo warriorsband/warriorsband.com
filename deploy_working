@@ -6,6 +6,6 @@ set -e
 # Uploads the working directory to the webserver (prompting for the password
 # for user "warriorsband").
 
-rsync -ah --progress --del --exclude-from "deploy_excludes.txt" \
+rsync -hprt --progress --del --exclude-from "deploy_excludes.txt" \
     `dirname $0`/www/ \
     warriorsband@warriorsband.com:~/warriorsband.com/

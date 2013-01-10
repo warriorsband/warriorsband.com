@@ -144,6 +144,9 @@ function print_msg() {
       case "photouploadsuccess":
         echo "Photo album uploaded successfully.";
         break;
+      case "albumdeletesuccess":
+        echo "Photo album deleted successfully.";
+        break;
       //Confirmation messages
       case "confirmdelete":
         echo "If you are CERTAIN this should be deleted, click the delete ";
