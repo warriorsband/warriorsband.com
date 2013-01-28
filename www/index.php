@@ -183,48 +183,13 @@ if (isset($_GET['page'])) {
       require($_SERVER['DOCUMENT_ROOT'].'/404.php');
   }
 } else { ?>
-          <div class="ctext8">
-            Woo, new site!<br />
-            If you're lost, try the links on the left, or scroll down to view
-            a list of site features. If something isn't displaying correctly on your browser, or 
-            you find any other problems with the site, please let Paul know with the Bug Report link 
-            on the left. Thanks!
-          </div>
-          <br /><br />
           <div class="center">
             <img src="/images/band_photo.jpg" />
           </div>
           <br />
-          <div style="width:600px; margin:0 auto">
-            Current main features of the site:
-            <ul>
-              <li>
-                <span class="emph">Accounts/profiles:</span>
-                You can be registered by e-mail, log in, and edit your profile
-              </li>
-              <li>
-                <span class="emph">Events:</span>
-                Execs can create events for all to see
-              </li>
-              <li>
-                <span class="emph">Event Responses:</span>
-                You can let us know which events you can attend, and see who's attending each event
-              </li>
-              <li>
-                <span class="emph">Member List:</span>
-                See who's in the band and find out a bit about them
-              </li>
-              <li>
-                <span class="emph">E-mail Notifications:</span>
-                New members get a registration e-mail, and all members get a notification e-mail when an 
-                event needs responses
-              </li>
-            </ul>
-            <br />
+          <div class="ctext6">
             Next things on Paul's list of stuff to do
             <ul>
-              <li>Photos page (admin can upload .zip file of appropriately-sized .jpg's and a new album 
-              gets created. Admins can delete albums also.)</li>
               <li>Limited surveys (execs can create small surveys, members get an e-mail reminder and 
               can log in to fill them out similarly to event responses)</li>
               <li>Stats page (view number of on-campus band members and whatever other band stats
@@ -239,7 +204,7 @@ if (isset($_GET['page'])) {
         <td colspan="2" class="contenttd center">
           <br /><br />
           University of Waterloo | 200 University Ave. W. | Waterloo, Ontario, Canada | N2L 
-          3G1 | 519.888.4567 | <a href="http://www.uwaterloo.ca">www.uwaterloo.ca</a>
+          3G1
         </td>
       </tr>
     </table>

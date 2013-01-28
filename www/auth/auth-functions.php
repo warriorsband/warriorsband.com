@@ -197,7 +197,7 @@ function auth_view_photos() {
 
 // Can the user upload photos?
 function auth_upload_photos() {
-  return user_type_greater_eq(2);
+  return user_type_greater_eq(3);
 }
 
 // Can the user delete photos?
