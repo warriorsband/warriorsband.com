@@ -36,8 +36,9 @@ if ($photo_id < 0 || $photo_id > 9999) {
 }
 
 // Build the full path to the image
-$photo_path = "images/albums/$album_id/images/" .
+$photo_linkpath = "images/albums/$album_id/images/" .
   str_pad($photo_id, 4, "0", STR_PAD_LEFT) . ".jpg";
+$photo_filepath = $_S
 
 // Build links to previous/next images
 if ($photo_id > 0) {
@@ -48,6 +49,9 @@ $next_id = str_pad(intval($photo_id) + 1, 4, "0", STR_PAD_LEFT);
 if (is_file($photo_album_dir . "/" . $album_id . "/images/" . $next_id . ".jpg")) {
   $next_path = "$domain?page=album&album_id=$album_id&photo_id=$next_id";
 }
+
+// Get image dimensions for centering and putting a border around the image
+list($image_width, $image_height) = getimagesize(
 
 ?>
 
@@ -69,4 +73,6 @@ if (is_file($photo_album_dir . "/" . $album_id . "/images/" . $next_id . ".jpg")
   </tr>
 </table>
 <br/><br/>
-<img id="photo" src="<?php echo $photo_path?>" />
+<div class="albumimage">
+  <img id="photo" src="<?php echo $photo_linkpath?>" />
+</div>

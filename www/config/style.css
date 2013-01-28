@@ -147,12 +147,14 @@ h2 {
 h3 {
     margin-bottom: 40px;
 }
+/* Properties of the error/notification dialog box */
 div.msg {
     text-align: center;
     border: 1px solid #fed403;
     padding: 5px;
     margin: 20px;
 }
+/* Centered divs of different widths */
 div.ctext6 {
     text-align: left;
     width:600px;
@@ -162,4 +164,10 @@ div.ctext8 {
     text-align: left;
     width:800px;
     margin: 0 auto;
+}
+/* Div used to contain a single photo album image, adding a margin and border */
+div.albumimage {
+    margin: 0 auto;
+    padding: 3px;
+    border: 1px solid #fed403;
 }
