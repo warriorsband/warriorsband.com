@@ -28,7 +28,7 @@ $album_id = sanitize($_GET['album_id']);
 $photo_id = sanitize($_GET['photo_id']);
 
 // Make sure album and photo IDs are valid
-if (!is_dir($photo_album_dir . "/" . $album_id)) {
+if (!is_dir($photo_album_abs_path . "/" . $album_id)) {
   error_and_exit("No photo album with that ID exists.");
 }
 if ($photo_id < 0 || $photo_id > 9999) {
@@ -36,9 +36,9 @@ if ($photo_id < 0 || $photo_id > 9999) {
 }
 
 // Build the full path to the image
-$photo_linkpath = "images/albums/$album_id/images/" .
-  str_pad($photo_id, 4, "0", STR_PAD_LEFT) . ".jpg";
-$photo_filepath = $_S
+$photo_path_suffix = "/$album_id/images/" . str_pad($photo_id, 4, "0", STR_PAD_LEFT) . ".jpg";
+$photo_linkpath = $photo_album_rel_path . $photo_path_suffix;
+$photo_filepath = $photo_album_abs_path . $photo_path_suffix;
 
 // Build links to previous/next images
 if ($photo_id > 0) {
@@ -46,12 +46,12 @@ if ($photo_id > 0) {
   $prev_path = "$domain?page=album&album_id=$album_id&photo_id=$prev_id";
 }
 $next_id = str_pad(intval($photo_id) + 1, 4, "0", STR_PAD_LEFT);
-if (is_file($photo_album_dir . "/" . $album_id . "/images/" . $next_id . ".jpg")) {
+if (is_file($photo_album_abs_path . "/" . $album_id . "/images/" . $next_id . ".jpg")) {
   $next_path = "$domain?page=album&album_id=$album_id&photo_id=$next_id";
 }
 
 // Get image dimensions for centering and putting a border around the image
-list($image_width, $image_height) = getimagesize(
+list($image_width, $image_height) = getimagesize( $photo_filepath );
 
 ?>
 
@@ -73,6 +73,6 @@ list($image_width, $image_height) = getimagesize(
   </tr>
 </table>
 <br/><br/>
-<div class="albumimage">
-  <img id="photo" src="<?php echo $photo_linkpath?>" />
+<div class="albumimage" style="width:<?php echo $image_width?>px">
+  <img id="photo" src="<?php echo $photo_linkpath?>" width="<?php echo $image_width?>" height="<?php echo $image_height?>"/>
 </div>

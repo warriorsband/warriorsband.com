@@ -26,9 +26,10 @@ if ($result->num_rows == 0) {
 
 <h1>Photo Albums</h1>
 <br />
-<div class="ctext8">
-  Eventually this will have thumbnail previews for each album and will
-  generally be prettier.
+<div class="ctext6">
+  Eventually this will be a nice grid of album previews instead of one 
+  column. The album page will also be a grid of photo previews instead of 
+  just taking you to the first image.
   <br /><br />
 </div>
 <?php
@@ -46,6 +47,7 @@ if(auth_view_photos()) {
 ?>
 <table>
   <tr>
+    <th></th>
     <th>Title</th>
     <th>Description</th>
 <?php if (auth_delete_photos()) { ?>
@@ -54,8 +56,11 @@ if(auth_view_photos()) {
   </tr>
 <?php
     while ($album_row = $result->fetch_assoc()) {
+      $image_preview_path = $photo_album_rel_path . "/" . $album_row['album_id'] . "/thumbs/0000.jpg";
+      $album_link = $domain . '?page=album&amp;album_id=' . $album_row['album_id'] . '&amp;photo_id=0000';
       echo '<tr>';
-      echo '<td><a href="' . $domain . '?page=album&amp;album_id=' . $album_row['album_id'] . '&amp;photo_id=0000">' . $album_row['title'] . '</a></td>';
+      echo '<td><a href="' . $album_link . '"><img src="' . $image_preview_path . '"/></a></td>';
+      echo '<td><a href="' . $album_link . '">' . $album_row['title'] . '</a></td>';
       echo "<td>" . $album_row['description'] . "</td>";
       if (auth_delete_photos()) { ?>
 <td>
