@@ -66,9 +66,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=history">History</a>
             </td></tr>
+            <!--
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=albumlist">Photos</a>
             </td></tr>
+            --!>
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=events">Events</a>
             </td></tr>
@@ -99,9 +101,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=event">Create new event</a>
             </td></tr>
+            <!--
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=uploadphotos">Upload photos</a>
             </td></tr>
+            --!>
 <?php } } else { ?>
             <tr <?php echo row_color() ?> ><td>
               <a href="/?page=login">Login</a>

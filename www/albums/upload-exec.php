@@ -52,6 +52,7 @@ if (isset($_POST['description']) &&
   exit();
 }
 if ($_FILES['file']['error'] > 0) {
+  //echo 'ERROR: Error uploading file. Code: ' . $_FILES['file']['error']; //DEBUG
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
   exit();
 }
@@ -106,6 +107,7 @@ if ( !mkdir($album_dir, 0775) ||
      !mkdir($album_temp_dir, 0775) ||
      !mkdir($album_thumbs_dir, 0775) ) {
   undo_db_entry($mysqli, $album_name);
+  //echo 'ERROR: Unable to make directories on server for album.'; //DEBUG
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
   exit();
 }
@@ -117,6 +119,7 @@ if ( !$zip->open($_FILES["file"]["tmp_name"]) ||
      !$zip->extractTo($album_temp_dir) ) {
   rm_album_dir($album_dir);
   undo_db_entry($mysqli, $album_name);
+  //echo 'ERROR: Unable to unzip ZIP file.'; //DEBUG
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
   exit();
 }
@@ -150,6 +153,7 @@ foreach (scandir($album_temp_dir) as $item) {
        !imagejpeg($image_thumb, $album_thumbs_dir . "/" . $outfile, 100) ) {
     rm_album_dir($album_dir);
     undo_db_entry($mysqli, $album_name);
+    //echo 'ERROR: Error making resized JPEG.'; //DEBUG
     header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
     exit();
   }
