@@ -171,3 +171,16 @@ div.albumimage {
     padding: 3px;
     border: 1px solid #fed403;
 }
+
+/* Photo album grid */
+li.photoalbum {
+    border: 1px solid #fed403;
+    float: left;
+    list-style: none;
+    margin: 10px;
+    padding: 3px;
+    width: 2.5cm;
+}
+ul.photoalbum {
+    padding-left: 0;
+} 

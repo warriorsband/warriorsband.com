@@ -15,43 +15,41 @@ if (!auth_view_photos()) {
   print_and_exit("You are not authorized to view photos.");
 }
 
-// Ensure that the album ID and photo number have been specified
+// Ensure that the album ID has been specified, get its value, and validate it
 if (!isset($_GET['album_id'])) {
   error_and_exit("No album ID specified");
 }
-if (!isset($_GET['photo_id'])) {
-  error_and_exit("No photo ID specified");
-}
-
-// Get the album and photo ID values
 $album_id = sanitize($_GET['album_id']);
-$photo_id = sanitize($_GET['photo_id']);
-
-// Make sure album and photo IDs are valid
 if (!is_dir($photo_album_abs_path . "/" . $album_id)) {
   error_and_exit("No photo album with that ID exists.");
 }
-if ($photo_id < 0 || $photo_id > 9999) {
-  error_and_exit("Invalid photo ID.");
-}
 
-// Build the full path to the image
-$photo_path_suffix = "/$album_id/images/" . str_pad($photo_id, 4, "0", STR_PAD_LEFT) . ".jpg";
-$photo_linkpath = $photo_album_rel_path . $photo_path_suffix;
-$photo_filepath = $photo_album_abs_path . $photo_path_suffix;
 
-// Build links to previous/next images
-if ($photo_id > 0) {
-  $prev_id = str_pad(intval($photo_id) - 1, 4, "0", STR_PAD_LEFT);
-  $prev_path = "$domain?page=album&album_id=$album_id&photo_id=$prev_id";
-}
-$next_id = str_pad(intval($photo_id) + 1, 4, "0", STR_PAD_LEFT);
-if (is_file($photo_album_abs_path . "/" . $album_id . "/images/" . $next_id . ".jpg")) {
-  $next_path = "$domain?page=album&album_id=$album_id&photo_id=$next_id";
-}
+// If a photo ID has been specified, display that image
+if (isset($_GET['photo_id'])) {
+  // Get the ID value and validate it
+  $photo_id = sanitize($_GET['photo_id']);
+  if ($photo_id < 0) {
+    error_and_exit("Invalid photo ID.");
+  }
 
-// Get image dimensions for centering and putting a border around the image
-list($image_width, $image_height) = getimagesize( $photo_filepath );
+  // Build the full path to the image
+  $photo_path_suffix = "/$album_id/images/" . str_pad($photo_id, 4, "0", STR_PAD_LEFT) . ".jpg";
+  $photo_linkpath = $photo_album_rel_path . $photo_path_suffix;
+  $photo_filepath = $photo_album_abs_path . $photo_path_suffix;
+
+  // Build links to previous/next images
+  if ($photo_id > 0) {
+    $prev_id = str_pad(intval($photo_id) - 1, 4, "0", STR_PAD_LEFT);
+    $prev_path = "$domain?page=album&album_id=$album_id&photo_id=$prev_id";
+  }
+  $next_id = str_pad(intval($photo_id) + 1, 4, "0", STR_PAD_LEFT);
+  if (is_file($photo_album_abs_path . "/" . $album_id . "/images/" . $next_id . ".jpg")) {
+    $next_path = "$domain?page=album&album_id=$album_id&photo_id=$next_id";
+  }
+
+  // Get image dimensions for centering and putting a border around the image
+  list($image_width, $image_height) = getimagesize( $photo_filepath );
 ?>
 
 <table style="width:100%">
@@ -95,3 +93,16 @@ list($image_width, $image_height) = getimagesize( $photo_filepath );
     </td>
   </tr>
 </table>
+
+<?php
+}
+// If no photo ID was specified, display thumbnails of the whole album
+else {
+?>
+  <ul class="photoalbum">
+    <li class="photoalbum">item 1</li>
+    <li class="photoalbum">item 2</li>
+  </ul>
+<?php
+}
+?>

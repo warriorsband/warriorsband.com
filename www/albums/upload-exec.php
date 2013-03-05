@@ -20,7 +20,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/albums/album-functions.php');
 // preceding steps to be undone.
 
 function clear_temp_dir() {
-  rm_all_files($photo_temp_dir);
+  rm_recursive($photo_temp_dir, FALSE);
 }
 function undo_db_entry($mysqli, $title) {
   $mysqli->query(
@@ -117,7 +117,7 @@ umask($old); //reset umask
 $zip = new ZipArchive;
 if ( !$zip->open($_FILES["file"]["tmp_name"]) ||
      !$zip->extractTo($album_temp_dir) ) {
-  rm_album_dir($album_dir);
+  rm_recursive($album_dir, TRUE);
   undo_db_entry($mysqli, $album_name);
   //echo 'ERROR: Unable to unzip ZIP file.'; //DEBUG
   header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
@@ -132,7 +132,7 @@ foreach (scandir($album_temp_dir) as $item) {
   if ($item == '.' || $item == '..') continue;
   list($width, $height, $image_type) = getimagesize($album_temp_dir . "/" . $item);
   if ($image_type != IMAGETYPE_JPEG) {
-    rm_album_dir($album_dir);
+    rm_recursive($album_dir, TRUE);
     undo_db_entry($mysqli, $album_name);
     header("Location: $domain?page=uploadphotos&msg=unsupportedimageformaterror");
     exit();
@@ -151,7 +151,7 @@ foreach (scandir($album_temp_dir) as $item) {
   $outfile = str_pad($counter, 4, "0", STR_PAD_LEFT) . ".jpg";
   if ( !imagejpeg($image_bounded, $album_images_dir . "/" . $outfile, 100) ||
        !imagejpeg($image_thumb, $album_thumbs_dir . "/" . $outfile, 100) ) {
-    rm_album_dir($album_dir);
+    rm_recursive($album_dir, TRUE);
     undo_db_entry($mysqli, $album_name);
     //echo 'ERROR: Error making resized JPEG.'; //DEBUG
     header("Location: $domain?page=uploadphotos&msg=fileuploaderror");
@@ -161,7 +161,7 @@ foreach (scandir($album_temp_dir) as $item) {
 }
 
 // Success! Remove the temp directory.
-rm_all_dir($album_temp_dir);
+rm_recursive($album_temp_dir, TRUE);
 
 // Redirect to the album page, indicating that the upload was successful
 // TODO: make this redirect to the actual album page, not the upload page

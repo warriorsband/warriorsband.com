@@ -17,7 +17,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/config/database.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/albums/album-functions.php');
 
-
 // An album ID is required in order to change settings. If none is provided, 
 // show an error and exit.
 if (!isset($_POST['album_id']) || $_POST['album_id'] < 0) {
@@ -38,7 +37,9 @@ $mysqli->query(
 handle_sql_error($mysqli);
 
 // Delete the album from disk
-rm_album_dir($photo_album_dir . "/" . $album_id);
+echo "starting delete"; //DEBUG
+rm_recursive($photo_album_abs_path . "/" . $album_id, TRUE);
+echo "ending delete"; //DEBUG
 
 // Success! Redirect to the settings page with the appropriate code.
 header("Location: $domain?page=albumlist&msg=albumdeletesuccess");

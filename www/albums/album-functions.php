@@ -9,28 +9,63 @@
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/auth/auth-functions.php');
 
-// rm_all_files(): Removes all the files in a directory (doesn't handle 
-//   directories)
-function rm_all_files($dir) {
-  foreach (scandir($dir) as $item) {
-    if ($item == '.' || $item == '..') continue;
-    unlink($dir . "/" . $item);
+// rm_recursive(): Recursively deletes everything within a directory,
+//   optionally deleting the directory itself if deldir is TRUE.
+function rm_recursive($directory, $deldir=FALSE) {
+  // if the path has a slash at the end we remove it here
+  if(substr($directory,-1) == '/') {
+    $directory = substr($directory,0,-1);
   }
-}
 
-// rm_all_dir(): Removes all the files in a directory and then removes the
-//   directory itself.
-function rm_all_dir($dir) {
-  rm_all_files($dir);
-  rmdir($dir);
-}
+  // if the path is not valid or is not a directory ...
+  if(!file_exists($directory) || !is_dir($directory)) {
+    // ... we return false and exit the function
+    return FALSE;
 
-// rm_album_dir(): Removes an album directory
-function rm_album_dir($dir) {
-  rm_all_dir($dir . "/images");
-  rm_all_dir($dir . "/temp");
-  rm_all_dir($dir . "/thumbs");
-  rmdir($dir);
+  // ... if the path is not readable
+  } elseif(!is_readable($directory)) {
+    // ... we return false and exit the function
+    return FALSE;
+
+  // ... else if the path is readable
+  } else {
+    // we open the directory
+    $handle = opendir($directory);
+
+    // and scan through the items inside
+    while (FALSE !== ($item = readdir($handle))) {
+      // if the filepointer is not the current directory
+      // or the parent directory
+      if($item != '.' && $item != '..') {
+        // we build the new path to delete
+        $path = $directory.'/'.$item;
+
+        // if the new path is a directory
+        if(is_dir($path)) {
+          // we call this function with the new path
+          rm_recursive($path);
+
+        // if the new path is a file
+        } else {
+          // we remove the file
+          unlink($path);
+        }
+      }
+    }
+    // close the directory
+    closedir($handle);
+
+    if($deldir == TRUE) {
+      // try to delete the now empty directory
+      if(!rmdir($directory)) {
+        // return false if not possible
+        return FALSE;
+      }
+    }
+
+    // return success
+    return TRUE;
+  }
 }
 
 // bound_image_size(): Computes the desired image dimensions to resize an
