@@ -97,7 +97,7 @@ $id_row = $mysqli->query(
   "WHERE `title`='$album_name'")->fetch_row();
 handle_sql_error();
 $album_id = $id_row[0];
-$album_dir = $photo_album_dir . "/" . $album_id;
+$album_dir = $photo_album_abs_path . "/" . $album_id;
 $album_images_dir = $album_dir . "/images";
 $album_temp_dir = $album_dir . "/temp";
 $album_thumbs_dir = $album_dir . "/thumbs";

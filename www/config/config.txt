@@ -47,4 +47,16 @@ $email_password = "YOURPASSWORD";
 //Maximum sizes of various user profile fields and database types
 $maxsize_term = 22;
 $maxsize_instrument = 16;
+
+// Location of photo album directory
+$photo_album_rel_path = 'images/albums';
+$photo_album_abs_path = $_SERVER['DOCUMENT_ROOT'] . '/' . $photo_album_rel_path;
+
+// Maximum width/height of images in photo albums
+$photo_max_width = 1024;
+$photo_max_height = 768;
+// Thumnail max width/height for images in photo albums
+$photo_thumb_width = 256;
+$photo_thumb_height = 192;
+
 ?>
