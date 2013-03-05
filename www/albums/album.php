@@ -52,7 +52,6 @@ if (is_file($photo_album_abs_path . "/" . $album_id . "/images/" . $next_id . ".
 
 // Get image dimensions for centering and putting a border around the image
 list($image_width, $image_height) = getimagesize( $photo_filepath );
-
 ?>
 
 <table style="width:100%">
@@ -74,5 +73,25 @@ list($image_width, $image_height) = getimagesize( $photo_filepath );
 </table>
 <br/><br/>
 <div class="albumimage" style="width:<?php echo $image_width?>px">
-  <img id="photo" src="<?php echo $photo_linkpath?>" width="<?php echo $image_width?>" height="<?php echo $image_height?>"/>
+  <a href="<?php echo $next_path?>">
+    <img id="photo" src="<?php echo $photo_linkpath?>" width="<?php echo $image_width?>" height="<?php echo $image_height?>"/>
+  </a>
 </div>
+<br/><br/>
+<table style="width:100%">
+  <tr>
+    <td style="width:20%;text-align:center">
+<?php if (isset($prev_path)) { ?>
+      <a href="<?php echo $prev_path?>">Prev</a>
+<?php } ?>
+    </td>
+    <td style="width:60%;text-align:center">
+      <a href="<?php echo "$domain?page=albumlist"?>">Back to album list</a>
+    </td>
+    <td style="width:20%;text-align:center">
+<?php if (isset($next_path)) { ?>
+      <a href="<?php echo $next_path?>">Next</a>
+<?php } ?>
+    </td>
+  </tr>
+</table>
