@@ -57,7 +57,7 @@ if(auth_view_photos()) {
 <?php
     while ($album_row = $result->fetch_assoc()) {
       $image_preview_path = $photo_album_rel_path . "/" . $album_row['album_id'] . "/thumbs/0000.jpg";
-      $album_link = $domain . '?page=album&amp;album_id=' . $album_row['album_id'] . '&amp;photo_id=0000';
+      $album_link = $domain . '?page=album&amp;album_id=' . $album_row['album_id'];
       echo '<tr>';
       echo '<td><a href="' . $album_link . '"><img src="' . $image_preview_path . '"/></a></td>';
       echo '<td><a href="' . $album_link . '">' . $album_row['title'] . '</a></td>';

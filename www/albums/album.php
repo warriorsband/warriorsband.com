@@ -60,7 +60,7 @@ if (isset($_GET['photo_id'])) {
 <?php } ?>
     </td>
     <td style="width:60%;text-align:center">
-      <a href="<?php echo "$domain?page=albumlist"?>">Back to album list</a>
+      <a href="<?php echo "$domain?page=album&amp;album_id=$album_id"?>">Back to album</a>
     </td>
     <td style="width:20%;text-align:center">
 <?php if (isset($next_path)) { ?>
@@ -84,7 +84,7 @@ if (isset($_GET['photo_id'])) {
 <?php } ?>
     </td>
     <td style="width:60%;text-align:center">
-      <a href="<?php echo "$domain?page=albumlist"?>">Back to album list</a>
+      <a href="<?php echo "$domain?page=album&amp;album_id=$album_id"?>">Back to album</a>
     </td>
     <td style="width:20%;text-align:center">
 <?php if (isset($next_path)) { ?>
@@ -99,10 +99,26 @@ if (isset($_GET['photo_id'])) {
 // If no photo ID was specified, display thumbnails of the whole album
 else {
 ?>
-  <ul class="photoalbum">
-    <li class="photoalbum">item 1</li>
-    <li class="photoalbum">item 2</li>
-  </ul>
+  <div class="center">
+    <a href="<?php echo "$domain?page=albumlist"?>">Back to album list</a>
+  </div>
+  <br/>
 <?php
+  $dir = opendir($photo_album_abs_path . "/" . $album_id . "/thumbs");
+
+  // Add thumbnails for each image in the album
+  echo "<ul class=\"photoalbum\">\n";
+  while (($file = readdir($dir)) !== false) {
+    if($file === "." || $file === "..") continue;
+    $path_suffix = "/" . $album_id . "/thumbs/" . $file;
+    list($width, $height, $image_type) = getimagesize($photo_album_abs_path . $path_suffix);
+    $photo_linkpath = $photo_album_rel_path . $photo_path_suffix;
+    echo "<li class=\"photoalbum\" style=\"width:" . $width . "px\">\n";
+    echo "<a href=\"$domain?page=album&amp;album_id=$album_id&amp;photo_id=" . substr($file, 0, 4) . "\">";
+    echo "<img src=\"" . $photo_album_rel_path . $path_suffix . "\"/>\n";
+    echo "</a></li>\n";
+  }
+  echo "</ul>";
+  closedir($dir);
 }
 ?>
