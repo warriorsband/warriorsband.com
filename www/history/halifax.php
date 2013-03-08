@@ -34,6 +34,8 @@ row_color(TRUE);
   someone who went on this trip will be able to write something up here 
   soon..........Relatively soon.
 </p>
-<div style="width:562px;margin:10px;padding:3px;border:1px solid #fed403">
-  <img src="images/history/halifax.jpg" width="560" height="391" />
+<div class="center">
+  <span class="imageborder">
+    <img src="images/history/halifax.jpg"/>
+  </span>
 </div>

@@ -37,11 +37,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/auth/timeout.php');
     <table id="header" class="contenttable">
       <tr>
         <td class="contenttd logotd">
-          <a href="/"><img id="logo" src="/images/logo.png" alt="Warriors Band" /></a>
+          <a href="/"><img id="logo" class="logo" src="/images/logo.png" alt="Warriors Band" /></a>
         </td>
         <td class="contenttd headertd">
           <div id="header_text" class="center">
-            <img style="vertical-align:middle" src="/images/uw_crest.png" />
+            <img class="logo" style="vertical-align:middle" src="/images/uw_crest.png" />
             <span class="header1">University of Waterloo</span><br />
             <span class="header2">WARRIORS BAND</span><br />
             <span class="header3">"One of the Bands in Canada"</span>
@@ -184,18 +184,11 @@ if (isset($_GET['page'])) {
   }
 } else { ?>
           <div class="center">
-            <img src="/images/band_photo.jpg" />
-          </div>
-          <br />
-          <div class="ctext6">
-            Next things on Paul's list of stuff to do
-            <ul>
-              <li>Limited surveys (execs can create small surveys, members get an e-mail reminder and 
-              can log in to fill them out similarly to event responses)</li>
-              <li>Stats page (view number of on-campus band members and whatever other band stats
-              I can come up with)</li>
-              <li>Admin control panel (buttons to delete old users, delete all events, etc)</li>
-            </ul>
+            Insert welcome message here!
+            <br /><br />
+            <span class="imageborder">
+              <img src="/images/band_photo.jpg"/>
+            </span>
           </div>
 <?php } ?>
         </td>

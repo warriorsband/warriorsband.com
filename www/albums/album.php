@@ -70,7 +70,7 @@ if (isset($_GET['photo_id'])) {
   </tr>
 </table>
 <br/><br/>
-<div class="albumimage" style="width:<?php echo $image_width?>px">
+<div class="imageborder">
   <a href="<?php echo $next_path?>">
     <img id="photo" src="<?php echo $photo_linkpath?>" width="<?php echo $image_width?>" height="<?php echo $image_height?>"/>
   </a>
@@ -107,7 +107,7 @@ else {
   $dir = opendir($photo_album_abs_path . "/" . $album_id . "/thumbs");
 
   // Add thumbnails for each image in the album
-  echo "<ul class=\"photoalbum\">\n";
+  echo "<ul>\n";
   while (($file = readdir($dir)) !== false) {
     if($file === "." || $file === "..") continue;
     $path_suffix = "/" . $album_id . "/thumbs/" . $file;

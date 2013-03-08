@@ -28,19 +28,18 @@ row_color(TRUE);
   </td></tr>
 </table>
 
-<p>The band was active 
+<div class="center">
+  The band was active 
   in 1988 when the Olympics came to town and became the offical band for 
   the mens Canadian Olympic Basketball Team and even took part in the Olympic 
-  Torch Relay Ceremonies in Kitchener.</p>
+  Torch Relay Ceremonies in Kitchener.
+</div>
 <br/>
 <br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<div style="width:802px;margin:10px;padding:3px;border:1px solid #fed403">
-  <img src="images/history/national_bball_s1988.jpg" width="800" height="457" />
+<div class="center">
+  <span class="imageborder">
+    <img src="images/history/national_bball_s1988.jpg"/>
+  </span>
 </div>
 <p>Letter to Steve Hayman;</p>
 <p>Dear Steve,</p>

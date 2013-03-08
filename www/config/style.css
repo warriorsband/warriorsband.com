@@ -1,3 +1,4 @@
+/* Basic style for the whole site */
 body {
     background-color:#000000;
 	font: 1em Arial, Helvetica, sans-serif;
@@ -23,9 +24,16 @@ th {
     background-color: #fed403;
     color: #000000;
 }
-tr.alt td {
+tr.alt td { /* "alternate" colour for a cell */
     background-color: #111111;
 }
+img { /* Make images blocks to get rid of weird ~3px space below each image */
+    display: block;
+}
+img.logo {
+    display: inline;
+}
+
 /* Used to define page layout using tables */
 table.contenttable, td.contenttd {
     border-style: none;
@@ -37,6 +45,7 @@ table.contenttable, td.contenttd {
 td.contenttd {
     padding: 10px;
 }
+
 /* Table cell containing the band logo */
 td.logotd {
     width: 200px;
@@ -61,26 +70,18 @@ td.content {
     text-align: left;
     vertical-align: top;
 }
-/* divs for holding floating images */
-div.imagefloat {
-    border: 1px solid #fed403;
+
+/* For placing a border around an image, possibly with a text caption */
+.imageborder {
+    display: inline-block;
     margin: 10px;
     padding: 3px;
+    border: 1px solid #fed403;
+    text-align: center;
     font: italic 0.75em Arial, Helvetica, sans-serif;
 }
-div.imagefloat img {
-    border: 1px solid #fed403;
-    vertical-align: middle;
-    margin-bottom: 3px;
-}
-.floatleft {
-    float: left;
-}
-.floatright {
-    float: right;
-}
 
-/* Set the fonts of the page header text */
+/* The fonts of the top bar logo text */
 span.header1 {
 	color: #fed403;
 	font: 1.5em Arial, Helvetica, sans-serif;
@@ -93,46 +94,8 @@ span.header3 {
 	color: #fed403;
 	font: italic 1em Arial, Helvetica, sans-serif;
 }
-/* The small font used for tips and form field explanations */
-span.tiph {
-	color: #000000;
-	font: 0.6875em Arial, Helvetica, sans-serif;
-}
-span.tip {
-	color: #fed403;
-	font: 0.6875em Arial, Helvetica, sans-serif;
-}
-span.emph {
-	color: #ff0000;
-	font: 1em Arial, Helvetica, sans-serif;
-}
-/* Set the look of textboxes and buttons */
-input, textarea, select {
-	color: #000000;
-	background: #ffffcc;
-	border: 1px solid #cc9900;
-}
-input[type="text"] {
-    width: 100%;
-}
-/* Set link colours */
-a:link {
-    color: #ff0000;
-}
-a:visited {
-    color: #cc0000
-}
-/* Shorthands for text alignment */
-.center {
-    text-align: center;
-}
-.justify {
-    text-align: justify;
-}
-.left {
-    text-align: left;
-}
-/* Set the header font properties */
+
+/* The header font properties */
 h1, h2, h3 {
     margin: 0;
     margin-bottom: 10px;
@@ -147,6 +110,56 @@ h2 {
 h3 {
     margin-bottom: 40px;
 }
+
+/* The small font used for tips and form field explanations */
+span.tiph {
+	color: #000000;
+	font: 0.6875em Arial, Helvetica, sans-serif;
+}
+span.tip {
+	color: #fed403;
+	font: 0.6875em Arial, Helvetica, sans-serif;
+}
+span.emph {
+	color: #ff0000;
+	font: 1em Arial, Helvetica, sans-serif;
+}
+
+/* The look of textboxes and buttons */
+input, textarea, select {
+	color: #000000;
+	background: #ffffcc;
+	border: 1px solid #cc9900;
+}
+input[type="text"] {
+    width: 100%;
+}
+
+/* Link colours */
+a:link {
+    color: #ff0000;
+}
+a:visited {
+    color: #cc0000
+}
+
+/* Shorthands for text alignment and floating */
+.center {
+    text-align: center;
+}
+.justify {
+    text-align: justify;
+}
+.left {
+    text-align: left;
+}
+.floatleft {
+    float: left;
+}
+.floatright {
+    float: right;
+}
+
 /* Properties of the error/notification dialog box */
 div.msg {
     text-align: center;
@@ -154,7 +167,8 @@ div.msg {
     padding: 5px;
     margin: 20px;
 }
-/* Centered divs of different widths */
+
+/* Centered divs of fixed widths, for centering paragraphs */
 div.ctext6 {
     text-align: left;
     width:600px;
@@ -165,6 +179,7 @@ div.ctext8 {
     width:800px;
     margin: 0 auto;
 }
+
 /* Div used to contain a single photo album image, adding a margin and border */
 div.albumimage {
     margin: 0 auto;
@@ -178,9 +193,6 @@ li.photoalbum {
     float: left;
     list-style: none;
     margin: 10px;
-    padding: 3px;
+    padding: 0px;
     width: 2.5cm;
 }
-ul.photoalbum {
-    padding-left: 0;
-} 

@@ -11,8 +11,8 @@ row_color(TRUE);
 <h3>History</h3>
 
 <div>
-  <div class="imagefloat floatleft" style="width:354px">
-    <img src="images/history/firstfive.jpg" width="352" height="300" />
+  <div class="imageborder floatleft">
+    <img src="images/history/firstfive.jpg"/>
       <br />The First Five - January 20, 1967<br>
       Len Kushnier, Chris Moon, Bill Petty, Dave Greenberg, Pete Huck
   </div>

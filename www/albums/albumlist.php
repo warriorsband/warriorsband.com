@@ -26,12 +26,6 @@ if ($result->num_rows == 0) {
 
 <h1>Photo Albums</h1>
 <br />
-<div class="ctext6">
-  Eventually this will be a nice grid of album previews instead of one 
-  column. The album page will also be a grid of photo previews instead of 
-  just taking you to the first image.
-  <br /><br />
-</div>
 <?php
 if(auth_view_photos()) {
 ?>
