@@ -25,7 +25,13 @@ if (isset($_GET['filter']) && $_GET['filter'] != "all") {
     case "unactivated":
       $users_filter_sql = "WHERE `last_login` IS NULL ";
       break;
-    case "old":
+    case "1monthold":
+      $users_filter_sql = "WHERE `last_login` < DATE_SUB(NOW(), INTERVAL 1 MONTH) ";
+      break;
+    case "4monthsold":
+      $users_filter_sql = "WHERE `last_login` < DATE_SUB(NOW(), INTERVAL 4 MONTH) ";
+      break;
+    case "1yearold":
       $users_filter_sql = "WHERE `last_login` < DATE_SUB(NOW(), INTERVAL 1 YEAR) ";
       break;
     default:
@@ -62,7 +68,9 @@ if (auth_view_emails()) {
 if (user_type_greater_eq(2)) {
 ?>
     <option value="unactivated" <?php selected("unactivated",$users_filter) ?>>Unactivated members</option>
-    <option value="old" <?php selected("old",$users_filter) ?>>Last login &gt;1 year ago</option>
+    <option value="1monthold" <?php selected("1monthold",$users_filter) ?>>Last login &gt;1 month ago</option>
+    <option value="4monthsold" <?php selected("4monthsold",$users_filter) ?>>Last login &gt;4 months ago</option>
+    <option value="1yearold" <?php selected("1yearold",$users_filter) ?>>Last login &gt;1 year ago</option>
 <?php
 }
 ?>
