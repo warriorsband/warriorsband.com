@@ -1,3 +1,0 @@
-* Do review of all source code files, add comments, think about security/reliability etc
-* Document site development process (how to use git, how to add a page, etc)
-* Add photo previews to individual photo albums
